@@ -13,6 +13,146 @@ CPU :: CPU (void){
 
     // Registro de estado
     P = 0x24;
+
+    initializeOpcodeTable();
+}
+
+void CPU :: ADC (unsigned char value){
+    
+    unsigned short sum = A + value + ((getFlag(CARRY)) ? 1 : 0);
+    A = static_cast<unsigned char>(sum);
+    
+    bool overflow = (~(A ^ value) & (A ^ sum)) & 0x80;
+
+    setFlag(CARRY, sum > 0xFF);
+    setFlag(ZERO, A == 0);
+    setFlag(OVERFLOW, overflow);
+    setFlag(NEGATIVE, A & 0x80);
+}
+
+void CPU :: AND (unsigned char value){
+
+    A &= value;
+    
+    setFlag(ZERO, A == 0);
+    setFlag(NEGATIVE, A & 0x80);
+}
+
+void CPU :: ASL (unsigned char * value){
+    
+    unsigned char result = *value << 1;
+    
+    setFlag(CARRY, *value & 0x80);
+    setFlag(ZERO, result == 0);
+    setFlag(NEGATIVE, result & 0x80);
+
+    *value = result;
+}
+
+void CPU :: LSR (unsigned char * value){
+
+    unsigned char result = *value >> 1;
+
+    setFlag(CARRY, *value & 0x01);
+    setFlag(ZERO, result == 0);
+    setFlag(NEGATIVE, 0);
+
+    *value = result;
+}
+
+void CPU :: ROL (unsigned char * value){
+
+    unsigned char result = *value << 1;
+    result |= 0x01 & getFlag(CARRY);
+
+    setFlag(CARRY, *value & 0x80);
+    setFlag(ZERO, result == 0);
+    setFlag(NEGATIVE, result & 0x80);
+
+    *value = result;
+}
+
+void CPU :: ROR (unsigned char * value){
+
+    unsigned char result = *value >> 1;
+    result |= 0x80 & getFlag(CARRY);
+
+    setFlag(CARRY, *value & 0x01);
+    setFlag(ZERO, result == 0);
+    setFlag(NEGATIVE, result & 0x80);
+
+    *value = result;
+}
+
+void CPU :: BXX (bool flag){
+    if (flag)
+        PC = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
+}
+
+void CPU :: BCC (){
+    BXX(!getFlag(CARRY));
+}
+
+void CPU :: BCS (){
+    BXX(getFlag(CARRY));
+}
+
+void CPU :: BNE (){
+    BXX(!getFlag(ZERO));
+}
+
+void CPU :: BEQ (){
+    BXX(getFlag(ZERO));
+}
+
+void CPU :: BPL (){
+    BXX(!getFlag(NEGATIVE));
+}
+
+void CPU :: BMI (){
+    BXX(getFlag(NEGATIVE));
+}
+
+void CPU :: BVC (){
+    BXX(!getFlag(OVERFLOW));
+}
+
+void CPU :: BVS (){
+    BXX(getFlag(OVERFLOW));
+}
+
+/**************************************************************************************/
+
+// Other functions
+
+/**************************************************************************************/
+
+void CPU :: initializeOpcodeTable(){
+    
+    for (int i = 0; i < OPCODE_TABLE_SIZE; ++i){
+        opcodeTable[i] = {NULL, 0, NULL, IMPLICIT};
+    }
+
+    opcodeTable[0x69] = {&CPU::ADC, 2, 2, IMMEDIATE};
+    opcodeTable[0x65] = {&CPU::ADC, 2, 3, ZEROPAGE};
+    opcodeTable[0x75] = {&CPU::ADC, 2, 4, ZEROPAGE_X};
+    opcodeTable[0x6D] = {&CPU::ADC, 3, 4, ABSOLUTE};
+    opcodeTable[0x7D] = {&CPU::ADC, 3, 4, ABSOLUTE_X};
+    opcodeTable[0x79] = {&CPU::ADC, 3, 4, ABSOLUTE_Y};
+    opcodeTable[0x61] = {&CPU::ADC, 2, 6, INDIRECT_X};
+    opcodeTable[0x71] = {&CPU::ADC, 2, 5, INDIRECT_Y};
+
+}
+
+bool CPU :: getFlag(Flags flag) {
+    return (P & flag) != 0;
+}
+
+void CPU :: setFlag(Flags flag, bool condition) {
+    if (condition)
+        P |= flag;
+    else
+        P &= ~flag;
 }
 
 void CPU :: emulationCycle(){
@@ -51,8 +191,7 @@ void CPU :: emulationCycle(){
         // 79
         arg = cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + Y];
 
-        // 61
-        //val = PEEK(PEEK((arg + X) % 256) + PEEK((arg + X + 1) % 256) * 256) 	
+        // 61	
         arg = cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];
 
         // 71
@@ -144,7 +283,7 @@ void CPU :: emulationCycle(){
         C = P & 0x01;
         arg = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
         
-        if (!C)
+        if (C)
             PC = arg;
 
         break;
