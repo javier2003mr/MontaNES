@@ -66,7 +66,12 @@ class CPU {
 
         // Arithmetic Operations
         void ADC(unsigned char value);
+
+        // Bitwise Operations
         void AND(unsigned char value);
+        void ORA(unsigned char value);
+        void EOR(unsigned char value);
+        void BIT(unsigned char value);
 
         // Shift Operations
         void ASL(unsigned char * value);
@@ -74,6 +79,12 @@ class CPU {
         void ROL(unsigned char * value);
         void ROR(unsigned char * value);
         
+        // Compare Operations
+        void CMP_GEN(unsigned char value, unsigned char reg);
+        void CMP(unsigned char value);
+        void CPX(unsigned char value);
+        void CPY(unsigned char value);
+
         // Branch Operations
         void BXX(bool flag);
         void BCC();
@@ -84,6 +95,10 @@ class CPU {
         void BVC();
         void BVS();
         void BPL();
+
+        // Jump Operations
+        void JMP(unsigned short dir);
+        void JSR(unsigned short dir);
 
         void initializeOpcodeTable();
         bool getFlag(Flags flag);

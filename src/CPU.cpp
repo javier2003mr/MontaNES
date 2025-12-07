@@ -38,6 +38,31 @@ void CPU :: AND (unsigned char value){
     setFlag(NEGATIVE, A & 0x80);
 }
 
+void CPU :: ORA (unsigned char value){
+    
+    A |= value;
+
+    setFlag(ZERO, A == 0);
+    setFlag(NEGATIVE, A & 0x80);
+}
+
+void CPU :: EOR (unsigned char value){
+
+    A ^= value;
+
+    setFlag(ZERO, A == 0);
+    setFlag(NEGATIVE, A & 0x80);
+}
+
+void CPU :: BIT (unsigned char value){
+
+    unsigned char aux = A & value;
+    
+    setFlag(ZERO, aux == 0);
+    setFlag(OVERFLOW, value & 0x40);
+    setFlag(NEGATIVE, value & 0x80);
+}
+
 void CPU :: ASL (unsigned char * value){
     
     unsigned char result = *value << 1;
@@ -84,6 +109,27 @@ void CPU :: ROR (unsigned char * value){
     *value = result;
 }
 
+void CPU :: CMP_GEN (unsigned char value, unsigned char reg){
+    setFlag(CARRY, reg >= value);
+    setFlag(ZERO, reg == value);
+    setFlag(NEGATIVE, (reg - value) & 0x80);
+}
+
+void CPU :: CMP (unsigned char value){
+
+    CMP_GEN(value, A);
+}
+
+void CPU :: CPX (unsigned char value){
+
+    CMP_GEN(value, X);
+}
+
+void CPU :: CPY (unsigned char value){
+
+    CMP_GEN(value, Y);
+}
+
 void CPU :: BXX (bool flag){
     if (flag)
         PC = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
@@ -119,6 +165,18 @@ void CPU :: BVC (){
 
 void CPU :: BVS (){
     BXX(getFlag(OVERFLOW));
+}
+
+void CPU :: JMP (unsigned short dir){
+    PC = dir;
+}
+
+void CPU :: JSR (unsigned short dir){
+    
+    cpu_memory[SP] = (PC & 0xFF00) >> 8;
+    cpu_memory[SP-1] = (PC & 0x00FF);
+    SP -= 2;
+    PC = dir;
 }
 
 /**************************************************************************************/
