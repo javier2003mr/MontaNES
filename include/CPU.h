@@ -39,15 +39,6 @@ class CPU {
         unsigned char SP;
 
         // Registros de estado
-        // Mapa de bits:
-        // 0: Carry
-        // 1: Zero
-        // 2: Interrupt Disable
-        // 3: Decimal
-        // 4: B flag
-        // 5: 1
-        // 6: Overflow
-        // 7: Negative
         unsigned char P;
 
         enum Flags {
@@ -66,7 +57,8 @@ class CPU {
 
         // Arithmetic Operations
         void ADC(unsigned char value);
-
+        void SBC(unsigned char value);
+        
         // Bitwise Operations
         void AND(unsigned char value);
         void ORA(unsigned char value);
@@ -99,7 +91,46 @@ class CPU {
         // Jump Operations
         void JMP(unsigned short dir);
         void JSR(unsigned short dir);
+        void RTS();
+        void RTI();
+        void BRK(); //<<<<----- NO IMPLEMENTADA AUN
 
+        // Access Operations
+        void LDA(unsigned short dir);
+        void STA(unsigned short dir);
+        void LDX(unsigned short dir);
+        void STX(unsigned short dir);
+        void LDY(unsigned short dir);
+        void STY(unsigned short dir);
+
+        // Transfer Operations
+        void TAX();
+        void TAY();
+        void TXA();
+        void TYA();
+        
+        // Stack Operations
+        void PHA();
+        void PLA();
+        void PHP();
+        void PLP();
+        void TSX();
+        void TXS();
+
+        // Flag Operations
+        void CLC();
+        void SEC();
+        void CLI();
+        void SEI();
+        void CLD();
+        void SED();
+        void CLV();
+
+        // Other Operations
+        // void NOP();
+
+        void stack_push(unsigned char data);
+        unsigned char stack_pop();
         void initializeOpcodeTable();
         bool getFlag(Flags flag);
         void setFlag(Flags flag, bool condition);

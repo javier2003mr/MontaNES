@@ -19,12 +19,25 @@ CPU :: CPU (void){
 
 void CPU :: ADC (unsigned char value){
     
-    unsigned short sum = A + value + ((getFlag(CARRY)) ? 1 : 0);
-    A = static_cast<unsigned char>(sum);
-    
+    unsigned short sum = A + value + ((getFlag(CARRY)) ? 1 : 0);    
     bool overflow = (~(A ^ value) & (A ^ sum)) & 0x80;
 
+    A = static_cast<unsigned char>(sum);
+
     setFlag(CARRY, sum > 0xFF);
+    setFlag(ZERO, A == 0);
+    setFlag(OVERFLOW, overflow);
+    setFlag(NEGATIVE, A & 0x80);
+}
+
+void CPU :: SBC (unsigned char value){
+    
+    unsigned short result = A + (~value) + ((getFlag(CARRY)) ? 1 : 0);
+    bool overflow = ((A ^ result) & (A ^ (~value)) & 0x80) != 0;
+    
+    A = static_cast<unsigned char>(result);
+
+    setFlag(CARRY, result <= 0xFF);
     setFlag(ZERO, A == 0);
     setFlag(OVERFLOW, overflow);
     setFlag(NEGATIVE, A & 0x80);
@@ -173,10 +186,132 @@ void CPU :: JMP (unsigned short dir){
 
 void CPU :: JSR (unsigned short dir){
     
-    cpu_memory[SP] = (PC & 0xFF00) >> 8;
-    cpu_memory[SP-1] = (PC & 0x00FF);
-    SP -= 2;
+    stack_push((PC & 0xFF00) >> 8);
+    stack_push(PC & 0x00FF);
     PC = dir;
+}
+
+void CPU :: RTS (){
+
+    unsigned char low_byte = stack_pop();
+    unsigned char high_byte = stack_pop();
+    PC = high_byte << 8 | low_byte;
+}
+
+void CPU :: RTI (){
+
+    P = stack_pop() & 0xCF;
+    RTS();
+}
+
+void CPU :: BRK (){
+
+}
+
+void CPU :: TAX (){
+    
+    X = A;
+    setFlag(ZERO, A == 0);
+    setFlag(NEGATIVE, A & 0x80);
+}
+
+void CPU :: TAY (){
+
+    Y = A;
+    setFlag(ZERO, Y == 0);
+    setFlag(NEGATIVE, Y & 0x80);
+}
+
+void CPU :: TXA (){
+    
+    A = X;
+    setFlag(ZERO, X == 0);
+    setFlag(NEGATIVE, X & 0x80);
+}
+
+void CPU :: TYA (){
+    
+    A = Y;
+    setFlag(ZERO, A == 0);
+    setFlag(NEGATIVE, A & 0x80);
+}
+
+void CPU :: TSX (){
+    X = SP;
+}
+
+void CPU :: TXS (){
+    SP = X;
+}
+
+void CPU :: PHA (){
+    stack_push(A);
+}
+
+void CPU :: PHP (){
+    stack_push(P | 0x30);
+}
+
+void CPU :: PLP (){
+    P |= stack_pop() & 0xCF;
+}
+
+void CPU :: LDA (unsigned short dir){
+    A = cpu_memory[dir];
+    setFlag(ZERO, A == 0);
+    setFlag(NEGATIVE, A & 0x80);
+}
+
+void CPU :: STA (unsigned short dir){
+    cpu_memory[dir] = A;
+}
+
+void CPU :: LDX (unsigned short dir){
+    X = cpu_memory[dir];
+    setFlag(ZERO, X == 0);
+    setFlag(NEGATIVE, X & 0x80);
+}
+
+void CPU :: STX (unsigned short dir){
+    cpu_memory[dir] = X;
+}
+
+void CPU :: LDY (unsigned short dir){
+    Y = cpu_memory[dir];
+    setFlag(ZERO, Y == 0);
+    setFlag(NEGATIVE, Y & 0x80);
+}
+
+void CPU :: STY (unsigned short dir){
+    cpu_memory[dir] = Y;
+}
+
+void CPU :: CLC (){
+    setFlag(CARRY, 0);
+}
+
+void CPU :: SEC (){
+    setFlag(CARRY, 1);
+}
+
+void CPU :: CLI (){
+    setFlag(INTERRUPT, 0);
+}
+
+void CPU :: SEI (){
+    setFlag(INTERRUPT, 1);
+}
+
+void CPU :: CLD (){
+    setFlag(DECIMAL, 0);
+}
+
+void CPU :: SED (){
+    setFlag(DECIMAL, 1);
+}
+
+void CPU :: CLV (){
+    setFlag(OVERFLOW, 0);
 }
 
 /**************************************************************************************/
@@ -184,6 +319,18 @@ void CPU :: JSR (unsigned short dir){
 // Other functions
 
 /**************************************************************************************/
+
+void CPU :: stack_push (unsigned char data){
+
+    cpu_memory[0x0100 | SP] = data;
+    --SP;
+}
+
+unsigned char CPU :: stack_pop (){
+
+    ++SP;
+    return cpu_memory[0x0100 | SP];
+}
 
 void CPU :: initializeOpcodeTable(){
     
@@ -214,204 +361,5 @@ void CPU :: setFlag(Flags flag, bool condition) {
 }
 
 void CPU :: emulationCycle(){
-
-    unsigned char opcode = cpu_memory[PC];
-    unsigned char arg;
-    unsigned char C, Z, N, V;
-
-    switch (opcode)
-    {
-    case 0x69:
-    case 0x65:
-    case 0x75:
-    case 0x6D:
-    case 0x7D:
-    case 0x79:
-    case 0x61:
-    case 0x71:
-
-        printf ("ADC\n");
-        // 69
-        arg = cpu_memory[PC+1];
-        
-        // 65
-        arg = cpu_memory[cpu_memory[PC+1] % 256];
-
-        // 75
-        arg = cpu_memory[(cpu_memory[PC+1] + X) % 256];
-
-        // 6D
-        arg = cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2]];
-
-        // 7D
-        arg = cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + X];
-
-        // 79
-        arg = cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + Y];
-
-        // 61	
-        arg = cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];
-
-        // 71
-        arg = cpu_memory[cpu_memory[cpu_memory[PC+1] % 256] + cpu_memory[(cpu_memory[PC+1] + 1) % 256] * 256 + Y];
-
-        C = P & 0x01;
-        A += arg + C;
-        
-        break;
-    
-    case 0x29:
-    case 0x25:
-    case 0x35:
-    case 0x2D:
-    case 0x3D:
-    case 0x39:
-    case 0x21:
-    case 0x31:
-
-        printf ("AND\n");
-        // 29
-        arg = cpu_memory[PC+1];
-        
-        // 25
-        arg = cpu_memory[cpu_memory[PC+1] % 256];
-
-        // 35
-        arg = cpu_memory[(cpu_memory[PC+1] + X) % 256];
-
-        // 2D
-        arg = cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2]];
-
-        // 3D
-        arg = cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + X];
-
-        // 39
-        arg = cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + Y];
-
-        // 31
-        arg = cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];
-
-        // 71
-        arg = cpu_memory[cpu_memory[cpu_memory[PC+1] % 256] + cpu_memory[(cpu_memory[PC+1] + 1) % 256] * 256 + Y];
-
-        C = P & 0x01;
-        A &= arg;
-
-        break;
-
-    case 0x0A:
-    case 0x06:
-    case 0x16:
-    case 0x0E:
-    case 0x1E:
-
-        printf ("ASL\n");
-        // 0A
-        A = A << 1;
-        
-        // 06
-        cpu_memory[cpu_memory[PC+1] % 256] = cpu_memory[cpu_memory[PC+1] % 256] << 1;
-
-        // 16
-        cpu_memory[(cpu_memory[PC+1] + X) % 256] = cpu_memory[(cpu_memory[PC+1] + X) % 256] << 1;
-
-        // 0E
-        cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2]] = cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2]] << 1;
-
-        // 1E
-        cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + X] = cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + X] << 1;
-
-        break;
-
-    case 0x90:
-
-        printf ("BCC\n");
-        // 90
-        C = P & 0x01;
-        arg = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
-        
-        if (!C)
-            PC = arg;
-
-        break;
-
-    case 0xB0:
-        printf ("BCS\n");
-        // B0
-        C = P & 0x01;
-        arg = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
-        
-        if (C)
-            PC = arg;
-
-        break;
-
-    case 0xF0:
-        printf ("BEQ\n");
-        // B0
-        Z = P & 0x02;
-        arg = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
-        
-        if (Z)
-            PC = arg;
-
-        break;
-
-    case 0x30:
-        printf ("BMI\n");
-        // 30
-        N = P & 0x80;
-        arg = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
-        
-        if (N)
-            PC = arg;
-
-        break;
-    
-    case 0x10:
-        printf ("BPL\n");
-        // 10
-        N = P & 0x80;
-        arg = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
-        
-        if (!N)
-            PC = arg;
-
-        break;
-
-    case 0xD0:
-        printf ("BNE\n");
-        // D0
-        Z = P & 0x02;
-        arg = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
-        
-        if (!Z)
-            PC = arg;
-        
-        break;
-    case 0x50:
-        printf ("BVC\n");
-        // 50
-        V = P & 0x40;
-        arg = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
-        
-        if (!V)
-            PC = arg;
-
-        break;
-
-    case 0x70:
-        printf ("BVS\n");
-        // 50
-        V = P & 0x40;
-        arg = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
-        
-        if (V)
-            PC = arg;
-
-        break;
-    default:
-        break;
-    }
 
 }
