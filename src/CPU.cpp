@@ -43,6 +43,30 @@ void CPU :: SBC (unsigned char value){
     setFlag(NEGATIVE, A & 0x80);
 }
 
+void CPU :: INC (unsigned short dir){
+    ++cpu_memory[dir];
+}
+
+void CPU :: DEC (unsigned short dir){
+    --cpu_memory[dir];
+}
+
+void CPU :: INX (){
+    ++X;
+}
+
+void CPU :: DEX (){
+    --X;
+}
+
+void CPU :: INY (){
+    ++Y;
+}
+
+void CPU :: DEY (){
+    --Y;
+}
+
 void CPU :: AND (unsigned char value){
 
     A &= value;
@@ -205,7 +229,9 @@ void CPU :: RTI (){
 }
 
 void CPU :: BRK (){
-
+    stack_push(((PC+1) & 0xFF00) >> 8);
+    stack_push((PC+1) & 0x00FF);
+    stack_push(P | 0x30);
 }
 
 void CPU :: TAX (){

@@ -1,4 +1,5 @@
-#define OPCODE_TABLE_SIZE
+#define OPCODE_TABLE_SIZE 256
+#define CPU_RAM_SIZE 65536
 
 enum AddressingMode {
     IMPLICIT,    // Implícito
@@ -19,13 +20,15 @@ enum AddressingMode {
 struct OpcodeInfo {
     InstructionHandler handler;
     int length;
-    uint8_t cycles;
+    int cycles;
     AddressingMode mode;
 };
 
 class CPU {
     private:
         
+        unsigned char cpu_memory[CPU_RAM_SIZE];
+
         // Contador de programa
         unsigned short PC;
 
@@ -58,7 +61,13 @@ class CPU {
         // Arithmetic Operations
         void ADC(unsigned char value);
         void SBC(unsigned char value);
-        
+        void INC(unsigned short dir);
+        void DEC(unsigned short dir);
+        void INX();
+        void DEX();
+        void INY();
+        void DEY();
+
         // Bitwise Operations
         void AND(unsigned char value);
         void ORA(unsigned char value);
