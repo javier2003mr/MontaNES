@@ -1,8 +1,10 @@
+#include <functional>
+
 #define OPCODE_TABLE_SIZE 256
 #define CPU_RAM_SIZE 65536
 
 enum AddressingMode {
-    IMPLICIT,    // Implícito
+    IMPLIED,    // Implícito
     ACCUMULATOR, // Acumulador
     IMMEDIATE,   // Inmediato
     ZEROPAGE,    // Página cero
@@ -15,6 +17,27 @@ enum AddressingMode {
     INDIRECT_X,  // (Indirecto,X)
     INDIRECT_Y,  // (Indirecto),Y
     RELATIVE     // Relativo
+};
+
+struct InstructionHandler {
+    enum {
+        TYPE_VOID,      // No parameters
+        TYPE_UCHAR,     // unsigned char
+        TYPE_USHORT,    // unsigned short
+        TYPE_UCHAR_PTR, // unsigned char*
+        TYPE_BOOL,      // bool
+        TYPE_USHORT2,   // unsigned short (for JMP, etc.)
+        TYPE_UC_UC      // unsigned char, unsigned char
+    } type;
+    
+    union {
+        void (CPU::*void_func)(void);
+        void (CPU::*uchar_func)(unsigned char);
+        void (CPU::*ushort_func)(unsigned short);
+        void (CPU::*uchar_ptr_func)(unsigned char*);
+        void (CPU::*bool_func)(bool);
+        void (CPU::*uc_uc_func)(unsigned char, unsigned char);
+    } func;
 };
 
 struct OpcodeInfo {
@@ -102,7 +125,7 @@ class CPU {
         void JSR(unsigned short dir);
         void RTS();
         void RTI();
-        void BRK(); //<<<<----- NO IMPLEMENTADA AUN
+        void BRK();
 
         // Access Operations
         void LDA(unsigned short dir);
@@ -136,7 +159,7 @@ class CPU {
         void CLV();
 
         // Other Operations
-        // void NOP();
+        void NOP();
 
         void stack_push(unsigned char data);
         unsigned char stack_pop();

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <functional>
 #include "include/CPU.h"
 
 CPU :: CPU (void){ 
@@ -356,23 +357,6 @@ unsigned char CPU :: stack_pop (){
 
     ++SP;
     return cpu_memory[0x0100 | SP];
-}
-
-void CPU :: initializeOpcodeTable(){
-    
-    for (int i = 0; i < OPCODE_TABLE_SIZE; ++i){
-        opcodeTable[i] = {NULL, 0, NULL, IMPLICIT};
-    }
-
-    opcodeTable[0x69] = {&CPU::ADC, 2, 2, IMMEDIATE};
-    opcodeTable[0x65] = {&CPU::ADC, 2, 3, ZEROPAGE};
-    opcodeTable[0x75] = {&CPU::ADC, 2, 4, ZEROPAGE_X};
-    opcodeTable[0x6D] = {&CPU::ADC, 3, 4, ABSOLUTE};
-    opcodeTable[0x7D] = {&CPU::ADC, 3, 4, ABSOLUTE_X};
-    opcodeTable[0x79] = {&CPU::ADC, 3, 4, ABSOLUTE_Y};
-    opcodeTable[0x61] = {&CPU::ADC, 2, 6, INDIRECT_X};
-    opcodeTable[0x71] = {&CPU::ADC, 2, 5, INDIRECT_Y};
-
 }
 
 bool CPU :: getFlag(Flags flag) {
