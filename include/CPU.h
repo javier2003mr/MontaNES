@@ -19,36 +19,38 @@ enum AddressingMode {
     RELATIVE     // Relativo
 };
 
-struct InstructionHandler {
-    enum {
-        TYPE_VOID,      // No parameters
-        TYPE_UCHAR,     // unsigned char
-        TYPE_USHORT,    // unsigned short
-        TYPE_UCHAR_PTR, // unsigned char*
-        TYPE_BOOL,      // bool
-        TYPE_USHORT2,   // unsigned short (for JMP, etc.)
-        TYPE_UC_UC      // unsigned char, unsigned char
-    } type;
-    
-    union {
-        void (CPU::*void_func)(void);
-        void (CPU::*uchar_func)(unsigned char);
-        void (CPU::*ushort_func)(unsigned short);
-        void (CPU::*uchar_ptr_func)(unsigned char*);
-        void (CPU::*bool_func)(bool);
-        void (CPU::*uc_uc_func)(unsigned char, unsigned char);
-    } func;
-};
 
-struct OpcodeInfo {
-    InstructionHandler handler;
-    int length;
-    int cycles;
-    AddressingMode mode;
-};
 
 class CPU {
     private:
+
+        struct InstructionHandler {
+            enum {
+                TYPE_VOID,      // No parameters
+                TYPE_UCHAR,     // unsigned char
+                TYPE_USHORT,    // unsigned short
+                TYPE_UCHAR_PTR, // unsigned char*
+                TYPE_BOOL,      // bool
+                TYPE_USHORT2,   // unsigned short (for JMP, etc.)
+                TYPE_UC_UC      // unsigned char, unsigned char
+            } type;
+            
+            union {
+                void (CPU::*void_func)(void);
+                void (CPU::*uchar_func)(unsigned char);
+                void (CPU::*ushort_func)(unsigned short);
+                void (CPU::*uchar_ptr_func)(unsigned char*);
+                void (CPU::*bool_func)(bool);
+                void (CPU::*uc_uc_func)(unsigned char, unsigned char);
+            } func;
+        };
+
+        struct OpcodeInfo {
+            InstructionHandler handler;
+            int length;
+            int cycles;
+            AddressingMode mode;
+        };
         
         unsigned char cpu_memory[CPU_RAM_SIZE];
 
@@ -80,6 +82,8 @@ class CPU {
         OpcodeInfo opcodeTable[OPCODE_TABLE_SIZE];
 
     public:
+
+        CPU();
 
         // Arithmetic Operations
         void ADC(unsigned char value);
@@ -166,5 +170,7 @@ class CPU {
         void initializeOpcodeTable();
         bool getFlag(Flags flag);
         void setFlag(Flags flag, bool condition);
+        void executeOpcode(OpcodeInfo & info, void* param1, void* param2);
         void emulationCycle();
 };
+

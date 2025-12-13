@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <functional>
-#include "include/CPU.h"
+#include "../include/CPU.h"
 
 CPU :: CPU (void){ 
 
@@ -370,6 +370,87 @@ void CPU :: setFlag(Flags flag, bool condition) {
         P &= ~flag;
 }
 
-void CPU :: emulationCycle(){
+void CPU :: executeOpcode(OpcodeInfo & info, void* param1 = nullptr, void* param2 = nullptr) {
 
+    if (!info.handler.func.void_func) {
+        // Handle illegal/undefined opcode
+        return;
+    }
+    
+    switch (info.handler.type) {
+        case InstructionHandler::TYPE_VOID:
+            (this->*(info.handler.func.void_func))();
+            break;
+            
+        case InstructionHandler::TYPE_UCHAR:
+            (this->*(info.handler.func.uchar_func))(*static_cast<unsigned char*>(param1));
+            break;
+            
+        case InstructionHandler::TYPE_USHORT:
+            (this->*(info.handler.func.ushort_func))(*static_cast<unsigned short*>(param1));
+            break;
+            
+        case InstructionHandler::TYPE_UCHAR_PTR:
+            (this->*(info.handler.func.uchar_ptr_func))(static_cast<unsigned char*>(param1));
+            break;
+            
+        case InstructionHandler::TYPE_BOOL:
+            (this->*(info.handler.func.bool_func))(*static_cast<bool*>(param1));
+            break;
+            
+        case InstructionHandler::TYPE_UC_UC:
+            (this->*(info.handler.func.uc_uc_func))(
+                *static_cast<unsigned char*>(param1),
+                *static_cast<unsigned char*>(param2)
+            );
+            break;
+    }
+}
+
+void CPU :: emulationCycle(){
+    unsigned char opcode = cpu_memory[PC];
+
+    OpcodeInfo info = opcodeTable[opcode];
+
+    switch (info.mode)
+    {
+    case IMPLIED:
+        break;
+    
+    case ACCUMULATOR:
+        break;
+
+    case IMMEDIATE:
+        break;
+    
+    case ZEROPAGE:
+        break;
+
+    case ZEROPAGE_X:
+        break;
+
+    case ZEROPAGE_Y:
+        break;
+    
+    case ABSOLUTE:
+        break;
+    
+    case ABSOLUTE_X:
+        break;
+
+    case INDIRECT:
+        break;
+    
+    case INDIRECT_X:
+        break;
+
+    case INDIRECT_Y:
+        break;
+
+    case RELATIVE:
+        break;
+    
+    default:
+        break;
+    }
 }
