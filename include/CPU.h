@@ -1,3 +1,6 @@
+#ifndef CPUCLASS
+#define CPUCLASS
+
 #include <functional>
 
 #define OPCODE_TABLE_SIZE 256
@@ -165,12 +168,29 @@ class CPU {
         // Other Operations
         void NOP();
 
+        void setPC(unsigned short value);
+        void setA (unsigned char value);
+        void setP (unsigned char value);
+        void setSP(unsigned short value);
+        void setX (unsigned char value);
+        void setY (unsigned char value);
+        void setMemoryDir (unsigned short dir, unsigned char value);
+
+        unsigned short getPC();
+        unsigned char getA ();
+        unsigned char getP ();
+        unsigned short getSP();
+        unsigned char getX ();
+        unsigned char getY ();
+        unsigned char getMemoryDir (unsigned short dir);
+
         void stack_push(unsigned char data);
         unsigned char stack_pop();
         void initializeOpcodeTable();
         bool getFlag(Flags flag);
         void setFlag(Flags flag, bool condition);
-        void executeOpcode(OpcodeInfo & info, void* param1, void* param2);
+        void executeOpcode(OpcodeInfo & info, void* param);
         void emulationCycle();
 };
 
+#endif

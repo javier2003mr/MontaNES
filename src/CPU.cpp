@@ -275,6 +275,10 @@ void CPU :: PHA (){
     stack_push(A);
 }
 
+void CPU :: PLA (){
+    A = stack_pop();
+}
+
 void CPU :: PHP (){
     stack_push(P | 0x30);
 }
@@ -341,6 +345,8 @@ void CPU :: CLV (){
     setFlag(OVERFLOW, 0);
 }
 
+void CPU :: NOP (){}
+
 /**************************************************************************************/
 
 // Other functions
@@ -370,7 +376,36 @@ void CPU :: setFlag(Flags flag, bool condition) {
         P &= ~flag;
 }
 
-void CPU :: executeOpcode(OpcodeInfo & info, void* param1 = nullptr, void* param2 = nullptr) {
+void CPU :: setPC(unsigned short value){ PC = value; }
+
+void CPU :: setA (unsigned char value){ A = value; }
+
+void CPU :: setP (unsigned char value){ P = value; }
+
+void CPU :: setSP(unsigned short value){ SP = value; }
+
+void CPU :: setX (unsigned char value){ X = value; }
+
+void CPU :: setY (unsigned char value){ Y = value; }
+
+void CPU :: setMemoryDir (unsigned short dir, unsigned char value){ if (dir < CPU_RAM_SIZE){ cpu_memory[dir] = value; } }
+
+unsigned short CPU :: getPC(){ return PC; }
+
+unsigned char CPU :: getA (){ return A; }
+
+unsigned char CPU :: getP (){ return P; }
+
+unsigned short CPU :: getSP(){ return SP; }
+
+unsigned char CPU :: getX (){ return X; }
+
+unsigned char CPU :: getY (){ return Y; }
+
+unsigned char CPU :: getMemoryDir (unsigned short dir){ if (dir < CPU_RAM_SIZE) {return cpu_memory[dir];}}
+
+
+void CPU :: executeOpcode(OpcodeInfo & info, void* param = nullptr) {
 
     if (!info.handler.func.void_func) {
         // Handle illegal/undefined opcode
@@ -383,74 +418,92 @@ void CPU :: executeOpcode(OpcodeInfo & info, void* param1 = nullptr, void* param
             break;
             
         case InstructionHandler::TYPE_UCHAR:
-            (this->*(info.handler.func.uchar_func))(*static_cast<unsigned char*>(param1));
+            (this->*(info.handler.func.uchar_func))(*static_cast<unsigned char*>(param));
             break;
             
         case InstructionHandler::TYPE_USHORT:
-            (this->*(info.handler.func.ushort_func))(*static_cast<unsigned short*>(param1));
+            (this->*(info.handler.func.ushort_func))(*static_cast<unsigned short*>(param));
             break;
             
         case InstructionHandler::TYPE_UCHAR_PTR:
-            (this->*(info.handler.func.uchar_ptr_func))(static_cast<unsigned char*>(param1));
+            (this->*(info.handler.func.uchar_ptr_func))(static_cast<unsigned char*>(param));
             break;
             
         case InstructionHandler::TYPE_BOOL:
-            (this->*(info.handler.func.bool_func))(*static_cast<bool*>(param1));
-            break;
-            
-        case InstructionHandler::TYPE_UC_UC:
-            (this->*(info.handler.func.uc_uc_func))(
-                *static_cast<unsigned char*>(param1),
-                *static_cast<unsigned char*>(param2)
-            );
+            (this->*(info.handler.func.bool_func))(*static_cast<bool*>(param));
             break;
     }
 }
 
 void CPU :: emulationCycle(){
+    
     unsigned char opcode = cpu_memory[PC];
 
     OpcodeInfo info = opcodeTable[opcode];
 
+    unsigned char * arg;
+    unsigned short aux;
+
     switch (info.mode)
     {
     case IMPLIED:
+        arg = nullptr;
         break;
     
     case ACCUMULATOR:
+        arg = &A;
         break;
 
     case IMMEDIATE:
+        arg = &cpu_memory[PC+1];
         break;
     
     case ZEROPAGE:
+        arg = &cpu_memory[cpu_memory[PC+1] % 256];
         break;
 
     case ZEROPAGE_X:
+        arg = &cpu_memory[(cpu_memory[PC+1] + X) % 256];
         break;
 
     case ZEROPAGE_Y:
+        arg = &cpu_memory[(cpu_memory[PC+1] + Y) % 256];
         break;
     
     case ABSOLUTE:
+        arg = &cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2]];
         break;
     
     case ABSOLUTE_X:
+        arg = &cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + X];
         break;
-
+    
+    case ABSOLUTE_Y:
+        arg = &cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + Y];
+        break;
     case INDIRECT:
+        aux = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
+        aux = cpu_memory[aux+1] << 8 + cpu_memory[aux];
+        arg = &cpu_memory[cpu_memory[aux+1] << 8 + cpu_memory[aux]];
         break;
     
     case INDIRECT_X:
+        arg = &cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];
         break;
-
     case INDIRECT_Y:
+        arg = &cpu_memory[cpu_memory[cpu_memory[PC+1] + cpu_memory[(cpu_memory[PC+1] + 1) % 256] * 256 + Y]];
         break;
 
     case RELATIVE:
+        arg = nullptr;
         break;
     
     default:
+        arg = nullptr;
         break;
     }
+    
+    executeOpcode(info, arg);
+
+    PC += info.length;
 }
