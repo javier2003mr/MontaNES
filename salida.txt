@@ -1,0 +1,897 @@
+Running tests from tests/CPU/v1/00.json...
+PC: e881 --> 59521
+Opcode: 0 --> 0
+A: 4 --> 4
+SP: f2 --> 242
+X: 47 --> 71
+Y: 38 --> 56
+Flags: 61 --> 97
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 23 --> 35
+A: 4 --> 4
+SP: ef --> 239
+X: 47 --> 71
+Y: 38 --> 56
+Flags: 61 --> 97
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 4 --> 4
+SP: ef --> 239
+X: 47 --> 71
+Y: 38 --> 56
+Flags: 61 --> 97
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 23 --> 35
+A: 4 --> 4
+SP: ec --> 236
+X: 47 --> 71
+Y: 38 --> 56
+Flags: 61 --> 97
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 4 --> 4
+SP: ec --> 236
+X: 47 --> 71
+Y: 38 --> 56
+Flags: 61 --> 97
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 23 --> 35
+A: 4 --> 4
+SP: e9 --> 233
+X: 47 --> 71
+Y: 38 --> 56
+Flags: 61 --> 97
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 4 --> 4
+SP: e9 --> 233
+X: 47 --> 71
+Y: 38 --> 56
+Flags: 61 --> 97
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 35 26" PC mismatch (0xffff vs 0x2315) SP mismatch P mismatch RAM mismatch at 0x01f1 (Act: 0x82 Exp: 0x83)
+PC: 216b --> 8555
+Opcode: 0 --> 0
+A: f --> 15
+SP: 4c --> 76
+X: 17 --> 23
+Y: fd --> 253
+Flags: ab --> 171
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: b6 --> 182
+A: f --> 15
+SP: 49 --> 73
+X: 17 --> 23
+Y: fd --> 253
+Flags: ab --> 171
+MEMORIA 0x26: 0 --> 0
+
+PC: 1 --> 1
+Opcode: 0 --> 0
+A: f --> 15
+SP: 49 --> 73
+X: 0 --> 0
+Y: fd --> 253
+Flags: 2b --> 43
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: b6 --> 182
+A: f --> 15
+SP: 46 --> 70
+X: 0 --> 0
+Y: fd --> 253
+Flags: 2b --> 43
+MEMORIA 0x26: 0 --> 0
+
+PC: 1 --> 1
+Opcode: 0 --> 0
+A: f --> 15
+SP: 46 --> 70
+X: 0 --> 0
+Y: fd --> 253
+Flags: 2b --> 43
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: b6 --> 182
+A: f --> 15
+SP: 43 --> 67
+X: 0 --> 0
+Y: fd --> 253
+Flags: 2b --> 43
+MEMORIA 0x26: 0 --> 0
+
+PC: 1 --> 1
+Opcode: 0 --> 0
+A: f --> 15
+SP: 43 --> 67
+X: 0 --> 0
+Y: fd --> 253
+Flags: 2b --> 43
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 c9 54" PC mismatch (0xffff vs 0xb629) SP mismatch X mismatch P mismatch RAM mismatch at 0x014b (Act: 0x6c Exp: 0x6d)
+PC: 1fe --> 510
+Opcode: 0 --> 0
+A: c8 --> 200
+SP: 60 --> 96
+X: cc --> 204
+Y: 4 --> 4
+Flags: af --> 175
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 38 --> 56
+A: c8 --> 200
+SP: 5d --> 93
+X: cc --> 204
+Y: 4 --> 4
+Flags: af --> 175
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: c8 --> 200
+SP: 5d --> 93
+X: cc --> 204
+Y: 4 --> 4
+Flags: af --> 175
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 38 --> 56
+A: c8 --> 200
+SP: 5a --> 90
+X: cc --> 204
+Y: 4 --> 4
+Flags: af --> 175
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: c8 --> 200
+SP: 5a --> 90
+X: cc --> 204
+Y: 4 --> 4
+Flags: af --> 175
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 38 --> 56
+A: c8 --> 200
+SP: 57 --> 87
+X: cc --> 204
+Y: 4 --> 4
+Flags: af --> 175
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: c8 --> 200
+SP: 57 --> 87
+X: cc --> 204
+Y: 4 --> 4
+Flags: af --> 175
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 4f 1b" PC mismatch (0xffff vs 0x3895) SP mismatch RAM mismatch at 0x015f (Act: 0xff Exp: 0x00)
+PC: 76c2 --> 30402
+Opcode: 0 --> 0
+A: c2 --> 194
+SP: 16 --> 22
+X: 84 --> 132
+Y: 42 --> 66
+Flags: a1 --> 161
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: d2 --> 210
+A: c2 --> 194
+SP: 13 --> 19
+X: 84 --> 132
+Y: 42 --> 66
+Flags: a1 --> 161
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: c2 --> 194
+SP: 13 --> 19
+X: 84 --> 132
+Y: 42 --> 66
+Flags: a1 --> 161
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: d2 --> 210
+A: c2 --> 194
+SP: 10 --> 16
+X: 84 --> 132
+Y: 42 --> 66
+Flags: a1 --> 161
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: c2 --> 194
+SP: 10 --> 16
+X: 84 --> 132
+Y: 42 --> 66
+Flags: a1 --> 161
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: d2 --> 210
+A: c2 --> 194
+SP: d --> 13
+X: 84 --> 132
+Y: 42 --> 66
+Flags: a1 --> 161
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: c2 --> 194
+SP: d --> 13
+X: 84 --> 132
+Y: 42 --> 66
+Flags: a1 --> 161
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 a9 d3" PC mismatch (0xffff vs 0xd253) SP mismatch P mismatch RAM mismatch at 0x0115 (Act: 0xc3 Exp: 0xc4)
+PC: ecc5 --> 60613
+Opcode: 0 --> 0
+A: 97 --> 151
+SP: 16 --> 22
+X: de --> 222
+Y: a9 --> 169
+Flags: 2b --> 43
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 46 --> 70
+A: 97 --> 151
+SP: 13 --> 19
+X: de --> 222
+Y: a9 --> 169
+Flags: 2b --> 43
+MEMORIA 0x26: 0 --> 0
+
+PC: 1 --> 1
+Opcode: 0 --> 0
+A: 97 --> 151
+SP: 13 --> 19
+X: de --> 222
+Y: a9 --> 169
+Flags: 2a --> 42
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 46 --> 70
+A: 97 --> 151
+SP: 10 --> 16
+X: de --> 222
+Y: a9 --> 169
+Flags: 2a --> 42
+MEMORIA 0x26: 0 --> 0
+
+PC: 1 --> 1
+Opcode: 0 --> 0
+A: 97 --> 151
+SP: 10 --> 16
+X: de --> 222
+Y: a9 --> 169
+Flags: 2a --> 42
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 46 --> 70
+A: 97 --> 151
+SP: d --> 13
+X: de --> 222
+Y: a9 --> 169
+Flags: 2a --> 42
+MEMORIA 0x26: 0 --> 0
+
+PC: 1 --> 1
+Opcode: 0 --> 0
+A: 97 --> 151
+SP: d --> 13
+X: de --> 222
+Y: a9 --> 169
+Flags: 2a --> 42
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 65 7b" PC mismatch (0xffff vs 0x4675) SP mismatch P mismatch RAM mismatch at 0x0115 (Act: 0xc6 Exp: 0xc7)
+PC: e80c --> 59404
+Opcode: 0 --> 0
+A: d9 --> 217
+SP: 67 --> 103
+X: 18 --> 24
+Y: dc --> 220
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 74 --> 116
+A: d9 --> 217
+SP: 64 --> 100
+X: 18 --> 24
+Y: dc --> 220
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: d9 --> 217
+SP: 64 --> 100
+X: 18 --> 24
+Y: dc --> 220
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 74 --> 116
+A: d9 --> 217
+SP: 61 --> 97
+X: 18 --> 24
+Y: dc --> 220
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: d9 --> 217
+SP: 61 --> 97
+X: 18 --> 24
+Y: dc --> 220
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 74 --> 116
+A: d9 --> 217
+SP: 5e --> 94
+X: 18 --> 24
+Y: dc --> 220
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: d9 --> 217
+SP: 5e --> 94
+X: 18 --> 24
+Y: dc --> 220
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 c8 63" PC mismatch (0xffff vs 0x74de) SP mismatch RAM mismatch at 0x0166 (Act: 0x0d Exp: 0x0e)
+PC: 213 --> 531
+Opcode: 0 --> 0
+A: ca --> 202
+SP: 50 --> 80
+X: a --> 10
+Y: be --> 190
+Flags: 26 --> 38
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: e --> 14
+A: ca --> 202
+SP: 4d --> 77
+X: a --> 10
+Y: be --> 190
+Flags: 26 --> 38
+MEMORIA 0x26: 0 --> 0
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: ca --> 202
+SP: 4d --> 77
+X: a --> 10
+Y: be --> 190
+Flags: 26 --> 38
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: e --> 14
+A: ca --> 202
+SP: 4a --> 74
+X: a --> 10
+Y: be --> 190
+Flags: 26 --> 38
+MEMORIA 0x26: 0 --> 0
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: ca --> 202
+SP: 4a --> 74
+X: a --> 10
+Y: be --> 190
+Flags: 26 --> 38
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: e --> 14
+A: ca --> 202
+SP: 47 --> 71
+X: a --> 10
+Y: be --> 190
+Flags: 26 --> 38
+MEMORIA 0x26: 0 --> 0
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: ca --> 202
+SP: 47 --> 71
+X: a --> 10
+Y: be --> 190
+Flags: 26 --> 38
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 d3 d0" PC mismatch (0xffff vs 0x0ee1) SP mismatch RAM mismatch at 0x014f (Act: 0x14 Exp: 0x15)
+PC: 2f8f --> 12175
+Opcode: 0 --> 0
+A: 8b --> 139
+SP: 50 --> 80
+X: 15 --> 21
+Y: 95 --> 149
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 34 --> 52
+A: 8b --> 139
+SP: 4d --> 77
+X: 15 --> 21
+Y: 95 --> 149
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 8b --> 139
+SP: 4d --> 77
+X: 15 --> 21
+Y: 95 --> 149
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 34 --> 52
+A: 8b --> 139
+SP: 4a --> 74
+X: 15 --> 21
+Y: 95 --> 149
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 8b --> 139
+SP: 4a --> 74
+X: 15 --> 21
+Y: 95 --> 149
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 34 --> 52
+A: 8b --> 139
+SP: 47 --> 71
+X: 15 --> 21
+Y: 95 --> 149
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 8b --> 139
+SP: 47 --> 71
+X: 15 --> 21
+Y: 95 --> 149
+Flags: 25 --> 37
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 88 2e" PC mismatch (0xffff vs 0x3428) SP mismatch RAM mismatch at 0x014f (Act: 0x90 Exp: 0x91)
+PC: abde --> 43998
+Opcode: 0 --> 0
+A: 2e --> 46
+SP: 2b --> 43
+X: b4 --> 180
+Y: f --> 15
+Flags: 66 --> 102
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: b3 --> 179
+A: 2e --> 46
+SP: 28 --> 40
+X: b4 --> 180
+Y: f --> 15
+Flags: 66 --> 102
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 2e --> 46
+SP: 28 --> 40
+X: b4 --> 180
+Y: f --> 15
+Flags: 66 --> 102
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: b3 --> 179
+A: 2e --> 46
+SP: 25 --> 37
+X: b4 --> 180
+Y: f --> 15
+Flags: 66 --> 102
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 2e --> 46
+SP: 25 --> 37
+X: b4 --> 180
+Y: f --> 15
+Flags: 66 --> 102
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: b3 --> 179
+A: 2e --> 46
+SP: 22 --> 34
+X: b4 --> 180
+Y: f --> 15
+Flags: 66 --> 102
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 2e --> 46
+SP: 22 --> 34
+X: b4 --> 180
+Y: f --> 15
+Flags: 66 --> 102
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 67 c2" PC mismatch (0xffff vs 0xb32e) SP mismatch RAM mismatch at 0x012a (Act: 0xdf Exp: 0xe0)
+PC: 3592 --> 13714
+Opcode: 0 --> 0
+A: 24 --> 36
+SP: d3 --> 211
+X: 4c --> 76
+Y: f --> 15
+Flags: 60 --> 96
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 9e --> 158
+A: 24 --> 36
+SP: d0 --> 208
+X: 4c --> 76
+Y: f --> 15
+Flags: 60 --> 96
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 24 --> 36
+SP: d0 --> 208
+X: 4c --> 76
+Y: f --> 15
+Flags: 60 --> 96
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 9e --> 158
+A: 24 --> 36
+SP: cd --> 205
+X: 4c --> 76
+Y: f --> 15
+Flags: 60 --> 96
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 24 --> 36
+SP: cd --> 205
+X: 4c --> 76
+Y: f --> 15
+Flags: 60 --> 96
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 9e --> 158
+A: 24 --> 36
+SP: ca --> 202
+X: 4c --> 76
+Y: f --> 15
+Flags: 60 --> 96
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 24 --> 36
+SP: ca --> 202
+X: 4c --> 76
+Y: f --> 15
+Flags: 60 --> 96
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 a9 0e" PC mismatch (0xffff vs 0x9e61) SP mismatch P mismatch RAM mismatch at 0x01d2 (Act: 0x93 Exp: 0x94)
+PC: d0fe --> 53502
+Opcode: 0 --> 0
+A: 4f --> 79
+SP: 33 --> 51
+X: 77 --> 119
+Y: 1c --> 28
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 8f --> 143
+A: 4f --> 79
+SP: 30 --> 48
+X: 77 --> 119
+Y: 1c --> 28
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 4f --> 79
+SP: 30 --> 48
+X: 77 --> 119
+Y: 1c --> 28
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 8f --> 143
+A: 4f --> 79
+SP: 2d --> 45
+X: 77 --> 119
+Y: 1c --> 28
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 4f --> 79
+SP: 2d --> 45
+X: 77 --> 119
+Y: 1c --> 28
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 8f --> 143
+A: 4f --> 79
+SP: 2a --> 42
+X: 77 --> 119
+Y: 1c --> 28
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 4f --> 79
+SP: 2a --> 42
+X: 77 --> 119
+Y: 1c --> 28
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 f3 24" PC mismatch (0xffff vs 0x8f14) SP mismatch RAM mismatch at 0x0132 (Act: 0xff Exp: 0x00)
+PC: 81af --> 33199
+Opcode: 0 --> 0
+A: 67 --> 103
+SP: 7d --> 125
+X: f0 --> 240
+Y: cf --> 207
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 64 --> 100
+A: 67 --> 103
+SP: 7a --> 122
+X: f0 --> 240
+Y: cf --> 207
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 67 --> 103
+SP: 7a --> 122
+X: f0 --> 240
+Y: cf --> 207
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 64 --> 100
+A: 67 --> 103
+SP: 77 --> 119
+X: f0 --> 240
+Y: cf --> 207
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 67 --> 103
+SP: 77 --> 119
+X: f0 --> 240
+Y: cf --> 207
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 64 --> 100
+A: 67 --> 103
+SP: 74 --> 116
+X: f0 --> 240
+Y: cf --> 207
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: 67 --> 103
+SP: 74 --> 116
+X: f0 --> 240
+Y: cf --> 207
+Flags: a5 --> 165
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 f0 e2" PC mismatch (0xffff vs 0x64d3) SP mismatch RAM mismatch at 0x017c (Act: 0xb0 Exp: 0xb1)
+PC: ddd1 --> 56785
+Opcode: 0 --> 0
+A: 3f --> 63
+SP: 72 --> 114
+X: b9 --> 185
+Y: 25 --> 37
+Flags: ab --> 171
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: fe --> 254
+A: 3f --> 63
+SP: 6f --> 111
+X: b9 --> 185
+Y: 25 --> 37
+Flags: ab --> 171
+MEMORIA 0x26: 0 --> 0
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: 3f --> 63
+SP: 6f --> 111
+X: b9 --> 185
+Y: 25 --> 37
+Flags: ab --> 171
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: fe --> 254
+A: 3f --> 63
+SP: 6c --> 108
+X: b9 --> 185
+Y: 25 --> 37
+Flags: ab --> 171
+MEMORIA 0x26: 0 --> 0
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: 3f --> 63
+SP: 6c --> 108
+X: b9 --> 185
+Y: 25 --> 37
+Flags: ab --> 171
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: fe --> 254
+A: 3f --> 63
+SP: 69 --> 105
+X: b9 --> 185
+Y: 25 --> 37
+Flags: ab --> 171
+MEMORIA 0x26: 0 --> 0
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: 3f --> 63
+SP: 69 --> 105
+X: b9 --> 185
+Y: 25 --> 37
+Flags: ab --> 171
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 87 4b" PC mismatch (0xffff vs 0xfe7e) SP mismatch P mismatch RAM mismatch at 0x0171 (Act: 0xd2 Exp: 0xd3)
+PC: b5c4 --> 46532
+Opcode: 0 --> 0
+A: bf --> 191
+SP: c2 --> 194
+X: fe --> 254
+Y: 6d --> 109
+Flags: 6b --> 107
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 96 --> 150
+A: bf --> 191
+SP: bf --> 191
+X: fe --> 254
+Y: 6d --> 109
+Flags: 6b --> 107
+MEMORIA 0x26: 0 --> 0
+
+PC: 1 --> 1
+Opcode: 0 --> 0
+A: bf --> 191
+SP: bf --> 191
+X: fe --> 254
+Y: 6d --> 109
+Flags: 6b --> 107
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 96 --> 150
+A: bf --> 191
+SP: bc --> 188
+X: fe --> 254
+Y: 6d --> 109
+Flags: 6b --> 107
+MEMORIA 0x26: 0 --> 0
+
+PC: 1 --> 1
+Opcode: 0 --> 0
+A: bf --> 191
+SP: bc --> 188
+X: fe --> 254
+Y: 6d --> 109
+Flags: 6b --> 107
+MEMORIA 0x26: 0 --> 0
+
+PC: ffff --> 65535
+Opcode: 96 --> 150
+A: bf --> 191
+SP: b9 --> 185
+X: fe --> 254
+Y: 6d --> 109
+Flags: 6b --> 107
+MEMORIA 0x26: 0 --> 0
+
+PC: 1 --> 1
+Opcode: 0 --> 0
+A: bf --> 191
+SP: b9 --> 185
+X: fe --> 254
+Y: 6d --> 109
+Flags: 6b --> 107
+MEMORIA 0x26: 0 --> 0
+
+FAILED: "00 0d db" PC mismatch (0xffff vs 0x9620) SP mismatch P mismatch RAM mismatch at 0x01c1 (Act: 0xc5 Exp: 0xc6)

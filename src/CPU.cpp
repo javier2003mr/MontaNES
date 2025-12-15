@@ -20,28 +20,28 @@ CPU :: CPU (void){
 
 void CPU :: ADC (unsigned char value){
     
-    unsigned short sum = A + value + ((getFlag(CARRY)) ? 1 : 0);    
+    unsigned short sum = A + value + ((getFlag(C_FLAG)) ? 1 : 0);    
     bool overflow = (~(A ^ value) & (A ^ sum)) & 0x80;
 
     A = static_cast<unsigned char>(sum);
 
-    setFlag(CARRY, sum > 0xFF);
-    setFlag(ZERO, A == 0);
-    setFlag(OVERFLOW, overflow);
-    setFlag(NEGATIVE, A & 0x80);
+    setFlag(C_FLAG, sum > 0xFF);
+    setFlag(Z_FLAG, A == 0);
+    setFlag(V_FLAG, overflow);
+    setFlag(N_FLAG, A & 0x80);
 }
 
 void CPU :: SBC (unsigned char value){
     
-    unsigned short result = A + (~value) + ((getFlag(CARRY)) ? 1 : 0);
+    unsigned short result = A + (~value) + ((getFlag(C_FLAG)) ? 1 : 0);
     bool overflow = ((A ^ result) & (A ^ (~value)) & 0x80) != 0;
     
     A = static_cast<unsigned char>(result);
 
-    setFlag(CARRY, result <= 0xFF);
-    setFlag(ZERO, A == 0);
-    setFlag(OVERFLOW, overflow);
-    setFlag(NEGATIVE, A & 0x80);
+    setFlag(C_FLAG, result <= 0xFF);
+    setFlag(Z_FLAG, A == 0);
+    setFlag(V_FLAG, overflow);
+    setFlag(N_FLAG, A & 0x80);
 }
 
 void CPU :: INC (unsigned short dir){
@@ -72,42 +72,42 @@ void CPU :: AND (unsigned char value){
 
     A &= value;
     
-    setFlag(ZERO, A == 0);
-    setFlag(NEGATIVE, A & 0x80);
+    setFlag(Z_FLAG, A == 0);
+    setFlag(N_FLAG, A & 0x80);
 }
 
 void CPU :: ORA (unsigned char value){
     
     A |= value;
 
-    setFlag(ZERO, A == 0);
-    setFlag(NEGATIVE, A & 0x80);
+    setFlag(Z_FLAG, A == 0);
+    setFlag(N_FLAG, A & 0x80);
 }
 
 void CPU :: EOR (unsigned char value){
 
     A ^= value;
 
-    setFlag(ZERO, A == 0);
-    setFlag(NEGATIVE, A & 0x80);
+    setFlag(Z_FLAG, A == 0);
+    setFlag(N_FLAG, A & 0x80);
 }
 
 void CPU :: BIT (unsigned char value){
 
     unsigned char aux = A & value;
     
-    setFlag(ZERO, aux == 0);
-    setFlag(OVERFLOW, value & 0x40);
-    setFlag(NEGATIVE, value & 0x80);
+    setFlag(Z_FLAG, aux == 0);
+    setFlag(V_FLAG, value & 0x40);
+    setFlag(N_FLAG, value & 0x80);
 }
 
 void CPU :: ASL (unsigned char * value){
     
     unsigned char result = *value << 1;
     
-    setFlag(CARRY, *value & 0x80);
-    setFlag(ZERO, result == 0);
-    setFlag(NEGATIVE, result & 0x80);
+    setFlag(C_FLAG, *value & 0x80);
+    setFlag(Z_FLAG, result == 0);
+    setFlag(N_FLAG, result & 0x80);
 
     *value = result;
 }
@@ -116,9 +116,9 @@ void CPU :: LSR (unsigned char * value){
 
     unsigned char result = *value >> 1;
 
-    setFlag(CARRY, *value & 0x01);
-    setFlag(ZERO, result == 0);
-    setFlag(NEGATIVE, 0);
+    setFlag(C_FLAG, *value & 0x01);
+    setFlag(Z_FLAG, result == 0);
+    setFlag(N_FLAG, 0);
 
     *value = result;
 }
@@ -126,11 +126,11 @@ void CPU :: LSR (unsigned char * value){
 void CPU :: ROL (unsigned char * value){
 
     unsigned char result = *value << 1;
-    result |= 0x01 & getFlag(CARRY);
+    result |= 0x01 & getFlag(C_FLAG);
 
-    setFlag(CARRY, *value & 0x80);
-    setFlag(ZERO, result == 0);
-    setFlag(NEGATIVE, result & 0x80);
+    setFlag(C_FLAG, *value & 0x80);
+    setFlag(Z_FLAG, result == 0);
+    setFlag(N_FLAG, result & 0x80);
 
     *value = result;
 }
@@ -138,19 +138,19 @@ void CPU :: ROL (unsigned char * value){
 void CPU :: ROR (unsigned char * value){
 
     unsigned char result = *value >> 1;
-    result |= 0x80 & getFlag(CARRY);
+    result |= 0x80 & getFlag(C_FLAG);
 
-    setFlag(CARRY, *value & 0x01);
-    setFlag(ZERO, result == 0);
-    setFlag(NEGATIVE, result & 0x80);
+    setFlag(C_FLAG, *value & 0x01);
+    setFlag(Z_FLAG, result == 0);
+    setFlag(N_FLAG, result & 0x80);
 
     *value = result;
 }
 
 void CPU :: CMP_GEN (unsigned char value, unsigned char reg){
-    setFlag(CARRY, reg >= value);
-    setFlag(ZERO, reg == value);
-    setFlag(NEGATIVE, (reg - value) & 0x80);
+    setFlag(C_FLAG, reg >= value);
+    setFlag(Z_FLAG, reg == value);
+    setFlag(N_FLAG, (reg - value) & 0x80);
 }
 
 void CPU :: CMP (unsigned char value){
@@ -174,35 +174,35 @@ void CPU :: BXX (bool flag){
 }
 
 void CPU :: BCC (){
-    BXX(!getFlag(CARRY));
+    BXX(!getFlag(C_FLAG));
 }
 
 void CPU :: BCS (){
-    BXX(getFlag(CARRY));
+    BXX(getFlag(C_FLAG));
 }
 
 void CPU :: BNE (){
-    BXX(!getFlag(ZERO));
+    BXX(!getFlag(Z_FLAG));
 }
 
 void CPU :: BEQ (){
-    BXX(getFlag(ZERO));
+    BXX(getFlag(Z_FLAG));
 }
 
 void CPU :: BPL (){
-    BXX(!getFlag(NEGATIVE));
+    BXX(!getFlag(N_FLAG));
 }
 
 void CPU :: BMI (){
-    BXX(getFlag(NEGATIVE));
+    BXX(getFlag(N_FLAG));
 }
 
 void CPU :: BVC (){
-    BXX(!getFlag(OVERFLOW));
+    BXX(!getFlag(V_FLAG));
 }
 
 void CPU :: BVS (){
-    BXX(getFlag(OVERFLOW));
+    BXX(getFlag(V_FLAG));
 }
 
 void CPU :: JMP (unsigned short dir){
@@ -233,34 +233,35 @@ void CPU :: BRK (){
     stack_push(((PC+1) & 0xFF00) >> 8);
     stack_push((PC+1) & 0x00FF);
     stack_push(P | 0x30);
+    PC = 0xFFFE;
 }
 
 void CPU :: TAX (){
     
     X = A;
-    setFlag(ZERO, A == 0);
-    setFlag(NEGATIVE, A & 0x80);
+    setFlag(Z_FLAG, A == 0);
+    setFlag(N_FLAG, A & 0x80);
 }
 
 void CPU :: TAY (){
 
     Y = A;
-    setFlag(ZERO, Y == 0);
-    setFlag(NEGATIVE, Y & 0x80);
+    setFlag(Z_FLAG, Y == 0);
+    setFlag(N_FLAG, Y & 0x80);
 }
 
 void CPU :: TXA (){
     
     A = X;
-    setFlag(ZERO, X == 0);
-    setFlag(NEGATIVE, X & 0x80);
+    setFlag(Z_FLAG, X == 0);
+    setFlag(N_FLAG, X & 0x80);
 }
 
 void CPU :: TYA (){
     
     A = Y;
-    setFlag(ZERO, A == 0);
-    setFlag(NEGATIVE, A & 0x80);
+    setFlag(Z_FLAG, A == 0);
+    setFlag(N_FLAG, A & 0x80);
 }
 
 void CPU :: TSX (){
@@ -289,8 +290,8 @@ void CPU :: PLP (){
 
 void CPU :: LDA (unsigned short dir){
     A = cpu_memory[dir];
-    setFlag(ZERO, A == 0);
-    setFlag(NEGATIVE, A & 0x80);
+    setFlag(Z_FLAG, A == 0);
+    setFlag(N_FLAG, A & 0x80);
 }
 
 void CPU :: STA (unsigned short dir){
@@ -299,8 +300,8 @@ void CPU :: STA (unsigned short dir){
 
 void CPU :: LDX (unsigned short dir){
     X = cpu_memory[dir];
-    setFlag(ZERO, X == 0);
-    setFlag(NEGATIVE, X & 0x80);
+    setFlag(Z_FLAG, X == 0);
+    setFlag(N_FLAG, X & 0x80);
 }
 
 void CPU :: STX (unsigned short dir){
@@ -309,8 +310,8 @@ void CPU :: STX (unsigned short dir){
 
 void CPU :: LDY (unsigned short dir){
     Y = cpu_memory[dir];
-    setFlag(ZERO, Y == 0);
-    setFlag(NEGATIVE, Y & 0x80);
+    setFlag(Z_FLAG, Y == 0);
+    setFlag(N_FLAG, Y & 0x80);
 }
 
 void CPU :: STY (unsigned short dir){
@@ -318,31 +319,31 @@ void CPU :: STY (unsigned short dir){
 }
 
 void CPU :: CLC (){
-    setFlag(CARRY, 0);
+    setFlag(C_FLAG, 0);
 }
 
 void CPU :: SEC (){
-    setFlag(CARRY, 1);
+    setFlag(C_FLAG, 1);
 }
 
 void CPU :: CLI (){
-    setFlag(INTERRUPT, 0);
+    setFlag(I_FLAG, 0);
 }
 
 void CPU :: SEI (){
-    setFlag(INTERRUPT, 1);
+    setFlag(I_FLAG, 1);
 }
 
 void CPU :: CLD (){
-    setFlag(DECIMAL, 0);
+    setFlag(D_FLAG, 0);
 }
 
 void CPU :: SED (){
-    setFlag(DECIMAL, 1);
+    setFlag(D_FLAG, 1);
 }
 
 void CPU :: CLV (){
-    setFlag(OVERFLOW, 0);
+    setFlag(V_FLAG, 0);
 }
 
 void CPU :: NOP (){}
@@ -443,6 +444,15 @@ void CPU :: emulationCycle(){
 
     unsigned char * arg;
     unsigned short aux;
+
+    printf("PC: %x --> %d\n", PC, PC);
+    printf("Opcode: %x --> %d\n", opcode, opcode);
+    printf("A: %x --> %d\n", A, A);
+    printf("SP: %x --> %d\n", SP, SP);
+    printf("X: %x --> %d\n", X, X);
+    printf("Y: %x --> %d\n", Y, Y);
+    printf("Flags: %x --> %d\n", P, P);
+    printf("MEMORIA 0x26: %x --> %d\n\n", cpu_memory[0x26], cpu_memory[0x26]);
 
     switch (info.mode)
     {

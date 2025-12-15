@@ -5,8 +5,8 @@
 #include <iomanip>
 #include <sstream>
 #include <filesystem>
-#include "../include/json.hpp"
-#include "../include/CPU.h" // Your provided header file
+#include "../../include/json.hpp"
+#include "../../include/CPU.h" // Your provided header file
 
 using json = nlohmann::json;
 
@@ -23,13 +23,15 @@ int main() {
 
     // Loop through all possible opcode files (0x00 to 0xFF)
     for (int opcode = 0; opcode <= 0xFF; ++opcode) {
+
         // Construct filename: "../tests/XX.json"
         std::stringstream ss;
-        ss << "../tests/" << std::hex << std::setw(2) << std::setfill('0') << opcode << ".json";
+        ss << "tests/CPU/v1/" << std::hex << std::setw(2) << std::setfill('0') << opcode << ".json";
         std::string filename = ss.str();
 
         // Check if file exists before trying to open (skip missing opcodes)
         if (!std::filesystem::exists(filename)) {
+            std::cout << "El fichero " << filename << " no existe" << std::endl;
             continue;
         }
 

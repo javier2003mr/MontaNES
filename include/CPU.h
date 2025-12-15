@@ -73,13 +73,13 @@ class CPU {
         unsigned char P;
 
         enum Flags {
-            CARRY     = (1 << 0),  // Carry Flag
-            ZERO      = (1 << 1),  // Zero Flag
-            INTERRUPT = (1 << 2),  // Interrupt Disable
-            DECIMAL   = (1 << 3),  // Decimal Mode (no usado en NES)
-            BREAK     = (1 << 4),  // Break Command
-            OVERFLOW  = (1 << 6),  // Overflow Flag
-            NEGATIVE  = (1 << 7)   // Negative Flag
+            C_FLAG     = (1 << 0),  // Carry Flag
+            Z_FLAG      = (1 << 1),  // Zero Flag
+            I_FLAG = (1 << 2),  // Interrupt Disable
+            D_FLAG   = (1 << 3),  // Decimal Mode (no usado en NES)
+            B_FLAG     = (1 << 4),  // Break Command
+            V_FLAG  = (1 << 6),  // Overflow Flag
+            N_FLAG  = (1 << 7)   // Negative Flag
         };
 
         OpcodeInfo opcodeTable[OPCODE_TABLE_SIZE];

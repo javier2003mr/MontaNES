@@ -13,7 +13,7 @@ void CPU :: initializeOpcodeTable() {
     // Opcode 0x00: BRK
     opcodeTable[0x00].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x00].handler.func.void_func = &CPU::BRK;
-    opcodeTable[0x00].length = 2;
+    opcodeTable[0x00].length = 1;
     opcodeTable[0x00].cycles = 7;
     opcodeTable[0x00].mode = IMPLIED;
     
