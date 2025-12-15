@@ -233,7 +233,7 @@ void CPU :: BRK (){
     stack_push(((PC+1) & 0xFF00) >> 8);
     stack_push((PC+1) & 0x00FF);
     stack_push(P | 0x30);
-    PC = 0xFFFE;
+    PC = cpu_memory[0xFFFF] << 8 | cpu_memory[0xFFFE];
 }
 
 void CPU :: TAX (){
@@ -452,7 +452,6 @@ void CPU :: emulationCycle(){
     printf("X: %x --> %d\n", X, X);
     printf("Y: %x --> %d\n", Y, Y);
     printf("Flags: %x --> %d\n", P, P);
-    printf("MEMORIA 0x26: %x --> %d\n\n", cpu_memory[0x26], cpu_memory[0x26]);
 
     switch (info.mode)
     {
@@ -496,7 +495,6 @@ void CPU :: emulationCycle(){
         aux = cpu_memory[aux+1] << 8 + cpu_memory[aux];
         arg = &cpu_memory[cpu_memory[aux+1] << 8 + cpu_memory[aux]];
         break;
-    
     case INDIRECT_X:
         arg = &cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];
         break;
@@ -513,7 +511,15 @@ void CPU :: emulationCycle(){
         break;
     }
     
+    if (arg)
+        printf("arg: %x ---> %d\n\n", *arg, *arg);
+    else
+        printf("Es puntero nulo\n\n");
+        
     executeOpcode(info, arg);
 
-    PC += info.length;
+    if (opcode != 0x90 && opcode != 0xB0 && opcode != 0xF0 && opcode != 0xD0 && opcode != 0x10 && 
+        opcode != 0x30 && opcode != 0x50 && opcode != 0x70 && opcode != 0x4C && opcode != 0x6C && 
+        opcode != 0x20 && opcode != 0x60 && opcode != 0x40 && opcode != 0x00)
+        PC += info.length;
 }

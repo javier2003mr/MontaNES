@@ -1,897 +1,1925 @@
-Running tests from tests/CPU/v1/00.json...
-PC: e881 --> 59521
-Opcode: 0 --> 0
-A: 4 --> 4
-SP: f2 --> 242
-X: 47 --> 71
-Y: 38 --> 56
-Flags: 61 --> 97
-MEMORIA 0x26: 0 --> 0
+Running tests from tests/CPU/v1/01.json...
+PC: acfb --> 44283
+Opcode: 1 --> 1
+A: 64 --> 100
+SP: 5 --> 5
+X: 76 --> 118
+Y: 94 --> 148
+Flags: 2f --> 47
+arg: fc ---> 252
 
-PC: ffff --> 65535
-Opcode: 23 --> 35
-A: 4 --> 4
-SP: ef --> 239
-X: 47 --> 71
-Y: 38 --> 56
-Flags: 61 --> 97
-MEMORIA 0x26: 0 --> 0
+PC: acfd --> 44285
+Opcode: 87 --> 135
+A: fc --> 252
+SP: 5 --> 5
+X: 76 --> 118
+Y: 94 --> 148
+Flags: ad --> 173
+Es puntero nulo
+
+PC: acfe --> 44286
+Opcode: 0 --> 0
+A: fc --> 252
+SP: 5 --> 5
+X: 76 --> 118
+Y: 94 --> 148
+Flags: ad --> 173
+Es puntero nulo
 
 PC: 0 --> 0
 Opcode: 0 --> 0
-A: 4 --> 4
-SP: ef --> 239
-X: 47 --> 71
-Y: 38 --> 56
-Flags: 61 --> 97
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 23 --> 35
-A: 4 --> 4
-SP: ec --> 236
-X: 47 --> 71
-Y: 38 --> 56
-Flags: 61 --> 97
-MEMORIA 0x26: 0 --> 0
+A: fc --> 252
+SP: 2 --> 2
+X: 76 --> 118
+Y: 94 --> 148
+Flags: ad --> 173
+Es puntero nulo
 
 PC: 0 --> 0
 Opcode: 0 --> 0
-A: 4 --> 4
-SP: ec --> 236
-X: 47 --> 71
-Y: 38 --> 56
-Flags: 61 --> 97
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 23 --> 35
-A: 4 --> 4
-SP: e9 --> 233
-X: 47 --> 71
-Y: 38 --> 56
-Flags: 61 --> 97
-MEMORIA 0x26: 0 --> 0
+A: fc --> 252
+SP: ff --> 255
+X: 76 --> 118
+Y: 94 --> 148
+Flags: ad --> 173
+Es puntero nulo
 
 PC: 0 --> 0
 Opcode: 0 --> 0
-A: 4 --> 4
-SP: e9 --> 233
-X: 47 --> 71
-Y: 38 --> 56
-Flags: 61 --> 97
-MEMORIA 0x26: 0 --> 0
+A: fc --> 252
+SP: fc --> 252
+X: 76 --> 118
+Y: 94 --> 148
+Flags: ad --> 173
+Es puntero nulo
 
-FAILED: "00 35 26" PC mismatch (0xffff vs 0x2315) SP mismatch P mismatch RAM mismatch at 0x01f1 (Act: 0x82 Exp: 0x83)
-PC: 216b --> 8555
-Opcode: 0 --> 0
-A: f --> 15
-SP: 4c --> 76
-X: 17 --> 23
-Y: fd --> 253
-Flags: ab --> 171
-MEMORIA 0x26: 0 --> 0
+FAILED: "01 b3 87" PC mismatch (0x0000 vs 0xacfd) SP mismatch
+PC: 1d3e --> 7486
+Opcode: 1 --> 1
+A: 8a --> 138
+SP: a3 --> 163
+X: 12 --> 18
+Y: 4d --> 77
+Flags: 25 --> 37
+arg: 10 ---> 16
 
-PC: ffff --> 65535
-Opcode: b6 --> 182
-A: f --> 15
-SP: 49 --> 73
-X: 17 --> 23
-Y: fd --> 253
-Flags: ab --> 171
-MEMORIA 0x26: 0 --> 0
+PC: 1d40 --> 7488
+Opcode: 10 --> 16
+A: 9a --> 154
+SP: a3 --> 163
+X: 12 --> 18
+Y: 4d --> 77
+Flags: a5 --> 165
+Es puntero nulo
 
-PC: 1 --> 1
-Opcode: 0 --> 0
-A: f --> 15
-SP: 49 --> 73
-X: 0 --> 0
-Y: fd --> 253
-Flags: 2b --> 43
-MEMORIA 0x26: 0 --> 0
+PC: 1d40 --> 7488
+Opcode: 10 --> 16
+A: 9a --> 154
+SP: a3 --> 163
+X: 12 --> 18
+Y: 4d --> 77
+Flags: a5 --> 165
+Es puntero nulo
 
-PC: ffff --> 65535
-Opcode: b6 --> 182
-A: f --> 15
-SP: 46 --> 70
-X: 0 --> 0
-Y: fd --> 253
-Flags: 2b --> 43
-MEMORIA 0x26: 0 --> 0
+PC: 1d40 --> 7488
+Opcode: 10 --> 16
+A: 9a --> 154
+SP: a3 --> 163
+X: 12 --> 18
+Y: 4d --> 77
+Flags: a5 --> 165
+Es puntero nulo
 
-PC: 1 --> 1
-Opcode: 0 --> 0
-A: f --> 15
-SP: 46 --> 70
-X: 0 --> 0
-Y: fd --> 253
-Flags: 2b --> 43
-MEMORIA 0x26: 0 --> 0
+PC: 1d40 --> 7488
+Opcode: 10 --> 16
+A: 9a --> 154
+SP: a3 --> 163
+X: 12 --> 18
+Y: 4d --> 77
+Flags: a5 --> 165
+Es puntero nulo
 
-PC: ffff --> 65535
-Opcode: b6 --> 182
-A: f --> 15
-SP: 43 --> 67
-X: 0 --> 0
-Y: fd --> 253
-Flags: 2b --> 43
-MEMORIA 0x26: 0 --> 0
+PC: 1d40 --> 7488
+Opcode: 10 --> 16
+A: 9a --> 154
+SP: a3 --> 163
+X: 12 --> 18
+Y: 4d --> 77
+Flags: a5 --> 165
+Es puntero nulo
 
-PC: 1 --> 1
-Opcode: 0 --> 0
-A: f --> 15
-SP: 43 --> 67
-X: 0 --> 0
-Y: fd --> 253
-Flags: 2b --> 43
-MEMORIA 0x26: 0 --> 0
+PC: 9f7b --> 40827
+Opcode: 1 --> 1
+A: 30 --> 48
+SP: e3 --> 227
+X: a4 --> 164
+Y: d2 --> 210
+Flags: e1 --> 225
+arg: 5 ---> 5
 
-FAILED: "00 c9 54" PC mismatch (0xffff vs 0xb629) SP mismatch X mismatch P mismatch RAM mismatch at 0x014b (Act: 0x6c Exp: 0x6d)
-PC: 1fe --> 510
-Opcode: 0 --> 0
-A: c8 --> 200
-SP: 60 --> 96
-X: cc --> 204
-Y: 4 --> 4
-Flags: af --> 175
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
+PC: 9f7d --> 40829
 Opcode: 38 --> 56
-A: c8 --> 200
-SP: 5d --> 93
-X: cc --> 204
-Y: 4 --> 4
-Flags: af --> 175
-MEMORIA 0x26: 0 --> 0
+A: 35 --> 53
+SP: e3 --> 227
+X: a4 --> 164
+Y: d2 --> 210
+Flags: 61 --> 97
+Es puntero nulo
+
+PC: 9f7e --> 40830
+Opcode: 0 --> 0
+A: 35 --> 53
+SP: e3 --> 227
+X: a4 --> 164
+Y: d2 --> 210
+Flags: 61 --> 97
+Es puntero nulo
 
 PC: 0 --> 0
 Opcode: 0 --> 0
-A: c8 --> 200
-SP: 5d --> 93
-X: cc --> 204
-Y: 4 --> 4
-Flags: af --> 175
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 38 --> 56
-A: c8 --> 200
-SP: 5a --> 90
-X: cc --> 204
-Y: 4 --> 4
-Flags: af --> 175
-MEMORIA 0x26: 0 --> 0
+A: 35 --> 53
+SP: e0 --> 224
+X: a4 --> 164
+Y: d2 --> 210
+Flags: 61 --> 97
+Es puntero nulo
 
 PC: 0 --> 0
 Opcode: 0 --> 0
-A: c8 --> 200
-SP: 5a --> 90
-X: cc --> 204
-Y: 4 --> 4
-Flags: af --> 175
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 38 --> 56
-A: c8 --> 200
-SP: 57 --> 87
-X: cc --> 204
-Y: 4 --> 4
-Flags: af --> 175
-MEMORIA 0x26: 0 --> 0
+A: 35 --> 53
+SP: dd --> 221
+X: a4 --> 164
+Y: d2 --> 210
+Flags: 61 --> 97
+Es puntero nulo
 
 PC: 0 --> 0
 Opcode: 0 --> 0
-A: c8 --> 200
-SP: 57 --> 87
-X: cc --> 204
-Y: 4 --> 4
-Flags: af --> 175
-MEMORIA 0x26: 0 --> 0
+A: 35 --> 53
+SP: da --> 218
+X: a4 --> 164
+Y: d2 --> 210
+Flags: 61 --> 97
+Es puntero nulo
 
-FAILED: "00 4f 1b" PC mismatch (0xffff vs 0x3895) SP mismatch RAM mismatch at 0x015f (Act: 0xff Exp: 0x00)
-PC: 76c2 --> 30402
+FAILED: "01 33 38" PC mismatch (0x0000 vs 0x9f7d) SP mismatch
+PC: 385c --> 14428
+Opcode: 1 --> 1
+A: 9e --> 158
+SP: 1f --> 31
+X: ba --> 186
+Y: 34 --> 52
+Flags: 62 --> 98
+arg: 50 ---> 80
+
+PC: 385e --> 14430
+Opcode: df --> 223
+A: de --> 222
+SP: 1f --> 31
+X: ba --> 186
+Y: 34 --> 52
+Flags: e0 --> 224
+Es puntero nulo
+
+PC: 385f --> 14431
 Opcode: 0 --> 0
-A: c2 --> 194
+A: de --> 222
+SP: 1f --> 31
+X: ba --> 186
+Y: 34 --> 52
+Flags: e0 --> 224
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: de --> 222
+SP: 1c --> 28
+X: ba --> 186
+Y: 34 --> 52
+Flags: e0 --> 224
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: de --> 222
+SP: 19 --> 25
+X: ba --> 186
+Y: 34 --> 52
+Flags: e0 --> 224
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: 0 --> 0
+A: de --> 222
 SP: 16 --> 22
-X: 84 --> 132
-Y: 42 --> 66
-Flags: a1 --> 161
-MEMORIA 0x26: 0 --> 0
+X: ba --> 186
+Y: 34 --> 52
+Flags: e0 --> 224
+Es puntero nulo
 
-PC: ffff --> 65535
-Opcode: d2 --> 210
-A: c2 --> 194
-SP: 13 --> 19
-X: 84 --> 132
-Y: 42 --> 66
-Flags: a1 --> 161
-MEMORIA 0x26: 0 --> 0
+FAILED: "01 c9 df" PC mismatch (0x0000 vs 0x385e) SP mismatch
+PC: 5645 --> 22085
+Opcode: 1 --> 1
+A: 3c --> 60
+SP: fe --> 254
+X: 8 --> 8
+Y: 27 --> 39
+Flags: e9 --> 233
+arg: 52 ---> 82
+
+PC: 5647 --> 22087
+Opcode: c1 --> 193
+A: 7e --> 126
+SP: fe --> 254
+X: 8 --> 8
+Y: 27 --> 39
+Flags: 69 --> 105
+arg: ef ---> 239
+
+PC: 5649 --> 22089
+Opcode: 0 --> 0
+A: 7e --> 126
+SP: fe --> 254
+X: 8 --> 8
+Y: 27 --> 39
+Flags: e8 --> 232
+Es puntero nulo
 
 PC: 0 --> 0
-Opcode: 0 --> 0
-A: c2 --> 194
-SP: 13 --> 19
-X: 84 --> 132
-Y: 42 --> 66
-Flags: a1 --> 161
-MEMORIA 0x26: 0 --> 0
+Opcode: ef --> 239
+A: 7e --> 126
+SP: fb --> 251
+X: 8 --> 8
+Y: 27 --> 39
+Flags: e8 --> 232
+Es puntero nulo
 
-PC: ffff --> 65535
-Opcode: d2 --> 210
-A: c2 --> 194
-SP: 10 --> 16
-X: 84 --> 132
-Y: 42 --> 66
-Flags: a1 --> 161
-MEMORIA 0x26: 0 --> 0
+PC: 1 --> 1
+Opcode: b2 --> 178
+A: 7e --> 126
+SP: fb --> 251
+X: 8 --> 8
+Y: 27 --> 39
+Flags: e8 --> 232
+Es puntero nulo
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: 7e --> 126
+SP: fb --> 251
+X: 8 --> 8
+Y: 27 --> 39
+Flags: e8 --> 232
+Es puntero nulo
+
+FAILED: "01 f8 c1" PC mismatch (0x0000 vs 0x5647) SP mismatch P mismatch
+PC: 5709 --> 22281
+Opcode: 1 --> 1
+A: b8 --> 184
+SP: 15 --> 21
+X: 0 --> 0
+Y: e5 --> 229
+Flags: e2 --> 226
+arg: 66 ---> 102
+
+PC: 570b --> 22283
+Opcode: a4 --> 164
+A: fe --> 254
+SP: 15 --> 21
+X: 0 --> 0
+Y: e5 --> 229
+Flags: e0 --> 224
+arg: ef ---> 239
+
+PC: 570d --> 22285
+Opcode: 0 --> 0
+A: fe --> 254
+SP: 15 --> 21
+X: 0 --> 0
+Y: 52 --> 82
+Flags: 60 --> 96
+Es puntero nulo
 
 PC: 0 --> 0
-Opcode: 0 --> 0
-A: c2 --> 194
-SP: 10 --> 16
-X: 84 --> 132
-Y: 42 --> 66
-Flags: a1 --> 161
-MEMORIA 0x26: 0 --> 0
+Opcode: ef --> 239
+A: fe --> 254
+SP: 12 --> 18
+X: 0 --> 0
+Y: 52 --> 82
+Flags: 60 --> 96
+Es puntero nulo
 
-PC: ffff --> 65535
-Opcode: d2 --> 210
-A: c2 --> 194
-SP: d --> 13
-X: 84 --> 132
-Y: 42 --> 66
-Flags: a1 --> 161
-MEMORIA 0x26: 0 --> 0
+PC: 1 --> 1
+Opcode: b2 --> 178
+A: fe --> 254
+SP: 12 --> 18
+X: 0 --> 0
+Y: 52 --> 82
+Flags: 60 --> 96
+Es puntero nulo
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: fe --> 254
+SP: 12 --> 18
+X: 0 --> 0
+Y: 52 --> 82
+Flags: 60 --> 96
+Es puntero nulo
+
+FAILED: "01 35 a4" PC mismatch (0x0000 vs 0x570b) SP mismatch Y mismatch P mismatch
+PC: 68f3 --> 26867
+Opcode: 1 --> 1
+A: a2 --> 162
+SP: f7 --> 247
+X: ae --> 174
+Y: f9 --> 249
+Flags: e5 --> 229
+arg: d8 ---> 216
+
+PC: 68f5 --> 26869
+Opcode: b4 --> 180
+A: fa --> 250
+SP: f7 --> 247
+X: ae --> 174
+Y: f9 --> 249
+Flags: e5 --> 229
+arg: 0 ---> 0
+
+PC: 68f7 --> 26871
+Opcode: 0 --> 0
+A: fa --> 250
+SP: f7 --> 247
+X: ae --> 174
+Y: ef --> 239
+Flags: e5 --> 229
+Es puntero nulo
 
 PC: 0 --> 0
+Opcode: ef --> 239
+A: fa --> 250
+SP: f4 --> 244
+X: ae --> 174
+Y: ef --> 239
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: b2 --> 178
+A: fa --> 250
+SP: f4 --> 244
+X: ae --> 174
+Y: ef --> 239
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 2 --> 2
 Opcode: 0 --> 0
-A: c2 --> 194
-SP: d --> 13
-X: 84 --> 132
-Y: 42 --> 66
+A: fa --> 250
+SP: f4 --> 244
+X: ae --> 174
+Y: ef --> 239
+Flags: e5 --> 229
+Es puntero nulo
+
+FAILED: "01 f4 b4" PC mismatch (0x0000 vs 0x68f5) SP mismatch Y mismatch
+PC: 86d8 --> 34520
+Opcode: 1 --> 1
+A: cd --> 205
+SP: 23 --> 35
+X: 24 --> 36
+Y: 89 --> 137
+Flags: e7 --> 231
+arg: f ---> 15
+
+PC: 86da --> 34522
+Opcode: 4 --> 4
+A: cf --> 207
+SP: 23 --> 35
+X: 24 --> 36
+Y: 89 --> 137
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 86db --> 34523
+Opcode: 0 --> 0
+A: cf --> 207
+SP: 23 --> 35
+X: 24 --> 36
+Y: 89 --> 137
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: ef --> 239
+A: cf --> 207
+SP: 20 --> 32
+X: 24 --> 36
+Y: 89 --> 137
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: b2 --> 178
+A: cf --> 207
+SP: 20 --> 32
+X: 24 --> 36
+Y: 89 --> 137
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: cf --> 207
+SP: 20 --> 32
+X: 24 --> 36
+Y: 89 --> 137
+Flags: e5 --> 229
+Es puntero nulo
+
+FAILED: "01 2b 04" PC mismatch (0x0000 vs 0x86da) SP mismatch
+PC: d546 --> 54598
+Opcode: 1 --> 1
+A: 91 --> 145
+SP: bd --> 189
+X: 55 --> 85
+Y: 9d --> 157
+Flags: a5 --> 165
+arg: a1 ---> 161
+
+PC: d548 --> 54600
+Opcode: 7 --> 7
+A: b1 --> 177
+SP: bd --> 189
+X: 55 --> 85
+Y: 9d --> 157
+Flags: a5 --> 165
+Es puntero nulo
+
+PC: d549 --> 54601
+Opcode: 0 --> 0
+A: b1 --> 177
+SP: bd --> 189
+X: 55 --> 85
+Y: 9d --> 157
+Flags: a5 --> 165
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: ef --> 239
+A: b1 --> 177
+SP: ba --> 186
+X: 55 --> 85
+Y: 9d --> 157
+Flags: a5 --> 165
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: b2 --> 178
+A: b1 --> 177
+SP: ba --> 186
+X: 55 --> 85
+Y: 9d --> 157
+Flags: a5 --> 165
+Es puntero nulo
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: b1 --> 177
+SP: ba --> 186
+X: 55 --> 85
+Y: 9d --> 157
+Flags: a5 --> 165
+Es puntero nulo
+
+FAILED: "01 51 07" PC mismatch (0x0000 vs 0xd548) SP mismatch
+PC: 76a8 --> 30376
+Opcode: 1 --> 1
+A: 9a --> 154
+SP: 1c --> 28
+X: 2 --> 2
+Y: d6 --> 214
+Flags: af --> 175
+arg: 23 ---> 35
+
+PC: 76aa --> 30378
+Opcode: 55 --> 85
+A: bb --> 187
+SP: 1c --> 28
+X: 2 --> 2
+Y: d6 --> 214
+Flags: ad --> 173
+arg: 0 ---> 0
+
+PC: 76ac --> 30380
+Opcode: 0 --> 0
+A: bb --> 187
+SP: 1c --> 28
+X: 2 --> 2
+Y: d6 --> 214
+Flags: ad --> 173
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: ef --> 239
+A: bb --> 187
+SP: 19 --> 25
+X: 2 --> 2
+Y: d6 --> 214
+Flags: ad --> 173
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: b2 --> 178
+A: bb --> 187
+SP: 19 --> 25
+X: 2 --> 2
+Y: d6 --> 214
+Flags: ad --> 173
+Es puntero nulo
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: bb --> 187
+SP: 19 --> 25
+X: 2 --> 2
+Y: d6 --> 214
+Flags: ad --> 173
+Es puntero nulo
+
+FAILED: "01 45 55" PC mismatch (0x0000 vs 0x76aa) SP mismatch
+PC: 2eb --> 747
+Opcode: 1 --> 1
+A: e6 --> 230
+SP: 49 --> 73
+X: 83 --> 131
+Y: 1f --> 31
+Flags: a4 --> 164
+arg: 2e ---> 46
+
+PC: 2ed --> 749
+Opcode: bb --> 187
+A: ee --> 238
+SP: 49 --> 73
+X: 83 --> 131
+Y: 1f --> 31
+Flags: a4 --> 164
+Es puntero nulo
+
+PC: 2ee --> 750
+Opcode: 0 --> 0
+A: ee --> 238
+SP: 49 --> 73
+X: 83 --> 131
+Y: 1f --> 31
+Flags: a4 --> 164
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: ef --> 239
+A: ee --> 238
+SP: 46 --> 70
+X: 83 --> 131
+Y: 1f --> 31
+Flags: a4 --> 164
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: b2 --> 178
+A: ee --> 238
+SP: 46 --> 70
+X: 83 --> 131
+Y: 1f --> 31
+Flags: a4 --> 164
+Es puntero nulo
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: ee --> 238
+SP: 46 --> 70
+X: 83 --> 131
+Y: 1f --> 31
+Flags: a4 --> 164
+Es puntero nulo
+
+FAILED: "01 8d bb" PC mismatch (0x0000 vs 0x02ed) SP mismatch
+PC: 8818 --> 34840
+Opcode: 1 --> 1
+A: 44 --> 68
+SP: e --> 14
+X: b0 --> 176
+Y: 61 --> 97
+Flags: 28 --> 40
+arg: f5 ---> 245
+
+PC: 881a --> 34842
+Opcode: 98 --> 152
+A: f5 --> 245
+SP: e --> 14
+X: b0 --> 176
+Y: 61 --> 97
+Flags: a8 --> 168
+Es puntero nulo
+
+PC: 881b --> 34843
+Opcode: 0 --> 0
+A: 61 --> 97
+SP: e --> 14
+X: b0 --> 176
+Y: 61 --> 97
+Flags: 28 --> 40
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: ef --> 239
+A: 61 --> 97
+SP: b --> 11
+X: b0 --> 176
+Y: 61 --> 97
+Flags: 28 --> 40
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: b2 --> 178
+A: 61 --> 97
+SP: b --> 11
+X: b0 --> 176
+Y: 61 --> 97
+Flags: 28 --> 40
+Es puntero nulo
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: 61 --> 97
+SP: b --> 11
+X: b0 --> 176
+Y: 61 --> 97
+Flags: 28 --> 40
+Es puntero nulo
+
+FAILED: "01 68 98" PC mismatch (0x0000 vs 0x881a) SP mismatch A mismatch P mismatch
+PC: 3721 --> 14113
+Opcode: 1 --> 1
+A: 53 --> 83
+SP: 21 --> 33
+X: d0 --> 208
+Y: db --> 219
+Flags: 61 --> 97
+arg: aa ---> 170
+
+PC: 3723 --> 14115
+Opcode: e8 --> 232
+A: fb --> 251
+SP: 21 --> 33
+X: d0 --> 208
+Y: db --> 219
+Flags: e1 --> 225
+Es puntero nulo
+
+PC: 3724 --> 14116
+Opcode: 0 --> 0
+A: fb --> 251
+SP: 21 --> 33
+X: d1 --> 209
+Y: db --> 219
+Flags: e1 --> 225
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: ef --> 239
+A: fb --> 251
+SP: 1e --> 30
+X: d1 --> 209
+Y: db --> 219
+Flags: e1 --> 225
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: b2 --> 178
+A: fb --> 251
+SP: 1e --> 30
+X: d1 --> 209
+Y: db --> 219
+Flags: e1 --> 225
+Es puntero nulo
+
+PC: 2 --> 2
+Opcode: 0 --> 0
+A: fb --> 251
+SP: 1e --> 30
+X: d1 --> 209
+Y: db --> 219
+Flags: e1 --> 225
+Es puntero nulo
+
+FAILED: "01 62 e8" PC mismatch (0x0000 vs 0x3723) SP mismatch X mismatch
+PC: 2238 --> 8760
+Opcode: 1 --> 1
+A: 40 --> 64
+SP: 14 --> 20
+X: a7 --> 167
+Y: e6 --> 230
+Flags: 6f --> 111
+arg: ac ---> 172
+
+PC: 223a --> 8762
+Opcode: 71 --> 113
+A: ec --> 236
+SP: 14 --> 20
+X: a7 --> 167
+Y: e6 --> 230
+Flags: ed --> 237
+arg: b7 ---> 183
+
+PC: 223c --> 8764
+Opcode: 0 --> 0
+A: a4 --> 164
+SP: 14 --> 20
+X: a7 --> 167
+Y: e6 --> 230
+Flags: ad --> 173
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: a4 --> 164
+SP: 11 --> 17
+X: a7 --> 167
+Y: e6 --> 230
+Flags: ad --> 173
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: a4 --> 164
+SP: 11 --> 17
+X: a7 --> 167
+Y: e6 --> 230
+Flags: ad --> 173
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 5c --> 92
+SP: 11 --> 17
+X: a7 --> 167
+Y: e6 --> 230
+Flags: 6d --> 109
+Es puntero nulo
+
+FAILED: "01 59 71" PC mismatch (0x0000 vs 0x223a) SP mismatch A mismatch P mismatch
+PC: 76fa --> 30458
+Opcode: 1 --> 1
+A: ce --> 206
+SP: 7 --> 7
+X: 11 --> 17
+Y: 30 --> 48
+Flags: 2c --> 44
+arg: 58 ---> 88
+
+PC: 76fc --> 30460
+Opcode: 78 --> 120
+A: de --> 222
+SP: 7 --> 7
+X: 11 --> 17
+Y: 30 --> 48
+Flags: ac --> 172
+Es puntero nulo
+
+PC: 76fd --> 30461
+Opcode: 0 --> 0
+A: de --> 222
+SP: 7 --> 7
+X: 11 --> 17
+Y: 30 --> 48
+Flags: ac --> 172
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: de --> 222
+SP: 4 --> 4
+X: 11 --> 17
+Y: 30 --> 48
+Flags: ac --> 172
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: de --> 222
+SP: 4 --> 4
+X: 11 --> 17
+Y: 30 --> 48
+Flags: ac --> 172
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 95 --> 149
+SP: 4 --> 4
+X: 11 --> 17
+Y: 30 --> 48
+Flags: ad --> 173
+Es puntero nulo
+
+FAILED: "01 56 78" PC mismatch (0x0000 vs 0x76fc) SP mismatch A mismatch P mismatch
+PC: 949e --> 38046
+Opcode: 1 --> 1
+A: c0 --> 192
+SP: ac --> 172
+X: f4 --> 244
+Y: da --> 218
+Flags: e5 --> 229
+arg: 11 ---> 17
+
+PC: 94a0 --> 38048
+Opcode: a6 --> 166
+A: d1 --> 209
+SP: ac --> 172
+X: f4 --> 244
+Y: da --> 218
+Flags: e5 --> 229
+arg: b7 ---> 183
+
+PC: 94a2 --> 38050
+Opcode: 0 --> 0
+A: d1 --> 209
+SP: ac --> 172
+X: ac --> 172
+Y: da --> 218
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: d1 --> 209
+SP: a9 --> 169
+X: ac --> 172
+Y: da --> 218
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: d1 --> 209
+SP: a9 --> 169
+X: ac --> 172
+Y: da --> 218
+Flags: e5 --> 229
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 89 --> 137
+SP: a9 --> 169
+X: ac --> 172
+Y: da --> 218
+Flags: a5 --> 165
+Es puntero nulo
+
+FAILED: "01 b3 a6" PC mismatch (0x0000 vs 0x94a0) SP mismatch A mismatch X mismatch P mismatch
+PC: b2b3 --> 45747
+Opcode: 1 --> 1
+A: 52 --> 82
+SP: 66 --> 102
+X: e7 --> 231
+Y: 6b --> 107
+Flags: 2f --> 47
+arg: 84 ---> 132
+
+PC: b2b5 --> 45749
+Opcode: ae --> 174
+A: d6 --> 214
+SP: 66 --> 102
+X: e7 --> 231
+Y: 6b --> 107
+Flags: ad --> 173
+arg: b7 ---> 183
+
+PC: b2b8 --> 45752
+Opcode: 0 --> 0
+A: d6 --> 214
+SP: 66 --> 102
+X: ac --> 172
+Y: 6b --> 107
+Flags: ad --> 173
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: d6 --> 214
+SP: 63 --> 99
+X: ac --> 172
+Y: 6b --> 107
+Flags: ad --> 173
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: d6 --> 214
+SP: 63 --> 99
+X: ac --> 172
+Y: 6b --> 107
+Flags: ad --> 173
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 8e --> 142
+SP: 63 --> 99
+X: ac --> 172
+Y: 6b --> 107
+Flags: ad --> 173
+Es puntero nulo
+
+FAILED: "01 53 ae" PC mismatch (0x0000 vs 0xb2b5) SP mismatch A mismatch X mismatch
+PC: b6fc --> 46844
+Opcode: 1 --> 1
+A: b0 --> 176
+SP: e9 --> 233
+X: e2 --> 226
+Y: 2a --> 42
+Flags: 63 --> 99
+arg: 54 ---> 84
+
+PC: b6fe --> 46846
+Opcode: c7 --> 199
+A: f4 --> 244
+SP: e9 --> 233
+X: e2 --> 226
+Y: 2a --> 42
+Flags: e1 --> 225
+Es puntero nulo
+
+PC: b6ff --> 46847
+Opcode: 0 --> 0
+A: f4 --> 244
+SP: e9 --> 233
+X: e2 --> 226
+Y: 2a --> 42
+Flags: e1 --> 225
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: f4 --> 244
+SP: e6 --> 230
+X: e2 --> 226
+Y: 2a --> 42
+Flags: e1 --> 225
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: f4 --> 244
+SP: e6 --> 230
+X: e2 --> 226
+Y: 2a --> 42
+Flags: e1 --> 225
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: ac --> 172
+SP: e6 --> 230
+X: e2 --> 226
+Y: 2a --> 42
 Flags: a1 --> 161
-MEMORIA 0x26: 0 --> 0
+Es puntero nulo
 
-FAILED: "00 a9 d3" PC mismatch (0xffff vs 0xd253) SP mismatch P mismatch RAM mismatch at 0x0115 (Act: 0xc3 Exp: 0xc4)
-PC: ecc5 --> 60613
+FAILED: "01 90 c7" PC mismatch (0x0000 vs 0xb6fe) SP mismatch A mismatch P mismatch
+PC: bac1 --> 47809
+Opcode: 1 --> 1
+A: f5 --> 245
+SP: 1a --> 26
+X: d8 --> 216
+Y: c9 --> 201
+Flags: ee --> 238
+arg: 18 ---> 24
+
+PC: bac3 --> 47811
+Opcode: 42 --> 66
+A: fd --> 253
+SP: 1a --> 26
+X: d8 --> 216
+Y: c9 --> 201
+Flags: ec --> 236
+Es puntero nulo
+
+PC: bac4 --> 47812
 Opcode: 0 --> 0
-A: 97 --> 151
-SP: 16 --> 22
-X: de --> 222
-Y: a9 --> 169
-Flags: 2b --> 43
-MEMORIA 0x26: 0 --> 0
+A: fd --> 253
+SP: 1a --> 26
+X: d8 --> 216
+Y: c9 --> 201
+Flags: ec --> 236
+Es puntero nulo
 
-PC: ffff --> 65535
-Opcode: 46 --> 70
-A: 97 --> 151
-SP: 13 --> 19
-X: de --> 222
-Y: a9 --> 169
-Flags: 2b --> 43
-MEMORIA 0x26: 0 --> 0
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: fd --> 253
+SP: 17 --> 23
+X: d8 --> 216
+Y: c9 --> 201
+Flags: ec --> 236
+Es puntero nulo
 
 PC: 1 --> 1
-Opcode: 0 --> 0
-A: 97 --> 151
-SP: 13 --> 19
-X: de --> 222
-Y: a9 --> 169
-Flags: 2a --> 42
-MEMORIA 0x26: 0 --> 0
+Opcode: 7d --> 125
+A: fd --> 253
+SP: 17 --> 23
+X: d8 --> 216
+Y: c9 --> 201
+Flags: ec --> 236
+arg: b7 ---> 183
 
-PC: ffff --> 65535
-Opcode: 46 --> 70
-A: 97 --> 151
-SP: 10 --> 16
-X: de --> 222
-Y: a9 --> 169
-Flags: 2a --> 42
-MEMORIA 0x26: 0 --> 0
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: b4 --> 180
+SP: 17 --> 23
+X: d8 --> 216
+Y: c9 --> 201
+Flags: ad --> 173
+Es puntero nulo
+
+FAILED: "01 4f 42" PC mismatch (0x0000 vs 0xbac3) SP mismatch A mismatch P mismatch
+PC: 7794 --> 30612
+Opcode: 1 --> 1
+A: 7c --> 124
+SP: df --> 223
+X: 28 --> 40
+Y: 9a --> 154
+Flags: a3 --> 163
+arg: 21 ---> 33
+
+PC: 7796 --> 30614
+Opcode: 29 --> 41
+A: 7d --> 125
+SP: df --> 223
+X: 28 --> 40
+Y: 9a --> 154
+Flags: 21 --> 33
+arg: 0 ---> 0
+
+PC: 7798 --> 30616
+Opcode: 0 --> 0
+A: 0 --> 0
+SP: df --> 223
+X: 28 --> 40
+Y: 9a --> 154
+Flags: 23 --> 35
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: 0 --> 0
+SP: dc --> 220
+X: 28 --> 40
+Y: 9a --> 154
+Flags: 23 --> 35
+Es puntero nulo
 
 PC: 1 --> 1
-Opcode: 0 --> 0
-A: 97 --> 151
-SP: 10 --> 16
-X: de --> 222
-Y: a9 --> 169
-Flags: 2a --> 42
-MEMORIA 0x26: 0 --> 0
+Opcode: 7d --> 125
+A: 0 --> 0
+SP: dc --> 220
+X: 28 --> 40
+Y: 9a --> 154
+Flags: 23 --> 35
+arg: b7 ---> 183
 
-PC: ffff --> 65535
-Opcode: 46 --> 70
-A: 97 --> 151
-SP: d --> 13
-X: de --> 222
-Y: a9 --> 169
-Flags: 2a --> 42
-MEMORIA 0x26: 0 --> 0
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: b8 --> 184
+SP: dc --> 220
+X: 28 --> 40
+Y: 9a --> 154
+Flags: a0 --> 160
+Es puntero nulo
+
+FAILED: "01 3e 29" PC mismatch (0x0000 vs 0x7796) SP mismatch A mismatch P mismatch
+PC: ead0 --> 60112
+Opcode: 1 --> 1
+A: 5b --> 91
+SP: f9 --> 249
+X: a0 --> 160
+Y: c9 --> 201
+Flags: ec --> 236
+arg: 25 ---> 37
+
+PC: ead2 --> 60114
+Opcode: ac --> 172
+A: 7f --> 127
+SP: f9 --> 249
+X: a0 --> 160
+Y: c9 --> 201
+Flags: 6c --> 108
+arg: b7 ---> 183
+
+PC: ead5 --> 60117
+Opcode: 0 --> 0
+A: 7f --> 127
+SP: f9 --> 249
+X: a0 --> 160
+Y: ac --> 172
+Flags: ec --> 236
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: 7f --> 127
+SP: f6 --> 246
+X: a0 --> 160
+Y: ac --> 172
+Flags: ec --> 236
+Es puntero nulo
 
 PC: 1 --> 1
-Opcode: 0 --> 0
-A: 97 --> 151
-SP: d --> 13
-X: de --> 222
-Y: a9 --> 169
-Flags: 2a --> 42
-MEMORIA 0x26: 0 --> 0
+Opcode: 7d --> 125
+A: 7f --> 127
+SP: f6 --> 246
+X: a0 --> 160
+Y: ac --> 172
+Flags: ec --> 236
+arg: b7 ---> 183
 
-FAILED: "00 65 7b" PC mismatch (0xffff vs 0x4675) SP mismatch P mismatch RAM mismatch at 0x0115 (Act: 0xc6 Exp: 0xc7)
-PC: e80c --> 59404
+PC: 4 --> 4
 Opcode: 0 --> 0
-A: d9 --> 217
+A: 36 --> 54
+SP: f6 --> 246
+X: a0 --> 160
+Y: ac --> 172
+Flags: 2d --> 45
+Es puntero nulo
+
+FAILED: "01 7c ac" PC mismatch (0x0000 vs 0xead2) SP mismatch A mismatch Y mismatch P mismatch
+PC: ff24 --> 65316
+Opcode: 1 --> 1
+A: fe --> 254
+SP: 1d --> 29
+X: f0 --> 240
+Y: 7d --> 125
+Flags: 2e --> 46
+arg: 49 ---> 73
+
+PC: ff26 --> 65318
+Opcode: 73 --> 115
+A: ff --> 255
+SP: 1d --> 29
+X: f0 --> 240
+Y: 7d --> 125
+Flags: ac --> 172
+Es puntero nulo
+
+PC: ff27 --> 65319
+Opcode: 0 --> 0
+A: ff --> 255
+SP: 1d --> 29
+X: f0 --> 240
+Y: 7d --> 125
+Flags: ac --> 172
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: ff --> 255
+SP: 1a --> 26
+X: f0 --> 240
+Y: 7d --> 125
+Flags: ac --> 172
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: ff --> 255
+SP: 1a --> 26
+X: f0 --> 240
+Y: 7d --> 125
+Flags: ac --> 172
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: b6 --> 182
+SP: 1a --> 26
+X: f0 --> 240
+Y: 7d --> 125
+Flags: ad --> 173
+Es puntero nulo
+
+FAILED: "01 9e 73" PC mismatch (0x0000 vs 0xff26) SP mismatch A mismatch P mismatch
+PC: dc1c --> 56348
+Opcode: 1 --> 1
+A: af --> 175
+SP: c1 --> 193
+X: ac --> 172
+Y: 70 --> 112
+Flags: 67 --> 103
+arg: 73 ---> 115
+
+PC: dc1e --> 56350
+Opcode: e2 --> 226
+A: ff --> 255
+SP: c1 --> 193
+X: ac --> 172
+Y: 70 --> 112
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: dc1f --> 56351
+Opcode: 0 --> 0
+A: ff --> 255
+SP: c1 --> 193
+X: ac --> 172
+Y: 70 --> 112
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: ff --> 255
+SP: be --> 190
+X: ac --> 172
+Y: 70 --> 112
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: ff --> 255
+SP: be --> 190
+X: ac --> 172
+Y: 70 --> 112
+Flags: e5 --> 229
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: b7 --> 183
+SP: be --> 190
+X: ac --> 172
+Y: 70 --> 112
+Flags: a5 --> 165
+Es puntero nulo
+
+FAILED: "01 af e2" PC mismatch (0x0000 vs 0xdc1e) SP mismatch A mismatch P mismatch
+PC: ea1a --> 59930
+Opcode: 1 --> 1
+A: f1 --> 241
+SP: 27 --> 39
+X: c0 --> 192
+Y: e6 --> 230
+Flags: e0 --> 224
+arg: df ---> 223
+
+PC: ea1c --> 59932
+Opcode: 75 --> 117
+A: ff --> 255
+SP: 27 --> 39
+X: c0 --> 192
+Y: e6 --> 230
+Flags: e0 --> 224
+arg: 0 ---> 0
+
+PC: ea1e --> 59934
+Opcode: 0 --> 0
+A: ff --> 255
+SP: 27 --> 39
+X: c0 --> 192
+Y: e6 --> 230
+Flags: a0 --> 160
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: ff --> 255
+SP: 24 --> 36
+X: c0 --> 192
+Y: e6 --> 230
+Flags: a0 --> 160
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: ff --> 255
+SP: 24 --> 36
+X: c0 --> 192
+Y: e6 --> 230
+Flags: a0 --> 160
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: b6 --> 182
+SP: 24 --> 36
+X: c0 --> 192
+Y: e6 --> 230
+Flags: a1 --> 161
+Es puntero nulo
+
+FAILED: "01 6e 75" PC mismatch (0x0000 vs 0xea1c) SP mismatch A mismatch P mismatch
+PC: ac34 --> 44084
+Opcode: 1 --> 1
+A: 4e --> 78
+SP: a7 --> 167
+X: f1 --> 241
+Y: a4 --> 164
+Flags: 6f --> 111
+arg: d6 ---> 214
+
+PC: ac36 --> 44086
+Opcode: 4b --> 75
+A: de --> 222
+SP: a7 --> 167
+X: f1 --> 241
+Y: a4 --> 164
+Flags: ed --> 237
+Es puntero nulo
+
+PC: ac37 --> 44087
+Opcode: 0 --> 0
+A: de --> 222
+SP: a7 --> 167
+X: f1 --> 241
+Y: a4 --> 164
+Flags: ed --> 237
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: de --> 222
+SP: a4 --> 164
+X: f1 --> 241
+Y: a4 --> 164
+Flags: ed --> 237
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: de --> 222
+SP: a4 --> 164
+X: f1 --> 241
+Y: a4 --> 164
+Flags: ed --> 237
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 96 --> 150
+SP: a4 --> 164
+X: f1 --> 241
+Y: a4 --> 164
+Flags: ad --> 173
+Es puntero nulo
+
+FAILED: "01 ef 4b" PC mismatch (0x0000 vs 0xac36) SP mismatch A mismatch P mismatch
+PC: fe5d --> 65117
+Opcode: 1 --> 1
+A: 90 --> 144
+SP: 15 --> 21
+X: d0 --> 208
+Y: 37 --> 55
+Flags: a8 --> 168
+arg: a8 ---> 168
+
+PC: fe5f --> 65119
+Opcode: 2c --> 44
+A: b8 --> 184
+SP: 15 --> 21
+X: d0 --> 208
+Y: 37 --> 55
+Flags: a8 --> 168
+arg: b7 ---> 183
+
+PC: fe62 --> 65122
+Opcode: 0 --> 0
+A: b8 --> 184
+SP: 15 --> 21
+X: d0 --> 208
+Y: 37 --> 55
+Flags: a8 --> 168
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: b8 --> 184
+SP: 12 --> 18
+X: d0 --> 208
+Y: 37 --> 55
+Flags: a8 --> 168
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: b8 --> 184
+SP: 12 --> 18
+X: d0 --> 208
+Y: 37 --> 55
+Flags: a8 --> 168
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 6f --> 111
+SP: 12 --> 18
+X: d0 --> 208
+Y: 37 --> 55
+Flags: 69 --> 105
+Es puntero nulo
+
+FAILED: "01 93 2c" PC mismatch (0x0000 vs 0xfe5f) SP mismatch A mismatch P mismatch
+PC: 113c --> 4412
+Opcode: 1 --> 1
+A: 0 --> 0
+SP: 6d --> 109
+X: c6 --> 198
+Y: 39 --> 57
+Flags: e5 --> 229
+arg: 62 ---> 98
+
+PC: 113e --> 4414
+Opcode: 8a --> 138
+A: 62 --> 98
+SP: 6d --> 109
+X: c6 --> 198
+Y: 39 --> 57
+Flags: 65 --> 101
+Es puntero nulo
+
+PC: 113f --> 4415
+Opcode: 0 --> 0
+A: c6 --> 198
+SP: 6d --> 109
+X: c6 --> 198
+Y: 39 --> 57
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: c6 --> 198
+SP: 6a --> 106
+X: c6 --> 198
+Y: 39 --> 57
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: c6 --> 198
+SP: 6a --> 106
+X: c6 --> 198
+Y: 39 --> 57
+Flags: e5 --> 229
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 7e --> 126
+SP: 6a --> 106
+X: c6 --> 198
+Y: 39 --> 57
+Flags: 65 --> 101
+Es puntero nulo
+
+FAILED: "01 76 8a" PC mismatch (0x0000 vs 0x113e) SP mismatch A mismatch
+PC: b330 --> 45872
+Opcode: 1 --> 1
+A: 33 --> 51
+SP: 96 --> 150
+X: 9f --> 159
+Y: b4 --> 180
+Flags: 60 --> 96
+arg: 3a ---> 58
+
+PC: b332 --> 45874
+Opcode: ad --> 173
+A: 3b --> 59
+SP: 96 --> 150
+X: 9f --> 159
+Y: b4 --> 180
+Flags: 60 --> 96
+arg: b7 ---> 183
+
+PC: b335 --> 45877
+Opcode: 0 --> 0
+A: ac --> 172
+SP: 96 --> 150
+X: 9f --> 159
+Y: b4 --> 180
+Flags: e0 --> 224
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: ac --> 172
+SP: 93 --> 147
+X: 9f --> 159
+Y: b4 --> 180
+Flags: e0 --> 224
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: ac --> 172
+SP: 93 --> 147
+X: 9f --> 159
+Y: b4 --> 180
+Flags: e0 --> 224
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 63 --> 99
+SP: 93 --> 147
+X: 9f --> 159
+Y: b4 --> 180
+Flags: 61 --> 97
+Es puntero nulo
+
+FAILED: "01 f7 ad" PC mismatch (0x0000 vs 0xb332) SP mismatch A mismatch P mismatch
+PC: 4a50 --> 19024
+Opcode: 1 --> 1
+A: b1 --> 177
+SP: ad --> 173
+X: 90 --> 144
+Y: eb --> 235
+Flags: a5 --> 165
+arg: a9 ---> 169
+
+PC: 4a52 --> 19026
+Opcode: 3d --> 61
+A: b9 --> 185
+SP: ad --> 173
+X: 90 --> 144
+Y: eb --> 235
+Flags: a5 --> 165
+arg: b7 ---> 183
+
+PC: 4a55 --> 19029
+Opcode: 0 --> 0
+A: b1 --> 177
+SP: ad --> 173
+X: 90 --> 144
+Y: eb --> 235
+Flags: a5 --> 165
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: b1 --> 177
+SP: aa --> 170
+X: 90 --> 144
+Y: eb --> 235
+Flags: a5 --> 165
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: b1 --> 177
+SP: aa --> 170
+X: 90 --> 144
+Y: eb --> 235
+Flags: a5 --> 165
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 69 --> 105
+SP: aa --> 170
+X: 90 --> 144
+Y: eb --> 235
+Flags: 65 --> 101
+Es puntero nulo
+
+FAILED: "01 45 3d" PC mismatch (0x0000 vs 0x4a52) SP mismatch A mismatch P mismatch
+PC: 6539 --> 25913
+Opcode: 1 --> 1
+A: 49 --> 73
+SP: 6a --> 106
+X: cf --> 207
+Y: ef --> 239
+Flags: e7 --> 231
+arg: 78 ---> 120
+
+PC: 653b --> 25915
+Opcode: a6 --> 166
+A: 79 --> 121
+SP: 6a --> 106
+X: cf --> 207
+Y: ef --> 239
+Flags: 65 --> 101
+arg: b7 ---> 183
+
+PC: 653d --> 25917
+Opcode: 0 --> 0
+A: 79 --> 121
+SP: 6a --> 106
+X: ac --> 172
+Y: ef --> 239
+Flags: e5 --> 229
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: 79 --> 121
 SP: 67 --> 103
-X: 18 --> 24
-Y: dc --> 220
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 74 --> 116
-A: d9 --> 217
-SP: 64 --> 100
-X: 18 --> 24
-Y: dc --> 220
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: d9 --> 217
-SP: 64 --> 100
-X: 18 --> 24
-Y: dc --> 220
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 74 --> 116
-A: d9 --> 217
-SP: 61 --> 97
-X: 18 --> 24
-Y: dc --> 220
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: d9 --> 217
-SP: 61 --> 97
-X: 18 --> 24
-Y: dc --> 220
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 74 --> 116
-A: d9 --> 217
-SP: 5e --> 94
-X: 18 --> 24
-Y: dc --> 220
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: d9 --> 217
-SP: 5e --> 94
-X: 18 --> 24
-Y: dc --> 220
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-FAILED: "00 c8 63" PC mismatch (0xffff vs 0x74de) SP mismatch RAM mismatch at 0x0166 (Act: 0x0d Exp: 0x0e)
-PC: 213 --> 531
-Opcode: 0 --> 0
-A: ca --> 202
-SP: 50 --> 80
-X: a --> 10
-Y: be --> 190
-Flags: 26 --> 38
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: e --> 14
-A: ca --> 202
-SP: 4d --> 77
-X: a --> 10
-Y: be --> 190
-Flags: 26 --> 38
-MEMORIA 0x26: 0 --> 0
-
-PC: 2 --> 2
-Opcode: 0 --> 0
-A: ca --> 202
-SP: 4d --> 77
-X: a --> 10
-Y: be --> 190
-Flags: 26 --> 38
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: e --> 14
-A: ca --> 202
-SP: 4a --> 74
-X: a --> 10
-Y: be --> 190
-Flags: 26 --> 38
-MEMORIA 0x26: 0 --> 0
-
-PC: 2 --> 2
-Opcode: 0 --> 0
-A: ca --> 202
-SP: 4a --> 74
-X: a --> 10
-Y: be --> 190
-Flags: 26 --> 38
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: e --> 14
-A: ca --> 202
-SP: 47 --> 71
-X: a --> 10
-Y: be --> 190
-Flags: 26 --> 38
-MEMORIA 0x26: 0 --> 0
-
-PC: 2 --> 2
-Opcode: 0 --> 0
-A: ca --> 202
-SP: 47 --> 71
-X: a --> 10
-Y: be --> 190
-Flags: 26 --> 38
-MEMORIA 0x26: 0 --> 0
-
-FAILED: "00 d3 d0" PC mismatch (0xffff vs 0x0ee1) SP mismatch RAM mismatch at 0x014f (Act: 0x14 Exp: 0x15)
-PC: 2f8f --> 12175
-Opcode: 0 --> 0
-A: 8b --> 139
-SP: 50 --> 80
-X: 15 --> 21
-Y: 95 --> 149
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 34 --> 52
-A: 8b --> 139
-SP: 4d --> 77
-X: 15 --> 21
-Y: 95 --> 149
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 8b --> 139
-SP: 4d --> 77
-X: 15 --> 21
-Y: 95 --> 149
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 34 --> 52
-A: 8b --> 139
-SP: 4a --> 74
-X: 15 --> 21
-Y: 95 --> 149
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 8b --> 139
-SP: 4a --> 74
-X: 15 --> 21
-Y: 95 --> 149
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 34 --> 52
-A: 8b --> 139
-SP: 47 --> 71
-X: 15 --> 21
-Y: 95 --> 149
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 8b --> 139
-SP: 47 --> 71
-X: 15 --> 21
-Y: 95 --> 149
-Flags: 25 --> 37
-MEMORIA 0x26: 0 --> 0
-
-FAILED: "00 88 2e" PC mismatch (0xffff vs 0x3428) SP mismatch RAM mismatch at 0x014f (Act: 0x90 Exp: 0x91)
-PC: abde --> 43998
-Opcode: 0 --> 0
-A: 2e --> 46
-SP: 2b --> 43
-X: b4 --> 180
-Y: f --> 15
-Flags: 66 --> 102
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: b3 --> 179
-A: 2e --> 46
-SP: 28 --> 40
-X: b4 --> 180
-Y: f --> 15
-Flags: 66 --> 102
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 2e --> 46
-SP: 28 --> 40
-X: b4 --> 180
-Y: f --> 15
-Flags: 66 --> 102
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: b3 --> 179
-A: 2e --> 46
-SP: 25 --> 37
-X: b4 --> 180
-Y: f --> 15
-Flags: 66 --> 102
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 2e --> 46
-SP: 25 --> 37
-X: b4 --> 180
-Y: f --> 15
-Flags: 66 --> 102
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: b3 --> 179
-A: 2e --> 46
-SP: 22 --> 34
-X: b4 --> 180
-Y: f --> 15
-Flags: 66 --> 102
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 2e --> 46
-SP: 22 --> 34
-X: b4 --> 180
-Y: f --> 15
-Flags: 66 --> 102
-MEMORIA 0x26: 0 --> 0
-
-FAILED: "00 67 c2" PC mismatch (0xffff vs 0xb32e) SP mismatch RAM mismatch at 0x012a (Act: 0xdf Exp: 0xe0)
-PC: 3592 --> 13714
-Opcode: 0 --> 0
-A: 24 --> 36
-SP: d3 --> 211
-X: 4c --> 76
-Y: f --> 15
-Flags: 60 --> 96
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 9e --> 158
-A: 24 --> 36
-SP: d0 --> 208
-X: 4c --> 76
-Y: f --> 15
-Flags: 60 --> 96
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 24 --> 36
-SP: d0 --> 208
-X: 4c --> 76
-Y: f --> 15
-Flags: 60 --> 96
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 9e --> 158
-A: 24 --> 36
-SP: cd --> 205
-X: 4c --> 76
-Y: f --> 15
-Flags: 60 --> 96
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 24 --> 36
-SP: cd --> 205
-X: 4c --> 76
-Y: f --> 15
-Flags: 60 --> 96
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 9e --> 158
-A: 24 --> 36
-SP: ca --> 202
-X: 4c --> 76
-Y: f --> 15
-Flags: 60 --> 96
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 24 --> 36
-SP: ca --> 202
-X: 4c --> 76
-Y: f --> 15
-Flags: 60 --> 96
-MEMORIA 0x26: 0 --> 0
-
-FAILED: "00 a9 0e" PC mismatch (0xffff vs 0x9e61) SP mismatch P mismatch RAM mismatch at 0x01d2 (Act: 0x93 Exp: 0x94)
-PC: d0fe --> 53502
-Opcode: 0 --> 0
-A: 4f --> 79
-SP: 33 --> 51
-X: 77 --> 119
-Y: 1c --> 28
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 8f --> 143
-A: 4f --> 79
-SP: 30 --> 48
-X: 77 --> 119
-Y: 1c --> 28
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 4f --> 79
-SP: 30 --> 48
-X: 77 --> 119
-Y: 1c --> 28
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 8f --> 143
-A: 4f --> 79
-SP: 2d --> 45
-X: 77 --> 119
-Y: 1c --> 28
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 4f --> 79
-SP: 2d --> 45
-X: 77 --> 119
-Y: 1c --> 28
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 8f --> 143
-A: 4f --> 79
-SP: 2a --> 42
-X: 77 --> 119
-Y: 1c --> 28
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 4f --> 79
-SP: 2a --> 42
-X: 77 --> 119
-Y: 1c --> 28
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-FAILED: "00 f3 24" PC mismatch (0xffff vs 0x8f14) SP mismatch RAM mismatch at 0x0132 (Act: 0xff Exp: 0x00)
-PC: 81af --> 33199
-Opcode: 0 --> 0
-A: 67 --> 103
-SP: 7d --> 125
-X: f0 --> 240
-Y: cf --> 207
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 64 --> 100
-A: 67 --> 103
-SP: 7a --> 122
-X: f0 --> 240
-Y: cf --> 207
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 67 --> 103
-SP: 7a --> 122
-X: f0 --> 240
-Y: cf --> 207
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 64 --> 100
-A: 67 --> 103
-SP: 77 --> 119
-X: f0 --> 240
-Y: cf --> 207
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 67 --> 103
-SP: 77 --> 119
-X: f0 --> 240
-Y: cf --> 207
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 64 --> 100
-A: 67 --> 103
-SP: 74 --> 116
-X: f0 --> 240
-Y: cf --> 207
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-PC: 0 --> 0
-Opcode: 0 --> 0
-A: 67 --> 103
-SP: 74 --> 116
-X: f0 --> 240
-Y: cf --> 207
-Flags: a5 --> 165
-MEMORIA 0x26: 0 --> 0
-
-FAILED: "00 f0 e2" PC mismatch (0xffff vs 0x64d3) SP mismatch RAM mismatch at 0x017c (Act: 0xb0 Exp: 0xb1)
-PC: ddd1 --> 56785
-Opcode: 0 --> 0
-A: 3f --> 63
-SP: 72 --> 114
-X: b9 --> 185
-Y: 25 --> 37
-Flags: ab --> 171
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: fe --> 254
-A: 3f --> 63
-SP: 6f --> 111
-X: b9 --> 185
-Y: 25 --> 37
-Flags: ab --> 171
-MEMORIA 0x26: 0 --> 0
-
-PC: 2 --> 2
-Opcode: 0 --> 0
-A: 3f --> 63
-SP: 6f --> 111
-X: b9 --> 185
-Y: 25 --> 37
-Flags: ab --> 171
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: fe --> 254
-A: 3f --> 63
-SP: 6c --> 108
-X: b9 --> 185
-Y: 25 --> 37
-Flags: ab --> 171
-MEMORIA 0x26: 0 --> 0
-
-PC: 2 --> 2
-Opcode: 0 --> 0
-A: 3f --> 63
-SP: 6c --> 108
-X: b9 --> 185
-Y: 25 --> 37
-Flags: ab --> 171
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: fe --> 254
-A: 3f --> 63
-SP: 69 --> 105
-X: b9 --> 185
-Y: 25 --> 37
-Flags: ab --> 171
-MEMORIA 0x26: 0 --> 0
-
-PC: 2 --> 2
-Opcode: 0 --> 0
-A: 3f --> 63
-SP: 69 --> 105
-X: b9 --> 185
-Y: 25 --> 37
-Flags: ab --> 171
-MEMORIA 0x26: 0 --> 0
-
-FAILED: "00 87 4b" PC mismatch (0xffff vs 0xfe7e) SP mismatch P mismatch RAM mismatch at 0x0171 (Act: 0xd2 Exp: 0xd3)
-PC: b5c4 --> 46532
-Opcode: 0 --> 0
-A: bf --> 191
-SP: c2 --> 194
-X: fe --> 254
-Y: 6d --> 109
-Flags: 6b --> 107
-MEMORIA 0x26: 0 --> 0
-
-PC: ffff --> 65535
-Opcode: 96 --> 150
-A: bf --> 191
-SP: bf --> 191
-X: fe --> 254
-Y: 6d --> 109
-Flags: 6b --> 107
-MEMORIA 0x26: 0 --> 0
+X: ac --> 172
+Y: ef --> 239
+Flags: e5 --> 229
+Es puntero nulo
 
 PC: 1 --> 1
-Opcode: 0 --> 0
-A: bf --> 191
-SP: bf --> 191
-X: fe --> 254
-Y: 6d --> 109
-Flags: 6b --> 107
-MEMORIA 0x26: 0 --> 0
+Opcode: 7d --> 125
+A: 79 --> 121
+SP: 67 --> 103
+X: ac --> 172
+Y: ef --> 239
+Flags: e5 --> 229
+arg: b7 ---> 183
 
-PC: ffff --> 65535
-Opcode: 96 --> 150
-A: bf --> 191
-SP: bc --> 188
-X: fe --> 254
-Y: 6d --> 109
-Flags: 6b --> 107
-MEMORIA 0x26: 0 --> 0
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 31 --> 49
+SP: 67 --> 103
+X: ac --> 172
+Y: ef --> 239
+Flags: 25 --> 37
+Es puntero nulo
+
+FAILED: "01 b0 a6" PC mismatch (0x0000 vs 0x653b) SP mismatch A mismatch X mismatch P mismatch
+PC: 60e2 --> 24802
+Opcode: 1 --> 1
+A: db --> 219
+SP: cb --> 203
+X: 9c --> 156
+Y: 3b --> 59
+Flags: 6f --> 111
+arg: 1 ---> 1
+
+PC: 60e4 --> 24804
+Opcode: 58 --> 88
+A: db --> 219
+SP: cb --> 203
+X: 9c --> 156
+Y: 3b --> 59
+Flags: ed --> 237
+Es puntero nulo
+
+PC: 60e5 --> 24805
+Opcode: 0 --> 0
+A: db --> 219
+SP: cb --> 203
+X: 9c --> 156
+Y: 3b --> 59
+Flags: e9 --> 233
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: db --> 219
+SP: c8 --> 200
+X: 9c --> 156
+Y: 3b --> 59
+Flags: e9 --> 233
+Es puntero nulo
 
 PC: 1 --> 1
-Opcode: 0 --> 0
-A: bf --> 191
-SP: bc --> 188
-X: fe --> 254
-Y: 6d --> 109
-Flags: 6b --> 107
-MEMORIA 0x26: 0 --> 0
+Opcode: 7d --> 125
+A: db --> 219
+SP: c8 --> 200
+X: 9c --> 156
+Y: 3b --> 59
+Flags: e9 --> 233
+arg: b7 ---> 183
 
-PC: ffff --> 65535
-Opcode: 96 --> 150
-A: bf --> 191
-SP: b9 --> 185
-X: fe --> 254
-Y: 6d --> 109
-Flags: 6b --> 107
-MEMORIA 0x26: 0 --> 0
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 93 --> 147
+SP: c8 --> 200
+X: 9c --> 156
+Y: 3b --> 59
+Flags: a9 --> 169
+Es puntero nulo
+
+FAILED: "01 88 58" PC mismatch (0x0000 vs 0x60e4) SP mismatch A mismatch P mismatch
+PC: ef0b --> 61195
+Opcode: 1 --> 1
+A: 20 --> 32
+SP: 84 --> 132
+X: 45 --> 69
+Y: e5 --> 229
+Flags: 21 --> 33
+arg: bc ---> 188
+
+PC: ef0d --> 61197
+Opcode: a0 --> 160
+A: bc --> 188
+SP: 84 --> 132
+X: 45 --> 69
+Y: e5 --> 229
+Flags: a1 --> 161
+arg: 0 ---> 0
+
+PC: ef0f --> 61199
+Opcode: 0 --> 0
+A: bc --> 188
+SP: 84 --> 132
+X: 45 --> 69
+Y: b7 --> 183
+Flags: a1 --> 161
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: bc --> 188
+SP: 81 --> 129
+X: 45 --> 69
+Y: b7 --> 183
+Flags: a1 --> 161
+Es puntero nulo
 
 PC: 1 --> 1
-Opcode: 0 --> 0
-A: bf --> 191
-SP: b9 --> 185
-X: fe --> 254
-Y: 6d --> 109
-Flags: 6b --> 107
-MEMORIA 0x26: 0 --> 0
+Opcode: 7d --> 125
+A: bc --> 188
+SP: 81 --> 129
+X: 45 --> 69
+Y: b7 --> 183
+Flags: a1 --> 161
+arg: b7 ---> 183
 
-FAILED: "00 0d db" PC mismatch (0xffff vs 0x9620) SP mismatch P mismatch RAM mismatch at 0x01c1 (Act: 0xc5 Exp: 0xc6)
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 74 --> 116
+SP: 81 --> 129
+X: 45 --> 69
+Y: b7 --> 183
+Flags: 61 --> 97
+Es puntero nulo
+
+FAILED: "01 0f a0" PC mismatch (0x0000 vs 0xef0d) SP mismatch A mismatch Y mismatch P mismatch
+PC: 89ca --> 35274
+Opcode: 1 --> 1
+A: 3a --> 58
+SP: 21 --> 33
+X: e1 --> 225
+Y: 5 --> 5
+Flags: 29 --> 41
+arg: 96 ---> 150
+
+PC: 89cc --> 35276
+Opcode: d6 --> 214
+A: be --> 190
+SP: 21 --> 33
+X: e1 --> 225
+Y: 5 --> 5
+Flags: a9 --> 169
+arg: cf ---> 207
+
+PC: 89ce --> 35278
+Opcode: 0 --> 0
+A: be --> 190
+SP: 21 --> 33
+X: e1 --> 225
+Y: 5 --> 5
+Flags: a9 --> 169
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: be --> 190
+SP: 1e --> 30
+X: e1 --> 225
+Y: 5 --> 5
+Flags: a9 --> 169
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: be --> 190
+SP: 1e --> 30
+X: e1 --> 225
+Y: 5 --> 5
+Flags: a9 --> 169
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 76 --> 118
+SP: 1e --> 30
+X: e1 --> 225
+Y: 5 --> 5
+Flags: 69 --> 105
+Es puntero nulo
+
+FAILED: "01 8b d6" PC mismatch (0x0000 vs 0x89cc) SP mismatch A mismatch P mismatch
+PC: d05c --> 53340
+Opcode: 1 --> 1
+A: d4 --> 212
+SP: 9 --> 9
+X: cb --> 203
+Y: 68 --> 104
+Flags: ad --> 173
+arg: 41 ---> 65
+
+PC: d05e --> 53342
+Opcode: 5b --> 91
+A: d5 --> 213
+SP: 9 --> 9
+X: cb --> 203
+Y: 68 --> 104
+Flags: ad --> 173
+Es puntero nulo
+
+PC: d05f --> 53343
+Opcode: 0 --> 0
+A: d5 --> 213
+SP: 9 --> 9
+X: cb --> 203
+Y: 68 --> 104
+Flags: ad --> 173
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: d5 --> 213
+SP: 6 --> 6
+X: cb --> 203
+Y: 68 --> 104
+Flags: ad --> 173
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: d5 --> 213
+SP: 6 --> 6
+X: cb --> 203
+Y: 68 --> 104
+Flags: ad --> 173
+arg: b7 ---> 183
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 8d --> 141
+SP: 6 --> 6
+X: cb --> 203
+Y: 68 --> 104
+Flags: ad --> 173
+Es puntero nulo
+
+FAILED: "01 cd 5b" PC mismatch (0x0000 vs 0xd05e) SP mismatch A mismatch
+PC: f3d5 --> 62421
+Opcode: 1 --> 1
+A: 1c --> 28
+SP: 9 --> 9
+X: 7c --> 124
+Y: 65 --> 101
+Flags: e0 --> 224
+arg: 6f ---> 111
+
+PC: f3d7 --> 62423
+Opcode: a7 --> 167
+A: 7f --> 127
+SP: 9 --> 9
+X: 7c --> 124
+Y: 65 --> 101
+Flags: 60 --> 96
+Es puntero nulo
+
+PC: f3d8 --> 62424
+Opcode: 0 --> 0
+A: 7f --> 127
+SP: 9 --> 9
+X: 7c --> 124
+Y: 65 --> 101
+Flags: 60 --> 96
+Es puntero nulo
+
+PC: 0 --> 0
+Opcode: b7 --> 183
+A: 7f --> 127
+SP: 6 --> 6
+X: 7c --> 124
+Y: 65 --> 101
+Flags: 60 --> 96
+Es puntero nulo
+
+PC: 1 --> 1
+Opcode: 7d --> 125
+A: 7f --> 127
+SP: 6 --> 6
+X: 7c --> 124
+Y: 65 --> 101
+Flags: 60 --> 96
+arg: 0 ---> 0
+
+PC: 4 --> 4
+Opcode: 0 --> 0
+A: 7f --> 127
+SP: 6 --> 6
+X: 7c --> 124
+Y: 65 --> 101
+Flags: 20 --> 32
+Es puntero nulo
+
+FAILED: "01 02 a7" PC mismatch (0x0000 vs 0xf3d7) SP mismatch P mismatch
