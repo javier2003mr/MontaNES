@@ -230,10 +230,12 @@ void CPU :: RTI (){
 }
 
 void CPU :: BRK (){
-    stack_push(((PC+1) & 0xFF00) >> 8);
-    stack_push((PC+1) & 0x00FF);
+    stack_push(((PC+2) & 0xFF00) >> 8);
+    stack_push((PC+2) & 0x00FF);
     stack_push(P | 0x30);
     PC = cpu_memory[0xFFFF] << 8 | cpu_memory[0xFFFE];
+
+    P |= 0x04;
 }
 
 void CPU :: TAX (){
@@ -346,7 +348,18 @@ void CPU :: CLV (){
     setFlag(V_FLAG, 0);
 }
 
-void CPU :: NOP (){}
+void CPU :: NOP () {}
+void CPU :: STP () {}
+
+void CPU :: SLO (unsigned char * value) {
+    ASL(value);
+    ORA(*value);
+}
+
+void CPU :: ANC (unsigned char value) {
+    AND(value);
+    setFlag(C_FLAG, getFlag(N_FLAG));
+}
 
 /**************************************************************************************/
 
@@ -436,7 +449,7 @@ void CPU :: executeOpcode(OpcodeInfo & info, void* param = nullptr) {
     }
 }
 
-void CPU :: emulationCycle(){
+int CPU :: emulationCycle(){
     
     unsigned char opcode = cpu_memory[PC];
 
@@ -444,7 +457,7 @@ void CPU :: emulationCycle(){
 
     unsigned char * arg;
     unsigned short aux;
-
+/*
     printf("PC: %x --> %d\n", PC, PC);
     printf("Opcode: %x --> %d\n", opcode, opcode);
     printf("A: %x --> %d\n", A, A);
@@ -452,7 +465,8 @@ void CPU :: emulationCycle(){
     printf("X: %x --> %d\n", X, X);
     printf("Y: %x --> %d\n", Y, Y);
     printf("Flags: %x --> %d\n", P, P);
-
+    printf("MEMORIA [0x01f1]: %x\n\n", cpu_memory[0x01f1]);
+*/
     switch (info.mode)
     {
     case IMPLIED:
@@ -510,16 +524,13 @@ void CPU :: emulationCycle(){
         arg = nullptr;
         break;
     }
-    
-    if (arg)
-        printf("arg: %x ---> %d\n\n", *arg, *arg);
-    else
-        printf("Es puntero nulo\n\n");
         
     executeOpcode(info, arg);
 
     if (opcode != 0x90 && opcode != 0xB0 && opcode != 0xF0 && opcode != 0xD0 && opcode != 0x10 && 
         opcode != 0x30 && opcode != 0x50 && opcode != 0x70 && opcode != 0x4C && opcode != 0x6C && 
-        opcode != 0x20 && opcode != 0x60 && opcode != 0x40 && opcode != 0x00)
+        opcode != 0x20 && opcode != 0x60 && opcode != 0x40 && opcode != 0x00 && info.handler.func.void_func != &CPU::STP)
         PC += info.length;
+
+    return info.cycles;
 }

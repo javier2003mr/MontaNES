@@ -22,7 +22,7 @@ int main() {
     cpu.initializeOpcodeTable(); // Initialize the CPU's internal tables
 
     // Loop through all possible opcode files (0x00 to 0xFF)
-    for (int opcode = 1; opcode <= 0xFF; ++opcode) {
+    for (int opcode = 0x00; opcode <= 0xFF; ++opcode) {
 
         // Construct filename: "../tests/XX.json"
         std::stringstream ss;
@@ -74,9 +74,16 @@ int main() {
             // We run the CPU for the exact number of cycles specified in the test
             // This assumes emulationCycle() advances the CPU by one clock cycle/step
             int cycles_to_run = test["cycles"].size();
-            for (int i = 0; i < cycles_to_run; ++i) {
-                cpu.emulationCycle();
+            int opcode_cycles;
+
+            int i = 0;
+            while (i < cycles_to_run){
+                opcode_cycles = cpu.emulationCycle();
+                i += opcode_cycles;
             }
+            //for (int i = 0; i < cycles_to_run; ++i) {
+            //    cpu.emulationCycle();
+            //}
 
             // 3. Compare Results
             auto final_state = test["final"];
