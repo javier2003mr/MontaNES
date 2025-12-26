@@ -67,7 +67,9 @@ int main() {
             // Set RAM
             // The JSON "ram" is an array of [address, value] pairs
             for (const auto& mem : initial["ram"]) {
+                
                 cpu.setMemoryDir(mem[0].get<unsigned short>(), mem[1].get<unsigned char>());
+                
             }
 
             // 2. Execute Test

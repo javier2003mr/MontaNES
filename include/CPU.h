@@ -82,6 +82,9 @@ class CPU {
             N_FLAG = (1 << 7)   // Negative Flag
         };
 
+        // Cuando hay un salto se activa
+        bool modifyPC;
+
         OpcodeInfo opcodeTable[OPCODE_TABLE_SIZE];
 
     public:

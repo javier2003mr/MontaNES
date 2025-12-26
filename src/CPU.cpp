@@ -15,6 +15,8 @@ CPU :: CPU (void){
     // Registro de estado
     P = 0x24;
 
+    modifyPC = true;
+
     initializeOpcodeTable();
 }
 
@@ -169,8 +171,10 @@ void CPU :: CPY (unsigned char value){
 }
 
 void CPU :: BXX (bool flag){
-    if (flag)
-        PC = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
+    if (flag){
+        PC += 2 + cpu_memory[PC+1];
+        modifyPC = false;
+    }
 }
 
 void CPU :: BCC (){
@@ -207,6 +211,7 @@ void CPU :: BVS (){
 
 void CPU :: JMP (unsigned short dir){
     PC = dir;
+    modifyPC = false;
 }
 
 void CPU :: JSR (unsigned short dir){
@@ -214,6 +219,7 @@ void CPU :: JSR (unsigned short dir){
     stack_push((PC & 0xFF00) >> 8);
     stack_push(PC & 0x00FF);
     PC = dir;
+    modifyPC = false;
 }
 
 void CPU :: RTS (){
@@ -221,6 +227,7 @@ void CPU :: RTS (){
     unsigned char low_byte = stack_pop();
     unsigned char high_byte = stack_pop();
     PC = high_byte << 8 | low_byte;
+    modifyPC = false;
 }
 
 void CPU :: RTI (){
@@ -234,7 +241,7 @@ void CPU :: BRK (){
     stack_push((PC+2) & 0x00FF);
     stack_push(P | 0x30);
     PC = cpu_memory[0xFFFF] << 8 | cpu_memory[0xFFFE];
-
+    modifyPC = false;
     P |= 0x04;
 }
 
@@ -349,7 +356,7 @@ void CPU :: CLV (){
 }
 
 void CPU :: NOP () {}
-void CPU :: STP () {}
+void CPU :: STP () {modifyPC = false;}
 
 void CPU :: SLO (unsigned char * value) {
     ASL(value);
@@ -458,6 +465,7 @@ int CPU :: emulationCycle(){
     unsigned char * arg;
     unsigned short aux;
 /*
+    printf("ANTES:\n");
     printf("PC: %x --> %d\n", PC, PC);
     printf("Opcode: %x --> %d\n", opcode, opcode);
     printf("A: %x --> %d\n", A, A);
@@ -465,7 +473,6 @@ int CPU :: emulationCycle(){
     printf("X: %x --> %d\n", X, X);
     printf("Y: %x --> %d\n", Y, Y);
     printf("Flags: %x --> %d\n", P, P);
-    printf("MEMORIA [0x01f1]: %x\n\n", cpu_memory[0x01f1]);
 */
     switch (info.mode)
     {
@@ -494,20 +501,20 @@ int CPU :: emulationCycle(){
         break;
     
     case ABSOLUTE:
-        arg = &cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2]];
+        arg = &cpu_memory[(cpu_memory[PC+2] << 8) + cpu_memory[PC+1]];
         break;
     
     case ABSOLUTE_X:
-        arg = &cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + X];
+        arg = &cpu_memory[(cpu_memory[PC+2] << 8) + cpu_memory[PC+1] + X];
         break;
     
     case ABSOLUTE_Y:
-        arg = &cpu_memory[cpu_memory[PC+1] << 8 + cpu_memory[PC+2] + Y];
+        arg = &cpu_memory[(cpu_memory[PC+2] << 8) + cpu_memory[PC+1] + Y];
         break;
     case INDIRECT:
-        aux = cpu_memory[PC+1] << 8 + cpu_memory[PC+2];
-        aux = cpu_memory[aux+1] << 8 + cpu_memory[aux];
-        arg = &cpu_memory[cpu_memory[aux+1] << 8 + cpu_memory[aux]];
+        aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
+        aux = (cpu_memory[aux+1] << 8) + cpu_memory[aux];
+        arg = &cpu_memory[(cpu_memory[aux+1]) << 8 + cpu_memory[aux]];
         break;
     case INDIRECT_X:
         arg = &cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];
@@ -526,11 +533,20 @@ int CPU :: emulationCycle(){
     }
         
     executeOpcode(info, arg);
-
-    if (opcode != 0x90 && opcode != 0xB0 && opcode != 0xF0 && opcode != 0xD0 && opcode != 0x10 && 
-        opcode != 0x30 && opcode != 0x50 && opcode != 0x70 && opcode != 0x4C && opcode != 0x6C && 
-        opcode != 0x20 && opcode != 0x60 && opcode != 0x40 && opcode != 0x00 && info.handler.func.void_func != &CPU::STP)
+/*
+    printf("DESPUÉS:\n");
+    printf("PC: %x --> %d\n", PC, PC);
+    printf("Opcode: %x --> %d\n", opcode, opcode);
+    printf("A: %x --> %d\n", A, A);
+    printf("SP: %x --> %d\n", SP, SP);
+    printf("X: %x --> %d\n", X, X);
+    printf("Y: %x --> %d\n", Y, Y);
+    printf("Flags: %x --> %d\n", P, P);
+*/
+    if (modifyPC)
         PC += info.length;
+    else
+        modifyPC = true;
 
     return info.cycles;
 }
