@@ -84,6 +84,7 @@ class CPU {
 
         // Cuando hay un salto se activa
         bool modifyPC;
+        int instruction_cycles;
 
         OpcodeInfo opcodeTable[OPCODE_TABLE_SIZE];
 

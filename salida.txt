@@ -18,28 +18,42 @@ Running tests from tests/CPU/v1/0d.json...
 Running tests from tests/CPU/v1/0e.json...
 Running tests from tests/CPU/v1/0f.json...
 Running tests from tests/CPU/v1/10.json...
-FAILED: "10 98 49" PC mismatch (0xa240 vs 0xa13d) A mismatch
-FAILED: "10 3e 16" PC mismatch (0x8356 vs 0x8355)
-FAILED: "10 6c c1" PC mismatch (0x4f73 vs 0x4f72)
-FAILED: "10 11 ab" PC mismatch (0x8c5f vs 0x8c5e) P mismatch
-FAILED: "10 d5 e8" PC mismatch (0xbcb8 vs 0xbbb7)
-FAILED: "10 62 a0" PC mismatch (0xe9fe vs 0xe9fc)
-FAILED: "10 1f 76" PC mismatch (0x90f8 vs 0x90f6)
-FAILED: "10 51 df" PC mismatch (0x9dac vs 0x9dab) A mismatch P mismatch
-FAILED: "10 53 a5" PC mismatch (0xfe7f vs 0xfe7d) A mismatch P mismatch
-FAILED: "10 14 d1" PC mismatch (0xdfed vs 0xdfea) A mismatch P mismatch
-FAILED: "10 6c c8" PC mismatch (0xe19d vs 0xe19a) P mismatch
-FAILED: "10 20 b7" PC mismatch (0xd51d vs 0xd51a)
-FAILED: "10 32 c1" PC mismatch (0x5f26 vs 0x5f24)
-FAILED: "10 71 d3" PC mismatch (0x2242 vs 0x223f) P mismatch
-FAILED: "10 cf 89" PC mismatch (0xd193 vs 0xd092)
-FAILED: "10 7f 14" PC mismatch (0xbec5 vs 0xbec4)
-FAILED: "10 b9 44" PC mismatch (0x9125 vs 0x9024)
-FAILED: "10 0d 79" PC mismatch (0xfd54 vs 0xfd52)
-FAILED: "10 e5 59" PC mismatch (0x8388 vs 0x8286) A mismatch P mismatch
-FAILED: "10 eb 47" PC mismatch (0xe1af vs 0xe0ad)
-FAILED: "10 d7 11" PC mismatch (0x793a vs 0x783a)
-FAILED: "10 80 3f" PC mismatch (0x9a81 vs 0x9981)
-FAILED: "10 34 9d" PC mismatch (0x79c8 vs 0x79c5) A mismatch
-FAILED: "10 3c 47" PC mismatch (0x7b3d vs 0x7b3c)
-FAILED: "10 14 e8" PC mismatch (0x889c vs 0x8899)
+Running tests from tests/CPU/v1/11.json...
+Running tests from tests/CPU/v1/12.json...
+Running tests from tests/CPU/v1/13.json...
+FAILED: "13 78 aa" A mismatch P mismatch RAM mismatch at 0xfda5 (Act: 0xef Exp: 0xde)
+Running tests from tests/CPU/v1/14.json...
+Running tests from tests/CPU/v1/15.json...
+Running tests from tests/CPU/v1/16.json...
+Running tests from tests/CPU/v1/17.json...
+FAILED: "17 1f 9f" A mismatch P mismatch RAM mismatch at 0x00b2 (Act: 0x28 Exp: 0x50)
+Running tests from tests/CPU/v1/18.json...
+Running tests from tests/CPU/v1/19.json...
+FAILED: "19 30 0f" PC mismatch (0xdf91 vs 0xdf90)
+FAILED: "19 dc 74" PC mismatch (0xaae5 vs 0xaae3) A mismatch
+FAILED: "19 ab 5a" PC mismatch (0x1554 vs 0x789f) SP mismatch
+FAILED: "19 ca 67" PC mismatch (0x07c3 vs 0x07c0)
+FAILED: "19 34 56" PC mismatch (0x9a18 vs 0xdcca) SP mismatch
+FAILED: "19 94 6d" PC mismatch (0x62bd vs 0x62bc)
+FAILED: "19 d3 f4" PC mismatch (0x5864 vs 0x5863) SP mismatch
+FAILED: "19 f4 29" PC mismatch (0x53f3 vs 0x53f2)
+FAILED: "19 d3 9d" PC mismatch (0xc4fb vs 0xc4fa)
+FAILED: "19 ec cf" PC mismatch (0x1a16 vs 0x1a14)
+FAILED: "19 c3 86" PC mismatch (0xa418 vs 0xa417)
+FAILED: "19 af 3b" PC mismatch (0xdaa3 vs 0xdaa2) Y mismatch
+FAILED: "19 15 85" PC mismatch (0x16d9 vs 0x16d6) P mismatch
+FAILED: "19 72 4e" PC mismatch (0xc4f1 vs 0xc4ee) P mismatch
+FAILED: "19 c3 7b" PC mismatch (0xd5fe vs 0xd5fc) A mismatch
+FAILED: "19 d5 3e" PC mismatch (0x7639 vs 0x7638)
+FAILED: "19 9c 39" PC mismatch (0xebd0 vs 0xebcf)
+FAILED: "19 d6 52" PC mismatch (0x8ebb vs 0x8eb9) P mismatch
+FAILED: "19 be b1" PC mismatch (0xe84f vs 0xe84d)
+FAILED: "19 60 29" PC mismatch (0x3cad vs 0x3cab)
+FAILED: "19 f9 e5" PC mismatch (0xea9a vs 0xea98) P mismatch
+FAILED: "19 e1 ad" PC mismatch (0x736c vs 0x736a)
+FAILED: "19 9e 4e" PC mismatch (0xe75b vs 0xe75a)
+FAILED: "19 61 c6" PC mismatch (0x3a01 vs 0x39ff)
+FAILED: "19 53 3e" PC mismatch (0xfd47 vs 0xfd46)
+FAILED: "19 52 9b" PC mismatch (0x80de vs 0x80dc) P mismatch
+FAILED: "19 b9 b4" PC mismatch (0xc765 vs 0xc762) A mismatch
+FAILED: "19 a9 cd" PC mismatch (0xfb9c vs 0xfb9a)

@@ -79,7 +79,6 @@ void CPU :: AND (unsigned char value){
 }
 
 void CPU :: ORA (unsigned char value){
-    
     A |= value;
 
     setFlag(Z_FLAG, A == 0);
@@ -171,9 +170,21 @@ void CPU :: CPY (unsigned char value){
 }
 
 void CPU :: BXX (bool flag){
+
     if (flag){
-        PC += 2 + cpu_memory[PC+1];
+        unsigned short current_pc;
+        current_pc = PC + 2;
+
+        PC += 2 + static_cast<char>(cpu_memory[PC+1]);
+
         modifyPC = false;
+
+        // takes the branch so cycles + 1
+        ++instruction_cycles;
+
+        // crosses the branch so cycles + 2
+        if ((current_pc & 0xFF00) != (PC & 0xFF00))
+            ++instruction_cycles;
     }
 }
 
@@ -458,6 +469,8 @@ void CPU :: executeOpcode(OpcodeInfo & info, void* param = nullptr) {
 
 int CPU :: emulationCycle(){
     
+    instruction_cycles = 0;
+
     unsigned char opcode = cpu_memory[PC];
 
     OpcodeInfo info = opcodeTable[opcode];
@@ -520,7 +533,11 @@ int CPU :: emulationCycle(){
         arg = &cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];
         break;
     case INDIRECT_Y:
-        arg = &cpu_memory[cpu_memory[cpu_memory[PC+1] + cpu_memory[(cpu_memory[PC+1] + 1) % 256] * 256 + Y]];
+        aux = cpu_memory[PC+1];
+        aux = (cpu_memory[(aux+1) % 256] << 8) + cpu_memory[aux % 256];
+        arg = &cpu_memory[(aux+Y)%CPU_RAM_SIZE];
+        if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
+            ++instruction_cycles;
         break;
 
     case RELATIVE:
@@ -548,5 +565,6 @@ int CPU :: emulationCycle(){
     else
         modifyPC = true;
 
-    return info.cycles;
+    instruction_cycles += info.cycles;
+    return instruction_cycles;
 }

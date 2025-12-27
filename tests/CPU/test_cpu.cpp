@@ -104,6 +104,7 @@ int main() {
             }
             if (cpu.getA() != final_state["a"].get<unsigned char>()) {
                 passed = false;
+                //printf("A OBTENIDO: %x, A ESPERADO: %x\n",cpu.getA(),final_state["a"].get<unsigned char>());
                 error_msg += " A mismatch";
             }
             if (cpu.getX() != final_state["x"].get<unsigned char>()) {
