@@ -314,7 +314,7 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x2B].mode = IMMEDIATE;
 
     // Opcode 0x2C: BIT Absolute
-    opcodeTable[0x2C].handler.type = InstructionHandler::TYPE_USHORT;
+    opcodeTable[0x2C].handler.type = InstructionHandler::TYPE_UCHAR;
     opcodeTable[0x2C].handler.func.uchar_func = &CPU::BIT;
     opcodeTable[0x2C].length = 3;
     opcodeTable[0x2C].cycles = 4;

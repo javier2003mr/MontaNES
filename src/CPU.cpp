@@ -242,8 +242,8 @@ void CPU :: RTS (){
 }
 
 void CPU :: RTI (){
-
-    P = stack_pop() & 0xCF;
+    unsigned char aux = stack_pop();
+    P = (aux & 0xCF) | (P & 0x30);
     RTS();
 }
 
@@ -305,7 +305,8 @@ void CPU :: PHP (){
 }
 
 void CPU :: PLP (){
-    P |= stack_pop() & 0xCF;
+    unsigned char aux = stack_pop();
+    P = (aux & 0xCF) | (P & 0x30);
 }
 
 void CPU :: LDA (unsigned short dir){
@@ -380,7 +381,7 @@ void CPU :: ANC (unsigned char value) {
 }
 
 void CPU :: RLA (unsigned char * value) {
-    ROR(value);
+    ROL(value);
     AND(*value);
 }
 
@@ -391,7 +392,7 @@ void CPU :: RLA (unsigned char * value) {
 /**************************************************************************************/
 
 void CPU :: stack_push (unsigned char data){
-
+    
     cpu_memory[0x0100 | SP] = data;
     --SP;
 }
