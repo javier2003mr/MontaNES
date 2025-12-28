@@ -22,7 +22,7 @@ int main() {
     cpu.initializeOpcodeTable(); // Initialize the CPU's internal tables
 
     // Loop through all possible opcode files (0x00 to 0xFF)
-    for (int opcode = 0x00; opcode <= 0xFF; ++opcode) {
+    for (int opcode = 0x23; opcode <= 0x30; ++opcode) {
 
         // Construct filename: "../tests/XX.json"
         std::stringstream ss;

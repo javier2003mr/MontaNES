@@ -176,6 +176,7 @@ class CPU {
         void STP();
         void SLO(unsigned char * value);
         void ANC(unsigned char value);
+        void RLA(unsigned char * value);
 
         void setPC(unsigned short value);
         void setA (unsigned char value);

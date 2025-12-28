@@ -227,8 +227,8 @@ void CPU :: JMP (unsigned short dir){
 
 void CPU :: JSR (unsigned short dir){
     
-    stack_push((PC & 0xFF00) >> 8);
-    stack_push(PC & 0x00FF);
+    stack_push(((PC+2) & 0xFF00) >> 8);
+    stack_push((PC+2) & 0x00FF);
     PC = dir;
     modifyPC = false;
 }
@@ -379,6 +379,11 @@ void CPU :: ANC (unsigned char value) {
     setFlag(C_FLAG, getFlag(N_FLAG));
 }
 
+void CPU :: RLA (unsigned char * value) {
+    ROR(value);
+    AND(*value);
+}
+
 /**************************************************************************************/
 
 // Other functions
@@ -514,15 +519,26 @@ int CPU :: emulationCycle(){
         break;
     
     case ABSOLUTE:
-        arg = &cpu_memory[(cpu_memory[PC+2] << 8) + cpu_memory[PC+1]];
+        aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
+        arg = &cpu_memory[aux];
         break;
     
     case ABSOLUTE_X:
-        arg = &cpu_memory[(cpu_memory[PC+2] << 8) + cpu_memory[PC+1] + X];
+        aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
+        arg = &cpu_memory[(aux+X)%CPU_RAM_SIZE];
+        
+        if ((aux & 0xFF00) != ((aux+X) & 0xFF00) && info.handler.func.uchar_ptr_func != &CPU::ASL && info.handler.func.ushort_func != &CPU::DEC &&
+            info.handler.func.ushort_func != &CPU::INC && info.handler.func.uchar_ptr_func != &CPU::LSR && info.handler.func.uchar_ptr_func != &CPU::ROL &&
+            info.handler.func.uchar_ptr_func != &CPU::ROR && info.handler.func.ushort_func != &CPU::STA)
+            ++instruction_cycles;
         break;
     
     case ABSOLUTE_Y:
-        arg = &cpu_memory[(cpu_memory[PC+2] << 8) + cpu_memory[PC+1] + Y];
+        aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
+        arg = &cpu_memory[(aux+Y)%CPU_RAM_SIZE];
+        
+        if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
+            ++instruction_cycles;
         break;
     case INDIRECT:
         aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
@@ -536,6 +552,7 @@ int CPU :: emulationCycle(){
         aux = cpu_memory[PC+1];
         aux = (cpu_memory[(aux+1) % 256] << 8) + cpu_memory[aux % 256];
         arg = &cpu_memory[(aux+Y)%CPU_RAM_SIZE];
+        
         if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
             ++instruction_cycles;
         break;
@@ -548,8 +565,11 @@ int CPU :: emulationCycle(){
         arg = nullptr;
         break;
     }
-        
-    executeOpcode(info, arg);
+    
+    if (info.handler.type == InstructionHandler::TYPE_USHORT)
+        executeOpcode(info, &aux);
+    else
+        executeOpcode(info, arg);
 /*
     printf("DESPUÉS:\n");
     printf("PC: %x --> %d\n", PC, PC);

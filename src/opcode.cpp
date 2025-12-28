@@ -186,7 +186,7 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x18].mode = IMPLIED;
     
     // Opcode 0x19: ORA Absolute,Y
-    opcodeTable[0x19].handler.type = InstructionHandler::TYPE_USHORT;
+    opcodeTable[0x19].handler.type = InstructionHandler::TYPE_UCHAR;
     opcodeTable[0x19].handler.func.uchar_func = &CPU::ORA;
     opcodeTable[0x19].length = 3;
     opcodeTable[0x19].cycles = 4;
@@ -209,7 +209,7 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x1C].mode = ABSOLUTE_X;
 
     // Opcode 0x1D: ORA Absolute,X
-    opcodeTable[0x1D].handler.type = InstructionHandler::TYPE_USHORT;
+    opcodeTable[0x1D].handler.type = InstructionHandler::TYPE_UCHAR;
     opcodeTable[0x1D].handler.func.uchar_func = &CPU::ORA;
     opcodeTable[0x1D].length = 3;
     opcodeTable[0x1D].cycles = 4;
@@ -251,7 +251,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x22].mode = IMPLIED;
 
     // Opcode 0x23: Undefined
-    
+    opcodeTable[0x23].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x23].handler.func.uchar_ptr_func = &CPU::RLA;
+    opcodeTable[0x23].length = 2;
+    opcodeTable[0x23].cycles = 8;
+    opcodeTable[0x23].mode = INDIRECT_X;
+
     // Opcode 0x24: BIT Zero Page
     opcodeTable[0x24].handler.type = InstructionHandler::TYPE_UCHAR;
     opcodeTable[0x24].handler.func.uchar_func = &CPU::BIT;
@@ -274,7 +279,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x26].mode = ZEROPAGE;
     
     // Opcode 0x27: Undefined
-    
+    opcodeTable[0x27].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x27].handler.func.uchar_ptr_func = &CPU::RLA;
+    opcodeTable[0x27].length = 2;
+    opcodeTable[0x27].cycles = 5;
+    opcodeTable[0x27].mode = ZEROPAGE;
+
     // Opcode 0x28: PLP
     opcodeTable[0x28].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x28].handler.func.void_func = &CPU::PLP;
@@ -325,7 +335,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x2E].mode = ABSOLUTE;
     
     // Opcode 0x2F: Undefined
-    
+    opcodeTable[0x2F].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x2F].handler.func.uchar_ptr_func = &CPU::RLA;
+    opcodeTable[0x2F].length = 3;
+    opcodeTable[0x2F].cycles = 6;
+    opcodeTable[0x2F].mode = ABSOLUTE;
+
     // Opcode 0x30: BMI
     opcodeTable[0x30].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x30].handler.func.void_func = &CPU::BMI;
@@ -348,7 +363,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x32].mode = IMPLIED;
 
     // Opcode 0x33: Undefined
-    
+    opcodeTable[0x33].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x33].handler.func.uchar_ptr_func = &CPU::RLA;
+    opcodeTable[0x33].length = 2;
+    opcodeTable[0x33].cycles = 8;
+    opcodeTable[0x33].mode = INDIRECT_Y;
+
     // Opcode 0x34: Undefined
     opcodeTable[0x34].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x34].handler.func.void_func = &CPU::NOP;
@@ -371,7 +391,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x36].mode = ZEROPAGE_X;
     
     // Opcode 0x37: Undefined
-    
+    opcodeTable[0x37].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x37].handler.func.uchar_ptr_func = &CPU::RLA;
+    opcodeTable[0x37].length = 2;
+    opcodeTable[0x37].cycles = 6;
+    opcodeTable[0x37].mode = ZEROPAGE_X;
+
     // Opcode 0x38: SEC
     opcodeTable[0x38].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x38].handler.func.void_func = &CPU::SEC;
@@ -389,7 +414,12 @@ void CPU :: initializeOpcodeTable() {
     // Opcode 0x3A: Undefined
     
     // Opcode 0x3B: Undefined
-    
+    opcodeTable[0x3B].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x3B].handler.func.uchar_ptr_func = &CPU::RLA;
+    opcodeTable[0x3B].length = 3;
+    opcodeTable[0x3B].cycles = 7;
+    opcodeTable[0x3B].mode = ABSOLUTE_Y;
+
     // Opcode 0x3C: Undefined
     opcodeTable[0x3C].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x3C].handler.func.void_func = &CPU::NOP;
@@ -412,7 +442,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x3E].mode = ABSOLUTE_X;
     
     // Opcode 0x3F: Undefined
-    
+    opcodeTable[0x3F].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x3F].handler.func.uchar_ptr_func = &CPU::RLA;
+    opcodeTable[0x3F].length = 3;
+    opcodeTable[0x3F].cycles = 7;
+    opcodeTable[0x3F].mode = ABSOLUTE_X;
+
     // Opcode 0x40: RTI
     opcodeTable[0x40].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x40].handler.func.void_func = &CPU::RTI;
