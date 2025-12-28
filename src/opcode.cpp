@@ -470,7 +470,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x42].mode = IMPLIED;
 
     // Opcode 0x43: Undefined
-    
+    opcodeTable[0x43].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x43].handler.func.uchar_ptr_func = &CPU::SRE;
+    opcodeTable[0x43].length = 2;
+    opcodeTable[0x43].cycles = 8;
+    opcodeTable[0x43].mode = INDIRECT_X;
+
     // Opcode 0x44: Undefined
     opcodeTable[0x44].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x44].handler.func.void_func = &CPU::NOP;
@@ -493,7 +498,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x46].mode = ZEROPAGE;
     
     // Opcode 0x47: Undefined
-    
+    opcodeTable[0x47].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x47].handler.func.uchar_ptr_func = &CPU::SRE;
+    opcodeTable[0x47].length = 2;
+    opcodeTable[0x47].cycles = 5;
+    opcodeTable[0x47].mode = ZEROPAGE;
+
     // Opcode 0x48: PHA
     opcodeTable[0x48].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x48].handler.func.void_func = &CPU::PHA;
@@ -516,7 +526,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x4A].mode = ACCUMULATOR;
     
     // Opcode 0x4B: Undefined
-    
+    opcodeTable[0x4B].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x4B].handler.func.uchar_ptr_func = &CPU::ASR;
+    opcodeTable[0x4B].length = 2;
+    opcodeTable[0x4B].cycles = 2;
+    opcodeTable[0x4B].mode = IMMEDIATE;
+
     // Opcode 0x4C: JMP Absolute
     opcodeTable[0x4C].handler.type = InstructionHandler::TYPE_USHORT;
     opcodeTable[0x4C].handler.func.ushort_func = &CPU::JMP;
@@ -525,7 +540,7 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x4C].mode = ABSOLUTE;
     
     // Opcode 0x4D: EOR Absolute
-    opcodeTable[0x4D].handler.type = InstructionHandler::TYPE_USHORT;
+    opcodeTable[0x4D].handler.type = InstructionHandler::TYPE_UCHAR;
     opcodeTable[0x4D].handler.func.uchar_func = &CPU::EOR;
     opcodeTable[0x4D].length = 3;
     opcodeTable[0x4D].cycles = 4;
@@ -539,7 +554,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x4E].mode = ABSOLUTE;
     
     // Opcode 0x4F: Undefined
-    
+    opcodeTable[0x4F].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x4F].handler.func.uchar_ptr_func = &CPU::SRE;
+    opcodeTable[0x4F].length = 3;
+    opcodeTable[0x4F].cycles = 6;
+    opcodeTable[0x4F].mode = ABSOLUTE;
+
     // Opcode 0x50: BVC
     opcodeTable[0x50].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x50].handler.func.void_func = &CPU::BVC;
@@ -562,7 +582,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x52].mode = IMPLIED;
 
     // Opcode 0x53: Undefined
-    
+    opcodeTable[0x53].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x53].handler.func.uchar_ptr_func = &CPU::SRE;
+    opcodeTable[0x53].length = 2;
+    opcodeTable[0x53].cycles = 8;
+    opcodeTable[0x53].mode = INDIRECT_Y;
+
     // Opcode 0x54: Undefined
     opcodeTable[0x54].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x54].handler.func.void_func = &CPU::NOP;
@@ -585,7 +610,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x56].mode = ZEROPAGE_X;
     
     // Opcode 0x57: Undefined
-    
+    opcodeTable[0x57].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x57].handler.func.uchar_ptr_func = &CPU::SRE;
+    opcodeTable[0x57].length = 2;
+    opcodeTable[0x57].cycles = 6;
+    opcodeTable[0x57].mode = ZEROPAGE_X;
+
     // Opcode 0x58: CLI
     opcodeTable[0x58].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x58].handler.func.void_func = &CPU::CLI;
@@ -594,7 +624,7 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x58].mode = IMPLIED;
     
     // Opcode 0x59: EOR Absolute,Y
-    opcodeTable[0x59].handler.type = InstructionHandler::TYPE_USHORT;
+    opcodeTable[0x59].handler.type = InstructionHandler::TYPE_UCHAR;
     opcodeTable[0x59].handler.func.uchar_func = &CPU::EOR;
     opcodeTable[0x59].length = 3;
     opcodeTable[0x59].cycles = 4;
@@ -603,7 +633,12 @@ void CPU :: initializeOpcodeTable() {
     // Opcode 0x5A: Undefined
     
     // Opcode 0x5B: Undefined
-    
+    opcodeTable[0x5B].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x5B].handler.func.uchar_ptr_func = &CPU::SRE;
+    opcodeTable[0x5B].length = 3;
+    opcodeTable[0x5B].cycles = 7;
+    opcodeTable[0x5B].mode = ABSOLUTE_Y;
+
     // Opcode 0x5C: Undefined
     opcodeTable[0x5C].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x5C].handler.func.void_func = &CPU::NOP;
@@ -612,7 +647,7 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x5C].mode = ABSOLUTE_X;
 
     // Opcode 0x5D: EOR Absolute,X
-    opcodeTable[0x5D].handler.type = InstructionHandler::TYPE_USHORT;
+    opcodeTable[0x5D].handler.type = InstructionHandler::TYPE_UCHAR;
     opcodeTable[0x5D].handler.func.uchar_func = &CPU::EOR;
     opcodeTable[0x5D].length = 3;
     opcodeTable[0x5D].cycles = 4;
@@ -626,7 +661,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x5E].mode = ABSOLUTE_X;
     
     // Opcode 0x5F: Undefined
-    
+    opcodeTable[0x5F].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x5F].handler.func.uchar_ptr_func = &CPU::SRE;
+    opcodeTable[0x5F].length = 3;
+    opcodeTable[0x5F].cycles = 7;
+    opcodeTable[0x5F].mode = ABSOLUTE_X;
+
     // Opcode 0x60: RTS
     opcodeTable[0x60].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x60].handler.func.void_func = &CPU::RTS;
@@ -649,7 +689,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x62].mode = IMPLIED;
 
     // Opcode 0x63: Undefined
-    
+    opcodeTable[0x63].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x63].handler.func.uchar_ptr_func = &CPU::RRA;
+    opcodeTable[0x63].length = 2;
+    opcodeTable[0x63].cycles = 8;
+    opcodeTable[0x63].mode = INDIRECT_X;
+
     // Opcode 0x64: Undefined
     opcodeTable[0x64].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x64].handler.func.void_func = &CPU::NOP;
@@ -672,7 +717,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x66].mode = ZEROPAGE;
     
     // Opcode 0x67: Undefined
-    
+    opcodeTable[0x67].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x67].handler.func.uchar_ptr_func = &CPU::RRA;
+    opcodeTable[0x67].length = 2;
+    opcodeTable[0x67].cycles = 5;
+    opcodeTable[0x67].mode = ZEROPAGE;
+
     // Opcode 0x68: PLA
     opcodeTable[0x68].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x68].handler.func.void_func = &CPU::PLA;
@@ -695,7 +745,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x6A].mode = ACCUMULATOR;
     
     // Opcode 0x6B: Undefined
-    
+    opcodeTable[0x6B].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x6B].handler.func.uchar_ptr_func = &CPU::ARR;
+    opcodeTable[0x6B].length = 2;
+    opcodeTable[0x6B].cycles = 2;
+    opcodeTable[0x6B].mode = IMMEDIATE;
+
     // Opcode 0x6C: JMP Indirect
     opcodeTable[0x6C].handler.type = InstructionHandler::TYPE_USHORT;
     opcodeTable[0x6C].handler.func.ushort_func = &CPU::JMP;
@@ -718,7 +773,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x6E].mode = ABSOLUTE;
     
     // Opcode 0x6F: Undefined
-    
+    opcodeTable[0x6F].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x6F].handler.func.uchar_ptr_func = &CPU::RRA;
+    opcodeTable[0x6F].length = 3;
+    opcodeTable[0x6F].cycles = 6;
+    opcodeTable[0x6F].mode = ABSOLUTE;
+
     // Opcode 0x70: BVS
     opcodeTable[0x70].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x70].handler.func.void_func = &CPU::BVS;
@@ -741,7 +801,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x72].mode = IMPLIED;
 
     // Opcode 0x73: Undefined
-    
+    opcodeTable[0x73].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x73].handler.func.uchar_ptr_func = &CPU::RRA;
+    opcodeTable[0x73].length = 2;
+    opcodeTable[0x73].cycles = 8;
+    opcodeTable[0x73].mode = INDIRECT_Y;
+
     // Opcode 0x74: Undefined
     opcodeTable[0x74].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x74].handler.func.void_func = &CPU::NOP;
@@ -764,7 +829,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x76].mode = ZEROPAGE_X;
     
     // Opcode 0x77: Undefined
-    
+    opcodeTable[0x77].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x77].handler.func.uchar_ptr_func = &CPU::RRA;
+    opcodeTable[0x77].length = 2;
+    opcodeTable[0x77].cycles = 6;
+    opcodeTable[0x77].mode = ZEROPAGE_X;
+
     // Opcode 0x78: SEI
     opcodeTable[0x78].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x78].handler.func.void_func = &CPU::SEI;
@@ -782,7 +852,12 @@ void CPU :: initializeOpcodeTable() {
     // Opcode 0x7A: Undefined
     
     // Opcode 0x7B: Undefined
-    
+    opcodeTable[0x7B].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x7B].handler.func.uchar_ptr_func = &CPU::RRA;
+    opcodeTable[0x7B].length = 3;
+    opcodeTable[0x7B].cycles = 7;
+    opcodeTable[0x7B].mode = ABSOLUTE_Y;
+
     // Opcode 0x7C: Undefined
     opcodeTable[0x7C].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x7C].handler.func.void_func = &CPU::NOP;
@@ -805,7 +880,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x7E].mode = ABSOLUTE_X;
     
     // Opcode 0x7F: Undefined
-    
+    opcodeTable[0x7F].handler.type = InstructionHandler::TYPE_UCHAR_PTR;
+    opcodeTable[0x7F].handler.func.uchar_ptr_func = &CPU::RRA;
+    opcodeTable[0x7F].length = 3;
+    opcodeTable[0x7F].cycles = 7;
+    opcodeTable[0x7F].mode = ABSOLUTE_X;
+
     // Opcode 0x80: Undefined
     opcodeTable[0x80].handler.type = InstructionHandler::TYPE_VOID;
     opcodeTable[0x80].handler.func.void_func = &CPU::NOP;

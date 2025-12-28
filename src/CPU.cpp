@@ -139,7 +139,7 @@ void CPU :: ROL (unsigned char * value){
 void CPU :: ROR (unsigned char * value){
 
     unsigned char result = *value >> 1;
-    result |= 0x80 & getFlag(C_FLAG);
+    result = (getFlag(C_FLAG)) ? 0x80 | result : 0x7F & result;
 
     setFlag(C_FLAG, *value & 0x01);
     setFlag(Z_FLAG, result == 0);
@@ -237,7 +237,8 @@ void CPU :: RTS (){
 
     unsigned char low_byte = stack_pop();
     unsigned char high_byte = stack_pop();
-    PC = high_byte << 8 | low_byte;
+    PC = (high_byte << 8) | low_byte;
+    ++PC;
     modifyPC = false;
 }
 
@@ -298,6 +299,9 @@ void CPU :: PHA (){
 
 void CPU :: PLA (){
     A = stack_pop();
+
+    setFlag(N_FLAG, A & 0x80);
+    setFlag(Z_FLAG, A == 0);
 }
 
 void CPU :: PHP (){
@@ -383,6 +387,28 @@ void CPU :: ANC (unsigned char value) {
 void CPU :: RLA (unsigned char * value) {
     ROL(value);
     AND(*value);
+}
+
+void CPU :: SRE (unsigned char * value) {
+    LSR(value);
+    EOR(*value);
+}
+
+void CPU :: ASR (unsigned char * value){
+    AND(*value);
+    LSR(&A);
+}
+
+void CPU :: RRA (unsigned char * value){
+    ROR(value);
+    ADC(*value);
+}
+
+void CPU :: ARR (unsigned char * value){
+    AND(*value);
+    ROR(&A);
+    setFlag(V_FLAG, ((A & 0x20) >> 5) != ((A & 0x40) >> 6));
+    setFlag(C_FLAG, A & 0x40);
 }
 
 /**************************************************************************************/
@@ -543,8 +569,8 @@ int CPU :: emulationCycle(){
         break;
     case INDIRECT:
         aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
-        aux = (cpu_memory[aux+1] << 8) + cpu_memory[aux];
-        arg = &cpu_memory[(cpu_memory[aux+1]) << 8 + cpu_memory[aux]];
+        aux = (cpu_memory[((aux & 0x00FF) < 0xFF) ? aux+1 : aux & 0xFF00] << 8) + cpu_memory[aux];
+        arg = &cpu_memory[aux];
         break;
     case INDIRECT_X:
         arg = &cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];

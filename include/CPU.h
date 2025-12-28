@@ -177,7 +177,11 @@ class CPU {
         void SLO(unsigned char * value);
         void ANC(unsigned char value);
         void RLA(unsigned char * value);
-
+        void SRE (unsigned char * value);
+        void ASR (unsigned char * value);
+        void RRA (unsigned char * value);
+        void ARR (unsigned char * value);
+        
         void setPC(unsigned short value);
         void setA (unsigned char value);
         void setP (unsigned char value);
