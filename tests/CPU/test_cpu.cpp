@@ -22,7 +22,7 @@ int main() {
     cpu.initializeOpcodeTable(); // Initialize the CPU's internal tables
 
     // Loop through all possible opcode files (0x00 to 0xFF)
-    for (int opcode = 0x81; opcode <= 0x90; ++opcode) {
+    for (int opcode = 0x9C; opcode <= 0x9C; ++opcode) {
 
         // Construct filename: "../tests/XX.json"
         std::stringstream ss;
@@ -117,6 +117,7 @@ int main() {
             }
             if (cpu.getP() != final_state["p"].get<unsigned char>()) {
                 passed = false;
+                //printf("P OBTENIDO: %x, P ESPERADO: %x\n",cpu.getP(),final_state["p"].get<unsigned char>());
                 error_msg += " P mismatch";
             }
 

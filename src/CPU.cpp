@@ -56,18 +56,26 @@ void CPU :: DEC (unsigned short dir){
 
 void CPU :: INX (){
     ++X;
+    setFlag(N_FLAG, X & 0x80);
+    setFlag(Z_FLAG, X == 0);
 }
 
 void CPU :: DEX (){
     --X;
+    setFlag(N_FLAG, X & 0x80);
+    setFlag(Z_FLAG, X == 0);
 }
 
 void CPU :: INY (){
     ++Y;
+    setFlag(N_FLAG, Y & 0x80);
+    setFlag(Z_FLAG, Y == 0);
 }
 
 void CPU :: DEY (){
     --Y;
+    setFlag(N_FLAG, Y & 0x80);
+    setFlag(Z_FLAG, Y == 0);
 }
 
 void CPU :: AND (unsigned char value){
@@ -411,6 +419,28 @@ void CPU :: ARR (unsigned char * value){
     setFlag(C_FLAG, A & 0x40);
 }
 
+void CPU :: SAX (unsigned char * value){
+    *value = A & X;
+}
+
+void CPU :: XAA (unsigned char value){
+    A = (0xEE | A) & X & value;
+
+    setFlag(Z_FLAG, A == 0);
+    setFlag(N_FLAG, A & 0x80);
+}
+
+void CPU :: SHX (unsigned short dir){
+    cpu_memory[dir] = X & (cpu_memory[PC+2] + 1);
+}
+
+void CPU :: SHY (unsigned short dir){
+    //printf("DIR: %x, PARAM1: %x, Y: %x\n", dir, ((dir >> 8)+1), Y);
+    unsigned short aux = ((Y << 8) | 0x00FF);
+    printf("DIR: %x, PARAM1: %x, Y: %x\n", dir & aux, (cpu_memory[PC+2]+1), Y);
+    cpu_memory[dir & aux] = Y & (cpu_memory[PC+2] + 1);
+}
+
 /**************************************************************************************/
 
 // Other functions
@@ -534,15 +564,18 @@ int CPU :: emulationCycle(){
         break;
     
     case ZEROPAGE:
-        arg = &cpu_memory[cpu_memory[PC+1] % 256];
+        aux = cpu_memory[PC+1] % 256;
+        arg = &cpu_memory[aux];
         break;
 
     case ZEROPAGE_X:
-        arg = &cpu_memory[(cpu_memory[PC+1] + X) % 256];
+        aux = (cpu_memory[PC+1] + X) % 256;
+        arg = &cpu_memory[aux];
         break;
 
     case ZEROPAGE_Y:
-        arg = &cpu_memory[(cpu_memory[PC+1] + Y) % 256];
+        aux = (cpu_memory[PC+1] + Y) % 256;
+        arg = &cpu_memory[aux];
         break;
     
     case ABSOLUTE:
@@ -552,7 +585,8 @@ int CPU :: emulationCycle(){
     
     case ABSOLUTE_X:
         aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
-        arg = &cpu_memory[(aux+X)%CPU_RAM_SIZE];
+        aux = (aux+X)%CPU_RAM_SIZE;
+        arg = &cpu_memory[aux];
         
         if ((aux & 0xFF00) != ((aux+X) & 0xFF00) && info.handler.func.uchar_ptr_func != &CPU::ASL && info.handler.func.ushort_func != &CPU::DEC &&
             info.handler.func.ushort_func != &CPU::INC && info.handler.func.uchar_ptr_func != &CPU::LSR && info.handler.func.uchar_ptr_func != &CPU::ROL &&
@@ -562,7 +596,8 @@ int CPU :: emulationCycle(){
     
     case ABSOLUTE_Y:
         aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
-        arg = &cpu_memory[(aux+Y)%CPU_RAM_SIZE];
+        aux = (aux+Y)%CPU_RAM_SIZE;
+        arg = &cpu_memory[aux];
         
         if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
             ++instruction_cycles;
@@ -573,12 +608,15 @@ int CPU :: emulationCycle(){
         arg = &cpu_memory[aux];
         break;
     case INDIRECT_X:
+        aux = (cpu_memory[PC+1] + X) % 256;
+        aux = (cpu_memory[(aux+1) % 256] << 8) + cpu_memory[aux];
         arg = &cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];
         break;
     case INDIRECT_Y:
         aux = cpu_memory[PC+1];
         aux = (cpu_memory[(aux+1) % 256] << 8) + cpu_memory[aux % 256];
-        arg = &cpu_memory[(aux+Y)%CPU_RAM_SIZE];
+        aux = (aux+Y)%CPU_RAM_SIZE;
+        arg = &cpu_memory[aux];
         
         if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
             ++instruction_cycles;

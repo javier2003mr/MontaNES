@@ -181,7 +181,11 @@ class CPU {
         void ASR (unsigned char * value);
         void RRA (unsigned char * value);
         void ARR (unsigned char * value);
-        
+        void SAX (unsigned char * value);
+        void XAA (unsigned char value);
+        void SHX (unsigned short dir);
+        void SHY (unsigned short dir);
+
         void setPC(unsigned short value);
         void setA (unsigned char value);
         void setP (unsigned char value);
