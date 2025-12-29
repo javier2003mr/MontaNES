@@ -436,9 +436,14 @@ void CPU :: SHX (unsigned short dir){
 
 void CPU :: SHY (unsigned short dir){
     //printf("DIR: %x, PARAM1: %x, Y: %x\n", dir, ((dir >> 8)+1), Y);
-    unsigned short aux = ((Y << 8) | 0x00FF);
-    printf("DIR: %x, PARAM1: %x, Y: %x\n", dir & aux, (cpu_memory[PC+2]+1), Y);
-    cpu_memory[dir & aux] = Y & (cpu_memory[PC+2] + 1);
+    unsigned char h = cpu_memory[PC+2] + 1;
+    unsigned char aux = h & Y;
+    cpu_memory[dir] = aux;
+}
+
+void CPU :: LAX (unsigned short dir){
+    LDA(dir);
+    LDX(dir);
 }
 
 /**************************************************************************************/
@@ -560,7 +565,8 @@ int CPU :: emulationCycle(){
         break;
 
     case IMMEDIATE:
-        arg = &cpu_memory[PC+1];
+        aux = PC + 1;
+        arg = &cpu_memory[aux];
         break;
     
     case ZEROPAGE:

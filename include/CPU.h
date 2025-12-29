@@ -185,6 +185,7 @@ class CPU {
         void XAA (unsigned char value);
         void SHX (unsigned short dir);
         void SHY (unsigned short dir);
+        void LAX (unsigned short dir);
 
         void setPC(unsigned short value);
         void setA (unsigned char value);
