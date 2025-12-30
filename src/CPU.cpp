@@ -33,25 +33,34 @@ void CPU :: ADC (unsigned char value){
     setFlag(N_FLAG, A & 0x80);
 }
 
-void CPU :: SBC (unsigned char value){
+void CPU :: SBC(unsigned char value) {
     
-    unsigned short result = A + (~value) + ((getFlag(C_FLAG)) ? 1 : 0);
-    bool overflow = ((A ^ result) & (A ^ (~value)) & 0x80) != 0;
+    unsigned char borrow = 1 - getFlag(C_FLAG);
     
-    A = static_cast<unsigned char>(result);
-
-    setFlag(C_FLAG, result <= 0xFF);
-    setFlag(Z_FLAG, A == 0);
-    setFlag(V_FLAG, overflow);
-    setFlag(N_FLAG, A & 0x80);
+    unsigned char aux = A - value - borrow;
+    
+    setFlag(Z_FLAG, aux == 0);
+    setFlag(N_FLAG, aux & 0x80);
+    setFlag(C_FLAG, A >= value + borrow); 
+    setFlag(V_FLAG, ((A ^ value) & 0x80) && ((A ^ aux) & 0x80));
+    
+    A = aux;
 }
 
 void CPU :: INC (unsigned short dir){
-    ++cpu_memory[dir];
+    
+    unsigned char aux = ++cpu_memory[dir];
+
+    setFlag(N_FLAG, aux & 0x80);
+    setFlag(Z_FLAG, aux == 0);
 }
 
 void CPU :: DEC (unsigned short dir){
-    --cpu_memory[dir];
+
+    unsigned char aux = --cpu_memory[dir];
+
+    setFlag(N_FLAG, aux & 0x80);
+    setFlag(Z_FLAG, aux == 0);
 }
 
 void CPU :: INX (){
@@ -294,7 +303,11 @@ void CPU :: TYA (){
 }
 
 void CPU :: TSX (){
+    
     X = SP;
+    
+    setFlag(N_FLAG, X & 0x80);
+    setFlag(Z_FLAG, X == 0);
 }
 
 void CPU :: TXS (){
@@ -446,6 +459,57 @@ void CPU :: LAX (unsigned short dir){
     LDX(dir);
 }
 
+void CPU :: LAS (unsigned char value){
+    
+    unsigned char aux = value & SP;
+
+    A = aux;
+    X = aux;
+    SP = aux;
+
+    setFlag(N_FLAG, A & 0x80);
+    setFlag(Z_FLAG, A == 0);
+}
+
+void CPU :: DCP (unsigned char * value){
+    
+    --(*value);
+
+    unsigned char aux = A - (*value);
+
+    setFlag(Z_FLAG, aux == 0);
+    setFlag(N_FLAG, aux & 0x80);
+    setFlag(C_FLAG, (*value) <= A);
+}
+
+void CPU :: SBX (unsigned char value) {
+    
+    unsigned char aux = (A & X);
+
+    CMP_GEN (value, aux);
+    
+    X = (A & X) - value;
+}
+
+void CPU :: ISC(unsigned char *value) {
+    
+    ++(*value);
+    
+    unsigned char operand = *value;
+    unsigned char borrow = getFlag(C_FLAG) ? 0 : 1;
+    
+    unsigned int temp = A - operand - borrow;
+    
+    setFlag(C_FLAG, A >= operand + borrow);
+    setFlag(Z_FLAG, (temp & 0xFF) == 0);
+    setFlag(N_FLAG, temp & 0x80);
+    
+    unsigned char overflow = ((A ^ operand) & 0x80) && ((A ^ temp) & 0x80);
+    setFlag(V_FLAG, overflow);
+    
+    A = temp & 0xFF;
+}
+
 /**************************************************************************************/
 
 // Other functions
@@ -591,22 +655,24 @@ int CPU :: emulationCycle(){
     
     case ABSOLUTE_X:
         aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
-        aux = (aux+X)%CPU_RAM_SIZE;
-        arg = &cpu_memory[aux];
         
         if ((aux & 0xFF00) != ((aux+X) & 0xFF00) && info.handler.func.uchar_ptr_func != &CPU::ASL && info.handler.func.ushort_func != &CPU::DEC &&
             info.handler.func.ushort_func != &CPU::INC && info.handler.func.uchar_ptr_func != &CPU::LSR && info.handler.func.uchar_ptr_func != &CPU::ROL &&
             info.handler.func.uchar_ptr_func != &CPU::ROR && info.handler.func.ushort_func != &CPU::STA)
             ++instruction_cycles;
+
+        aux = (aux+X)%CPU_RAM_SIZE;
+        arg = &cpu_memory[aux];
         break;
     
     case ABSOLUTE_Y:
         aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
-        aux = (aux+Y)%CPU_RAM_SIZE;
-        arg = &cpu_memory[aux];
         
         if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
             ++instruction_cycles;
+        
+        aux = (aux+Y)%CPU_RAM_SIZE;
+        arg = &cpu_memory[aux];
         break;
     case INDIRECT:
         aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
@@ -621,11 +687,12 @@ int CPU :: emulationCycle(){
     case INDIRECT_Y:
         aux = cpu_memory[PC+1];
         aux = (cpu_memory[(aux+1) % 256] << 8) + cpu_memory[aux % 256];
-        aux = (aux+Y)%CPU_RAM_SIZE;
-        arg = &cpu_memory[aux];
         
         if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
             ++instruction_cycles;
+        
+        aux = (aux+Y)%CPU_RAM_SIZE;
+        arg = &cpu_memory[aux];
         break;
 
     case RELATIVE:

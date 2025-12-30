@@ -186,6 +186,10 @@ class CPU {
         void SHX (unsigned short dir);
         void SHY (unsigned short dir);
         void LAX (unsigned short dir);
+        void LAS (unsigned char value);
+        void DCP (unsigned char * value);
+        void SBX (unsigned char value);
+        void ISC (unsigned char * value);
 
         void setPC(unsigned short value);
         void setA (unsigned char value);
