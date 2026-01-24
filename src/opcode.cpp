@@ -1020,7 +1020,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x92].mode = IMPLIED;
 
     // Opcode 0x93: Undefined
-    
+    opcodeTable[0x93].handler.type = InstructionHandler::TYPE_UCHAR;
+    opcodeTable[0x93].handler.func.uchar_func = &CPU::SHA_indirectY;
+    opcodeTable[0x93].length = 2;
+    opcodeTable[0x93].cycles = 6;
+    opcodeTable[0x93].mode = INDIRECT_Y;
+
     // Opcode 0x94: STY Zero Page,X
     opcodeTable[0x94].handler.type = InstructionHandler::TYPE_USHORT;
     opcodeTable[0x94].handler.func.ushort_func = &CPU::STY;
@@ -1094,7 +1099,12 @@ void CPU :: initializeOpcodeTable() {
     opcodeTable[0x9E].mode = ABSOLUTE_Y;
 
     // Opcode 0x9F: Undefined
-    
+    opcodeTable[0x9F].handler.type = InstructionHandler::TYPE_USHORT;
+    opcodeTable[0x9F].handler.func.ushort_func = &CPU::SHA;
+    opcodeTable[0x9F].length = 3;
+    opcodeTable[0x9F].cycles = 5;
+    opcodeTable[0x9F].mode = ABSOLUTE_Y;
+
     // Opcode 0xA0: LDY Immediate
     opcodeTable[0xA0].handler.type = InstructionHandler::TYPE_USHORT;
     opcodeTable[0xA0].handler.func.ushort_func = &CPU::LDY;

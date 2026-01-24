@@ -190,6 +190,9 @@ class CPU {
         void DCP (unsigned char * value);
         void SBX (unsigned char value);
         void ISC (unsigned char * value);
+        void SHA_absoluteY(unsigned short dir);
+        void SHA_indirectY(unsigned char zp_addr);
+        void SHA (unsigned short dir);
 
         void setPC(unsigned short value);
         void setA (unsigned char value);

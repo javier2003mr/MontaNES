@@ -49,7 +49,11 @@ void CPU :: SBC(unsigned char value) {
 
 void CPU :: INC (unsigned short dir){
     
-    unsigned char aux = ++cpu_memory[dir];
+    unsigned char aux = cpu_memory[dir];
+    ++aux;
+    setMemoryDir(dir, aux);
+
+    //unsigned char aux = ++cpu_memory[dir];
 
     setFlag(N_FLAG, aux & 0x80);
     setFlag(Z_FLAG, aux == 0);
@@ -57,7 +61,11 @@ void CPU :: INC (unsigned short dir){
 
 void CPU :: DEC (unsigned short dir){
 
-    unsigned char aux = --cpu_memory[dir];
+    unsigned char aux = cpu_memory[dir];
+    --aux;
+    setMemoryDir(dir, aux);
+
+    //unsigned char aux = --cpu_memory[dir];
 
     setFlag(N_FLAG, aux & 0x80);
     setFlag(Z_FLAG, aux == 0);
@@ -263,6 +271,7 @@ void CPU :: RTI (){
     unsigned char aux = stack_pop();
     P = (aux & 0xCF) | (P & 0x30);
     RTS();
+    --PC;
 }
 
 void CPU :: BRK (){
@@ -341,7 +350,9 @@ void CPU :: LDA (unsigned short dir){
 }
 
 void CPU :: STA (unsigned short dir){
-    cpu_memory[dir] = A;
+
+    setMemoryDir(dir, A);
+    //cpu_memory[dir] = A;
 }
 
 void CPU :: LDX (unsigned short dir){
@@ -351,7 +362,9 @@ void CPU :: LDX (unsigned short dir){
 }
 
 void CPU :: STX (unsigned short dir){
-    cpu_memory[dir] = X;
+
+    setMemoryDir(dir, X);
+    //cpu_memory[dir] = X;
 }
 
 void CPU :: LDY (unsigned short dir){
@@ -361,7 +374,9 @@ void CPU :: LDY (unsigned short dir){
 }
 
 void CPU :: STY (unsigned short dir){
-    cpu_memory[dir] = Y;
+    
+    setMemoryDir(dir, Y);
+    //cpu_memory[dir] = Y;
 }
 
 void CPU :: CLC (){
@@ -444,14 +459,15 @@ void CPU :: XAA (unsigned char value){
 }
 
 void CPU :: SHX (unsigned short dir){
-    cpu_memory[dir] = X & (cpu_memory[PC+2] + 1);
+    
+    setMemoryDir(dir, X & (cpu_memory[PC+2] + 1));
+    //cpu_memory[dir] = X & (cpu_memory[PC+2] + 1);
 }
 
 void CPU :: SHY (unsigned short dir){
-    //printf("DIR: %x, PARAM1: %x, Y: %x\n", dir, ((dir >> 8)+1), Y);
-    unsigned char h = cpu_memory[PC+2] + 1;
-    unsigned char aux = h & Y;
-    cpu_memory[dir] = aux;
+
+    setMemoryDir(dir, Y & (cpu_memory[PC+2] + 1));
+    //cpu_memory[dir] = Y & (cpu_memory[PC+2] + 1);
 }
 
 void CPU :: LAX (unsigned short dir){
@@ -510,6 +526,38 @@ void CPU :: ISC(unsigned char *value) {
     A = temp & 0xFF;
 }
 
+void CPU :: SHA_absoluteY(unsigned short dir) {
+    
+    unsigned char high_byte = (dir >> 8) + 1;
+    unsigned char value = A & X & high_byte;
+    
+    setMemoryDir(dir, value);
+    //cpu_memory[dir] = value;
+}
+
+void CPU :: SHA_indirectY(unsigned char zp_addr) {
+
+    unsigned short base_addr = cpu_memory[zp_addr] | (cpu_memory[(zp_addr + 1) & 0xFF] << 8);
+    
+    unsigned short effective_addr = base_addr + Y;
+    unsigned char high_byte = (base_addr >> 8) + 1;
+    unsigned char value = A & X & high_byte;
+    
+    unsigned short store_addr = ((high_byte & A) << 8) | (effective_addr & 0xFF);
+    
+    setMemoryDir(store_addr, value);
+    //cpu_memory[store_addr] = value;
+}
+
+void CPU :: SHA (unsigned short dir) {
+    
+    unsigned char high_byte = (dir >> 8) & 0xFF;
+    unsigned char result = A & X & (high_byte + 1);
+
+    setMemoryDir(dir, result);
+    //cpu_memory[dir] = result;
+}
+
 /**************************************************************************************/
 
 // Other functions
@@ -551,7 +599,31 @@ void CPU :: setX (unsigned char value){ X = value; }
 
 void CPU :: setY (unsigned char value){ Y = value; }
 
-void CPU :: setMemoryDir (unsigned short dir, unsigned char value){ if (dir < CPU_RAM_SIZE){ cpu_memory[dir] = value; } }
+void CPU :: setMemoryDir (unsigned short dir, unsigned char value){ 
+    
+    unsigned short offset;
+    
+    if (dir < CPU_RAM_SIZE){ 
+    
+        cpu_memory[dir] = value; 
+
+        if (dir < 0x2000){
+            
+            offset = dir % 0x800;
+
+            for (unsigned short i = 0; i < 0x2000; i += 0x800)
+                cpu_memory[i + offset] = value;
+
+        }else if (dir < 0x4000) {
+            
+            offset = dir % 0x8;
+
+            for (unsigned short i = 0x2000; i < 0x4000; i += 0x8)
+                cpu_memory[i + offset] = value;
+
+        }
+    } 
+}
 
 unsigned short CPU :: getPC(){ return PC; }
 
