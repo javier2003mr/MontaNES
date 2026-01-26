@@ -601,13 +601,13 @@ void CPU :: setY (unsigned char value){ Y = value; }
 
 void CPU :: setMemoryDir (unsigned short dir, unsigned char value){ 
     
-    unsigned short offset;
+    //unsigned short offset;
     
     if (dir < CPU_RAM_SIZE){ 
     
         cpu_memory[dir] = value; 
 
-        if (dir < 0x2000){
+        /*if (dir < 0x2000){
             
             offset = dir % 0x800;
 
@@ -621,7 +621,7 @@ void CPU :: setMemoryDir (unsigned short dir, unsigned char value){
             for (unsigned short i = 0x2000; i < 0x4000; i += 0x8)
                 cpu_memory[i + offset] = value;
 
-        }
+        }*/
     } 
 }
 
@@ -680,6 +680,8 @@ int CPU :: emulationCycle(){
 
     unsigned char * arg;
     unsigned short aux;
+    int pc_plus_1 = (PC + 1) % CPU_RAM_SIZE;
+    int pc_plus_2 = (PC + 2) % CPU_RAM_SIZE;
 /*
     printf("ANTES:\n");
     printf("PC: %x --> %d\n", PC, PC);
@@ -706,27 +708,27 @@ int CPU :: emulationCycle(){
         break;
     
     case ZEROPAGE:
-        aux = cpu_memory[PC+1] % 256;
+        aux = cpu_memory[pc_plus_1] % 256;
         arg = &cpu_memory[aux];
         break;
 
     case ZEROPAGE_X:
-        aux = (cpu_memory[PC+1] + X) % 256;
+        aux = (cpu_memory[pc_plus_1] + X) % 256;
         arg = &cpu_memory[aux];
         break;
 
     case ZEROPAGE_Y:
-        aux = (cpu_memory[PC+1] + Y) % 256;
+        aux = (cpu_memory[pc_plus_1] + Y) % 256;
         arg = &cpu_memory[aux];
         break;
     
     case ABSOLUTE:
-        aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
+        aux = (cpu_memory[pc_plus_2] << 8) + cpu_memory[pc_plus_1];
         arg = &cpu_memory[aux];
         break;
     
     case ABSOLUTE_X:
-        aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
+        aux = (cpu_memory[pc_plus_2] << 8) + cpu_memory[pc_plus_1];
         
         if ((aux & 0xFF00) != ((aux+X) & 0xFF00) && info.handler.func.uchar_ptr_func != &CPU::ASL && info.handler.func.ushort_func != &CPU::DEC &&
             info.handler.func.ushort_func != &CPU::INC && info.handler.func.uchar_ptr_func != &CPU::LSR && info.handler.func.uchar_ptr_func != &CPU::ROL &&
@@ -738,7 +740,7 @@ int CPU :: emulationCycle(){
         break;
     
     case ABSOLUTE_Y:
-        aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
+        aux = (cpu_memory[pc_plus_2] << 8) + cpu_memory[pc_plus_1];
         
         if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
             ++instruction_cycles;
@@ -747,17 +749,17 @@ int CPU :: emulationCycle(){
         arg = &cpu_memory[aux];
         break;
     case INDIRECT:
-        aux = (cpu_memory[PC+2] << 8) + cpu_memory[PC+1];
+        aux = (cpu_memory[pc_plus_2] << 8) + cpu_memory[pc_plus_1];
         aux = (cpu_memory[((aux & 0x00FF) < 0xFF) ? aux+1 : aux & 0xFF00] << 8) + cpu_memory[aux];
         arg = &cpu_memory[aux];
         break;
     case INDIRECT_X:
-        aux = (cpu_memory[PC+1] + X) % 256;
+        aux = (cpu_memory[pc_plus_1] + X) % 256;
         aux = (cpu_memory[(aux+1) % 256] << 8) + cpu_memory[aux];
-        arg = &cpu_memory[cpu_memory[(cpu_memory[PC+1] + X) % 256] + cpu_memory[(cpu_memory[PC+1] + X + 1) % 256] * 256];
+        arg = &cpu_memory[cpu_memory[(cpu_memory[pc_plus_1] + X) % 256] + cpu_memory[(cpu_memory[pc_plus_1] + X + 1) % 256] * 256];
         break;
     case INDIRECT_Y:
-        aux = cpu_memory[PC+1];
+        aux = cpu_memory[pc_plus_1];
         aux = (cpu_memory[(aux+1) % 256] << 8) + cpu_memory[aux % 256];
         
         if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
