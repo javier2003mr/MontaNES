@@ -1,22 +1,18 @@
-#define CPU_RAM_SIZE 65536
+#include <cstdint>
+#include "cartridge.h"
+#include "CPU.h"
+#include "joypad.h"
+#include "PPU.hpp"
 
 class NES {
-    private:
-        unsigned char cpu_memory[CPU_RAM_SIZE];
-        ppu_memory;
-        ObjectAttributeMemory;
-
+    public:
         CPU cpu;
         PPU ppu;
-        APU apu;
-
         Cartridge cartridge;
+        Joypad joypad;
+        bool loaded = false;
 
-        Interrupts interrupts;
-
-        MMU mmu;
-
-        GUI gui;
-
-        Joypad joypads[NES_NUM_JOYPADS];
+        NES() : cpu(*this), ppu(*this), apu(*this), cartridge(*this) {}
+        void load(const char* filename);
+        void run_frame();
 };

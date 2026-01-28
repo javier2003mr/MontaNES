@@ -3,11 +3,16 @@
 
 #include "CPU.h"
 
+#define PPU_RAM_SIZE 65536
+#define SPR_RAM_SIZE 256
 class PPU {
 
     private:
 
         CPU * nes_cpu;
+
+        unsigned char ppu_memory[PPU_RAM_SIZE];
+        unsigned char spr_ram[SPR_RAM_SIZE];
 
         // Current VRAM address (lowests 15 bits)
         unsigned short v;
