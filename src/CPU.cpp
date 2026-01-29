@@ -4,7 +4,7 @@
 
 CPU :: CPU (void){ 
 
-    PC = 0xFFFC;
+    PC = cpu_memory[0xFFFD] << 8 | cpu_memory[0xFFFC];
 
     A = 0;
     X = 0;

@@ -3,7 +3,7 @@
 
 Cartridge :: Cartridge(){
     m_CHR_ROM = nullptr;
-    m_CHR_ROM = nullptr;
+    m_PRG_ROM = nullptr;
     scrollMode = false;
     mapper = -1;
     thereIsPRGRAM = false;
@@ -15,16 +15,16 @@ void Cartridge :: loadROM (char * path){
     FILE * romFile;
     romFile = fopen(path, "rb");
 
-    if (romFile == nullptr){
-        perror("Error when opening the file: Not found\n");
+    if (romFile == NULL){
+        printf("Error when opening the file: Not found\n");
     }else{
 
         int magic_number;
 
         fread(&magic_number, sizeof(int), 1, romFile);
 
-        if (magic_number != 0x4E45531A){
-            perror("Error when reading the file: It is not a .nes file\n");
+        if (magic_number != 0x1A53454E){
+            printf("Error when reading the file: It is not a .nes file\n");
         }else{
 
             unsigned char prg_rom_size;
@@ -32,7 +32,7 @@ void Cartridge :: loadROM (char * path){
             fread(&prg_rom_size, sizeof(unsigned char), 1, romFile);
 
             if (!prg_rom_size){
-                perror("Error: No PRG code\n");
+                printf("Error: No PRG code\n");
             }else{
 
                 unsigned char chr_rom_size;
@@ -95,6 +95,10 @@ bool Cartridge :: hasExtendedRAM(){
 }
 
 Cartridge :: ~Cartridge(){
-    delete [] m_CHR_ROM;
-    delete [] m_PRG_ROM;
+    
+    if (m_CHR_ROM != NULL) 
+        delete [] m_CHR_ROM;
+
+    if (m_PRG_ROM != NULL) 
+        delete [] m_PRG_ROM;
 }
