@@ -23,6 +23,15 @@ private:
     unsigned char x;   // Fine X scroll (3 bits)
     bool w;           // First/second write toggle
     bool odd_frame;   // For frame skipping
+
+    unsigned char ppu_ctrl;    // $2000
+    unsigned char ppu_mask;    // $2001
+    unsigned char ppu_status;  // $2002
+    unsigned char oam_addr;    // $2003
+    unsigned char oam_data;    // $2004 (read/write through OAM)
+    unsigned char ppu_scroll;  // $2005
+    unsigned char ppu_addr;    // $2006
+    unsigned char ppu_data;    // $2007 (read/write through VRAM)
     
     // Rendering buffers
     unsigned char background_buffer[256];

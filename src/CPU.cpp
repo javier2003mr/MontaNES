@@ -1,10 +1,17 @@
 #include <stdio.h>
 #include <functional>
 #include "../include/CPU.h"
+#include "../include/PPU2.hpp"
 
 CPU :: CPU (void){ 
 
-    PC = cpu_memory[0xFFFD] << 8 | cpu_memory[0xFFFC];
+    initializeOpcodeTable();
+    reset();
+}
+
+void CPU :: reset (void) {
+    
+    PC = getMemoryValue(0xFFFD) << 8 | getMemoryValue(0xFFFC);
 
     A = 0;
     X = 0;
@@ -16,8 +23,6 @@ CPU :: CPU (void){
     P = 0x24;
 
     modifyPC = true;
-
-    initializeOpcodeTable();
 }
 
 void CPU :: ADC (unsigned char value){
@@ -49,9 +54,9 @@ void CPU :: SBC(unsigned char value) {
 
 void CPU :: INC (unsigned short dir){
     
-    unsigned char aux = cpu_memory[dir];
+    unsigned char aux = getMemoryValue(dir);
     ++aux;
-    setMemoryDir(dir, aux);
+    setMemoryValue(dir, aux);
 
     //unsigned char aux = ++cpu_memory[dir];
 
@@ -61,9 +66,9 @@ void CPU :: INC (unsigned short dir){
 
 void CPU :: DEC (unsigned short dir){
 
-    unsigned char aux = cpu_memory[dir];
+    unsigned char aux = getMemoryValue(dir);
     --aux;
-    setMemoryDir(dir, aux);
+    setMemoryValue(dir, aux);
 
     //unsigned char aux = --cpu_memory[dir];
 
@@ -200,7 +205,7 @@ void CPU :: BXX (bool flag){
         unsigned short current_pc;
         current_pc = PC + 2;
 
-        PC += 2 + static_cast<char>(cpu_memory[PC+1]);
+        PC += 2 + static_cast<char>(getMemoryValue(PC+1));
 
         modifyPC = false;
 
@@ -278,7 +283,7 @@ void CPU :: BRK (){
     stack_push(((PC+2) & 0xFF00) >> 8);
     stack_push((PC+2) & 0x00FF);
     stack_push(P | 0x30);
-    PC = cpu_memory[0xFFFF] << 8 | cpu_memory[0xFFFE];
+    PC = getMemoryValue(0xFFFF) << 8 | getMemoryValue(0xFFFE);
     modifyPC = false;
     P |= 0x04;
 }
@@ -344,38 +349,38 @@ void CPU :: PLP (){
 }
 
 void CPU :: LDA (unsigned short dir){
-    A = cpu_memory[dir];
+    A = getMemoryValue(dir);
     setFlag(Z_FLAG, A == 0);
     setFlag(N_FLAG, A & 0x80);
 }
 
 void CPU :: STA (unsigned short dir){
 
-    setMemoryDir(dir, A);
+    setMemoryValue(dir, A);
     //cpu_memory[dir] = A;
 }
 
 void CPU :: LDX (unsigned short dir){
-    X = cpu_memory[dir];
+    X = getMemoryValue(dir);
     setFlag(Z_FLAG, X == 0);
     setFlag(N_FLAG, X & 0x80);
 }
 
 void CPU :: STX (unsigned short dir){
 
-    setMemoryDir(dir, X);
+    setMemoryValue(dir, X);
     //cpu_memory[dir] = X;
 }
 
 void CPU :: LDY (unsigned short dir){
-    Y = cpu_memory[dir];
+    Y = getMemoryValue(dir);
     setFlag(Z_FLAG, Y == 0);
     setFlag(N_FLAG, Y & 0x80);
 }
 
 void CPU :: STY (unsigned short dir){
     
-    setMemoryDir(dir, Y);
+    setMemoryValue(dir, Y);
     //cpu_memory[dir] = Y;
 }
 
@@ -460,13 +465,13 @@ void CPU :: XAA (unsigned char value){
 
 void CPU :: SHX (unsigned short dir){
     
-    setMemoryDir(dir, X & (cpu_memory[PC+2] + 1));
+    setMemoryValue(dir, X & (getMemoryValue(PC+2) + 1));
     //cpu_memory[dir] = X & (cpu_memory[PC+2] + 1);
 }
 
 void CPU :: SHY (unsigned short dir){
 
-    setMemoryDir(dir, Y & (cpu_memory[PC+2] + 1));
+    setMemoryValue(dir, Y & (getMemoryValue(PC+2) + 1));
     //cpu_memory[dir] = Y & (cpu_memory[PC+2] + 1);
 }
 
@@ -531,13 +536,13 @@ void CPU :: SHA_absoluteY(unsigned short dir) {
     unsigned char high_byte = (dir >> 8) + 1;
     unsigned char value = A & X & high_byte;
     
-    setMemoryDir(dir, value);
+    setMemoryValue(dir, value);
     //cpu_memory[dir] = value;
 }
 
 void CPU :: SHA_indirectY(unsigned char zp_addr) {
 
-    unsigned short base_addr = cpu_memory[zp_addr] | (cpu_memory[(zp_addr + 1) & 0xFF] << 8);
+    unsigned short base_addr = getMemoryValue(zp_addr) | (getMemoryValue((zp_addr + 1) & 0xFF) << 8);
     
     unsigned short effective_addr = base_addr + Y;
     unsigned char high_byte = (base_addr >> 8) + 1;
@@ -545,7 +550,7 @@ void CPU :: SHA_indirectY(unsigned char zp_addr) {
     
     unsigned short store_addr = ((high_byte & A) << 8) | (effective_addr & 0xFF);
     
-    setMemoryDir(store_addr, value);
+    setMemoryValue(store_addr, value);
     //cpu_memory[store_addr] = value;
 }
 
@@ -554,8 +559,23 @@ void CPU :: SHA (unsigned short dir) {
     unsigned char high_byte = (dir >> 8) & 0xFF;
     unsigned char result = A & X & (high_byte + 1);
 
-    setMemoryDir(dir, result);
+    setMemoryValue(dir, result);
     //cpu_memory[dir] = result;
+}
+
+void CPU :: nmi() {
+    stack_push((PC >> 8) & 0xFF);
+    stack_push(PC & 0xFF);
+
+    setFlag(B_FLAG, false);
+    stack_push(P);
+    setFlag(I_FLAG, true);
+
+    PC = getMemoryValue(0xFFFA) | (getMemoryValue(0xFFFB) << 8);
+}
+
+void CPU :: connectPPU(PPU* ppu_ptr) {
+    this->ppu = ppu_ptr;
 }
 
 /**************************************************************************************/
@@ -566,14 +586,14 @@ void CPU :: SHA (unsigned short dir) {
 
 void CPU :: stack_push (unsigned char data){
     
-    cpu_memory[0x0100 | SP] = data;
+    setMemoryValue(0x0100 | SP, data);
     --SP;
 }
 
 unsigned char CPU :: stack_pop (){
 
     ++SP;
-    return cpu_memory[0x0100 | SP];
+    return getMemoryValue(0x0100 | SP);
 }
 
 bool CPU :: getFlag(Flags flag) {
@@ -599,29 +619,54 @@ void CPU :: setX (unsigned char value){ X = value; }
 
 void CPU :: setY (unsigned char value){ Y = value; }
 
-void CPU :: setMemoryDir (unsigned short dir, unsigned char value){ 
-    
-    //unsigned short offset;
+void CPU :: setMemoryValue (unsigned short dir, unsigned char value){ 
     
     if (dir < CPU_RAM_SIZE){ 
-    
-        cpu_memory[dir] = value; 
 
-        /*if (dir < 0x2000){
+        if (dir < 0x2000){
             
-            offset = dir % 0x800;
+            dir = dir % 0x800;
+            cpu_memory[dir] = value; 
 
-            for (unsigned short i = 0; i < 0x2000; i += 0x800)
-                cpu_memory[i + offset] = value;
-
-        }else if (dir < 0x4000) {
+        } else if (dir >= 0x2000 && dir < 0x4000) {
+            if (this->ppu == nullptr) {
+                printf("CPU::setMemoryValue - ERROR: PPU pointer is nullptr when writing to PPU register 0x%04X\n", dir);
+                return;
+            }
             
-            offset = dir % 0x8;
+            switch (0x2000 + (dir % 8)) {
+                case 0x2000:
+                    this->ppu->setPPUCTRL(value);
+                    break;
+                case 0x2001:
+                    this->ppu->setPPUMASK(value);
+                    break;
+                case 0x2003:
+                    this->ppu->setOAMADDR(value);
+                    break;
+                case 0x2004:
+                    this->ppu->setOAMDATA(value);
+                    break;
+                case 0x2005:
+                    this->ppu->setPPUSCROLL(value);
+                    break;
+                case 0x2006:
+                    this->ppu->setPPUADDR(value);
+                    break;
+                case 0x2007:
+                    this->ppu->setPPUDATA(value);
+                    break;
+            }
 
-            for (unsigned short i = 0x2000; i < 0x4000; i += 0x8)
-                cpu_memory[i + offset] = value;
-
-        }*/
+        } else if (dir == 0x4014) {
+            if (this->ppu == nullptr) {
+                printf("CPU::setMemoryValue - ERROR: PPU pointer is nullptr when writing to OAMDMA 0x%04X\n", dir);
+                return;
+            }
+            this->ppu->setOAMDMA(value);
+        } else {
+            cpu_memory[dir] = value; 
+        }
     } 
 }
 
@@ -637,8 +682,50 @@ unsigned char CPU :: getX (){ return X; }
 
 unsigned char CPU :: getY (){ return Y; }
 
-unsigned char CPU :: getMemoryDir (unsigned short dir){ if (dir < CPU_RAM_SIZE) {return cpu_memory[dir];}}
+unsigned char CPU :: getMemoryValue (unsigned short dir){ 
 
+    if (dir < CPU_RAM_SIZE) {
+
+        if (dir < 0x2000){
+            
+            dir = dir % 0x800;
+
+        }else if (dir < 0x4000) {
+            
+            switch (0x2000 + (dir % 8)) {
+                case 0x2002:
+                    return this->ppu->getPPUSTATUS();
+                case 0x2004:
+					return this->ppu->getOAMDATA();
+                case 0x2007:
+                    return this->ppu->getPPUDATA();
+            }
+
+        }
+
+        return cpu_memory[dir];
+
+    }
+}
+
+unsigned char * CPU :: getMemoryDir (unsigned short dir){
+    
+    if (dir < CPU_RAM_SIZE) {
+
+        if (dir < 0x2000){
+            
+            dir = dir % 0x800;
+
+        }else if (dir < 0x4000) {
+            
+            dir = 0x2000 | (dir % 0x8);
+
+        }
+
+        return &cpu_memory[dir];
+
+    }
+}
 
 void CPU :: executeOpcode(OpcodeInfo & info, void* param = nullptr) {
 
@@ -674,7 +761,9 @@ int CPU :: emulationCycle(){
     
     instruction_cycles = 0;
 
-    unsigned char opcode = cpu_memory[PC];
+    unsigned char opcode = getMemoryValue(PC);
+
+    //printf("Opcode: %x\n", opcode);
 
     OpcodeInfo info = opcodeTable[opcode];
 
@@ -704,31 +793,31 @@ int CPU :: emulationCycle(){
 
     case IMMEDIATE:
         aux = PC + 1;
-        arg = &cpu_memory[aux];
+        arg = getMemoryDir(aux);
         break;
     
     case ZEROPAGE:
-        aux = cpu_memory[pc_plus_1] % 256;
-        arg = &cpu_memory[aux];
+        aux = getMemoryValue(pc_plus_1) % 256;
+        arg = getMemoryDir(aux);
         break;
 
     case ZEROPAGE_X:
-        aux = (cpu_memory[pc_plus_1] + X) % 256;
-        arg = &cpu_memory[aux];
+        aux = (getMemoryValue(pc_plus_1) + X) % 256;
+        arg = getMemoryDir(aux);
         break;
 
     case ZEROPAGE_Y:
-        aux = (cpu_memory[pc_plus_1] + Y) % 256;
-        arg = &cpu_memory[aux];
+        aux = (getMemoryValue(pc_plus_1) + Y) % 256;
+        arg = getMemoryDir(aux);
         break;
     
     case ABSOLUTE:
-        aux = (cpu_memory[pc_plus_2] << 8) + cpu_memory[pc_plus_1];
-        arg = &cpu_memory[aux];
+        aux = (getMemoryValue(pc_plus_2) << 8) + getMemoryValue(pc_plus_1);
+        arg = getMemoryDir(aux);
         break;
     
     case ABSOLUTE_X:
-        aux = (cpu_memory[pc_plus_2] << 8) + cpu_memory[pc_plus_1];
+        aux = (getMemoryValue(pc_plus_2) << 8) + getMemoryValue(pc_plus_1);
         
         if ((aux & 0xFF00) != ((aux+X) & 0xFF00) && info.handler.func.uchar_ptr_func != &CPU::ASL && info.handler.func.ushort_func != &CPU::DEC &&
             info.handler.func.ushort_func != &CPU::INC && info.handler.func.uchar_ptr_func != &CPU::LSR && info.handler.func.uchar_ptr_func != &CPU::ROL &&
@@ -736,37 +825,37 @@ int CPU :: emulationCycle(){
             ++instruction_cycles;
 
         aux = (aux+X)%CPU_RAM_SIZE;
-        arg = &cpu_memory[aux];
+        arg = getMemoryDir(aux);
         break;
     
     case ABSOLUTE_Y:
-        aux = (cpu_memory[pc_plus_2] << 8) + cpu_memory[pc_plus_1];
+        aux = (getMemoryValue(pc_plus_2) << 8) + getMemoryValue(pc_plus_1);
         
         if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
             ++instruction_cycles;
         
         aux = (aux+Y)%CPU_RAM_SIZE;
-        arg = &cpu_memory[aux];
+        arg = getMemoryDir(aux);
         break;
     case INDIRECT:
-        aux = (cpu_memory[pc_plus_2] << 8) + cpu_memory[pc_plus_1];
-        aux = (cpu_memory[((aux & 0x00FF) < 0xFF) ? aux+1 : aux & 0xFF00] << 8) + cpu_memory[aux];
-        arg = &cpu_memory[aux];
+        aux = (getMemoryValue(pc_plus_2) << 8) + getMemoryValue(pc_plus_1);
+        aux = (getMemoryValue(((aux & 0x00FF) < 0xFF) ? aux+1 : aux & 0xFF00) << 8) + getMemoryValue(aux);
+        arg = getMemoryDir(aux);
         break;
     case INDIRECT_X:
-        aux = (cpu_memory[pc_plus_1] + X) % 256;
-        aux = (cpu_memory[(aux+1) % 256] << 8) + cpu_memory[aux];
-        arg = &cpu_memory[cpu_memory[(cpu_memory[pc_plus_1] + X) % 256] + cpu_memory[(cpu_memory[pc_plus_1] + X + 1) % 256] * 256];
+        aux = (getMemoryValue(pc_plus_1) + X) % 256;
+        aux = (getMemoryValue((aux+1) % 256) << 8) + getMemoryValue(aux);
+        arg = getMemoryDir(getMemoryValue((cpu_memory[pc_plus_1] + X) % 256) + getMemoryValue((cpu_memory[pc_plus_1] + X + 1) % 256) * 256);
         break;
     case INDIRECT_Y:
-        aux = cpu_memory[pc_plus_1];
-        aux = (cpu_memory[(aux+1) % 256] << 8) + cpu_memory[aux % 256];
+        aux = getMemoryValue(pc_plus_1);
+        aux = (getMemoryValue((aux+1) % 256) << 8) + getMemoryValue(aux % 256);
         
         if ((aux & 0xFF00) != ((aux+Y) & 0xFF00) && info.handler.func.ushort_func != &CPU::STA)
             ++instruction_cycles;
         
         aux = (aux+Y)%CPU_RAM_SIZE;
-        arg = &cpu_memory[aux];
+        arg = getMemoryDir(aux);
         break;
 
     case RELATIVE:

@@ -24,6 +24,8 @@ enum AddressingMode {
 
 
 
+class PPU; // Forward declaration
+
 class CPU {
     private:
 
@@ -56,6 +58,7 @@ class CPU {
         };
         
         unsigned char cpu_memory[CPU_RAM_SIZE];
+        PPU* ppu = nullptr;
 
         // Contador de programa
         unsigned short PC;
@@ -91,6 +94,8 @@ class CPU {
     public:
 
         CPU();
+
+        void reset(void);
 
         // Arithmetic Operations
         void ADC(unsigned char value);
@@ -194,13 +199,15 @@ class CPU {
         void SHA_indirectY(unsigned char zp_addr);
         void SHA (unsigned short dir);
 
+        void nmi();
+        void connectPPU(PPU* ppu_ptr);
         void setPC(unsigned short value);
         void setA (unsigned char value);
         void setP (unsigned char value);
         void setSP(unsigned short value);
         void setX (unsigned char value);
         void setY (unsigned char value);
-        void setMemoryDir (unsigned short dir, unsigned char value);
+        void setMemoryValue (unsigned short dir, unsigned char value);
 
         unsigned short getPC();
         unsigned char getA ();
@@ -208,7 +215,9 @@ class CPU {
         unsigned short getSP();
         unsigned char getX ();
         unsigned char getY ();
-        unsigned char getMemoryDir (unsigned short dir);
+        unsigned char getMemoryValue (unsigned short dir);
+
+        unsigned char * getMemoryDir(unsigned short dir);
 
         void stack_push(unsigned char data);
         unsigned char stack_pop();

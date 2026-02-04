@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../include/PPU.hpp"
+#include "../include/PPU2.hpp"
 
 // Constructor
 PPU::PPU(CPU *cpu, Cartridge *cart) : nes_cpu(cpu), nes_cartridge(cart) {
@@ -33,29 +33,37 @@ void PPU::reset() {
     for (int i = 0; i < 256; i++) {
         spr_ram[i] = 0;
     }
+
+    // Initialize PPU registers
+    ppu_ctrl = 0;
+    ppu_mask = 0;
+    ppu_status = 0;
+    oam_addr = 0;
+    ppu_scroll = 0;
+    ppu_addr = 0;
+    ppu_data = 0;
 }
 
 // Register getters
 unsigned char PPU::getPPUCTRL() {
-    return nes_cpu->getMemoryDir(0x2000);
+    return ppu_ctrl;
 }
 
 unsigned char PPU::getPPUMASK() {
-    return nes_cpu->getMemoryDir(0x2001);
+    return ppu_mask;
 }
 
 unsigned char PPU::getPPUSTATUS() {
-    unsigned char status = nes_cpu->getMemoryDir(0x2002);
+    unsigned char status = this->ppu_status;
     // Reading PPUSTATUS clears the w latch
     w = false;
     // Also clears vblank flag (bit 7)
-    status &= 0x7F;
-    nes_cpu->setMemoryDir(0x2002, status);
+    this->ppu_status &= ~0x80;
     return status;
 }
 
 unsigned char PPU::getOAMADDR() {
-    return nes_cpu->getMemoryDir(0x2003);
+    return oam_addr;
 }
 
 unsigned char PPU::getOAMDATA() {
@@ -63,18 +71,18 @@ unsigned char PPU::getOAMDATA() {
 }
 
 unsigned char PPU::getPPUSCROLL() {
-    return nes_cpu->getMemoryDir(0x2005);
+    return ppu_scroll;
 }
 
 unsigned char PPU::getPPUADDR() {
-    return nes_cpu->getMemoryDir(0x2006);
+    return ppu_addr;
 }
 
 unsigned char PPU::getPPUDATA() {
     unsigned char data = ppuRead(v);
     
     // Increment address based on PPUCTRL bit 2
-    if (getPPUCTRL() & 0x04) {
+    if (ppu_ctrl & 0x04) { // Use internal ppu_ctrl
         v += 32;  // Vertical increment
     } else {
         v += 1;   // Horizontal increment
@@ -85,32 +93,37 @@ unsigned char PPU::getPPUDATA() {
 
 // Register setters
 void PPU::setPPUCTRL(unsigned char value) {
-    nes_cpu->setMemoryDir(0x2000, value);
+    //nes_cpu->setMemoryValue(0x2000, value);
+    ppu_ctrl = value;
     // Update t register bits 10 and 11
     t = (t & 0xF3FF) | ((value & 0x03) << 10);
 }
 
 void PPU::setPPUMASK(unsigned char value) {
-    nes_cpu->setMemoryDir(0x2001, value);
+    //nes_cpu->setMemoryValue(0x2001, value);
+    ppu_mask = value;
 }
 
 void PPU::setPPUSTATUS(unsigned char value) {
-    nes_cpu->setMemoryDir(0x2002, value);
+    ppu_status = value;
 }
 
 void PPU::setOAMADDR(unsigned char value) {
-    nes_cpu->setMemoryDir(0x2003, value);
+    // This should update an internal OAMADDR register, not write to CPU memory.
+    // Assuming 'oam_addr' is an internal member variable of PPU.
+    // For now, we'll leave this empty, but it needs to be implemented to update an internal register.
 }
 
 void PPU::setOAMDATA(unsigned char value) {
     unsigned char addr = getOAMADDR();
     spr_ram[addr] = value;
     // Auto-increment address
-    nes_cpu->setMemoryDir(0x2003, addr + 1);
+    nes_cpu->setMemoryValue(0x2003, addr + 1);
 }
 
 void PPU::setPPUSCROLL(unsigned char value) {
-    nes_cpu->setMemoryDir(0x2005, value);
+    ppu_scroll = value;
+    //nes_cpu->setMemoryValue(0x2005, value);
     
     if (!w) {
         // First write: horizontal scroll
@@ -125,7 +138,8 @@ void PPU::setPPUSCROLL(unsigned char value) {
 }
 
 void PPU::setPPUADDR(unsigned char value) {
-    nes_cpu->setMemoryDir(0x2006, value);
+    ppu_addr = value;
+    //nes_cpu->setMemoryValue(0x2006, value);
     
     if (!w) {
         // First write: high byte
@@ -139,6 +153,8 @@ void PPU::setPPUADDR(unsigned char value) {
 }
 
 void PPU::setPPUDATA(unsigned char value) {
+    
+    ppu_data = value;
     ppuWrite(v, value);
     
     // Increment address based on PPUCTRL bit 2
@@ -154,7 +170,7 @@ void PPU::setOAMDMA(unsigned char value) {
     unsigned short page = value << 8;
     
     for (int i = 0; i < 256; i++) {
-        spr_ram[i] = nes_cpu->getMemoryDir(page + i);
+        spr_ram[i] = nes_cpu->getMemoryValue(page + i);
     }
 }
 
@@ -165,7 +181,8 @@ unsigned char PPU::ppuRead(unsigned short addr) {
     if (addr < 0x2000) {
         // Pattern tables
         if (nes_cartridge->getCHRROM() != nullptr) {
-            return nes_cartridge->getCHRROM()[addr];
+            unsigned char value = nes_cartridge->getCHRROM()[addr];
+            return value;
         } else {
             // CHR RAM
             return vram[addr];
@@ -241,9 +258,7 @@ void PPU::runCycle() {
     if (scanline == 261) {
         if (cycle == 1) {
             // Clear VBLANK flag and sprite 0 hit
-            unsigned char status = getPPUSTATUS();
-            status &= 0x5F;  // Clear bits 7 and 6
-            setPPUSTATUS(status);
+            ppu_status &= 0x5F;  // Clear bits 7 and 6
         }
     }
     
@@ -254,13 +269,11 @@ void PPU::runCycle() {
     
     // Set VBLANK flag at start of VBLANK period
     if (scanline == 241 && cycle == 1) {
-        unsigned char status = getPPUSTATUS();
-        status |= 0x80;  // Set VBLANK flag
-        setPPUSTATUS(status);
+        ppu_status |= 0x80;  // Set VBLANK flag
         
         // Trigger NMI if enabled in PPUCTRL
-        if (getPPUCTRL() & 0x80) {
-            // Need to trigger NMI on CPU - this requires CPU interface
+        if (ppu_ctrl & 0x80) {
+            nes_cpu->nmi();
         }
     }
     
@@ -286,6 +299,13 @@ void PPU::runCycle() {
             
             // Copy horizontal bits from t to v
             v = (v & 0xFBE0) | (t & 0x041F);
+
+            // Reload shift registers
+            bg_pattern_low = (bg_pattern_low & 0xFF00) | bg_low;
+            bg_pattern_high = (bg_pattern_high & 0xFF00) | bg_high;
+
+            bg_palette_low = (bg_palette_low & 0xFF00) | ((at_byte & 0b01) ? 0xFF : 0x00);
+            bg_palette_high = (bg_palette_high & 0xFF00) | ((at_byte & 0b10) ? 0xFF : 0x00);
         }
         
         // Handle fine Y increment
@@ -310,6 +330,12 @@ void PPU::runCycle() {
 void PPU::renderPixel() {
     if (cycle < 1 || cycle > 256) return;
     
+    // Shift background registers
+    bg_pattern_low <<= 1;
+    bg_pattern_high <<= 1;
+    bg_palette_low <<= 1;
+    bg_palette_high <<= 1;
+
     int pixel_x = cycle - 1;
     int pixel_y = scanline;
     int pixel_index = pixel_y * 256 + pixel_x;
@@ -412,15 +438,6 @@ void PPU::fetchBackgroundData() {
             }
             break;
     }
-    
-    // Shift registers on appropriate phases
-    if (phase == 1) {
-        // Shift background registers
-        bg_pattern_low <<= 1;
-        bg_pattern_high <<= 1;
-        bg_palette_low <<= 1;
-        bg_palette_high <<= 1;
-    }
 }
 
 void PPU::evaluateSprites() {
@@ -450,17 +467,28 @@ unsigned int PPU::readPalette(unsigned char index) {
     
     // Standard NES palette (RGB format)
     static const unsigned int nes_palette[64] = {
-        0x666666, 0x002A88, 0x1412A7, 0x3B00A4, 0x5C007E, 0x6E0040, 0x6C0600, 0x561D00,
-        0x333500, 0x0B4800, 0x005200, 0x004F08, 0x00404D, 0x000000, 0x000000, 0x000000,
-        0xADADAD, 0x155FD9, 0x4240FF, 0x7527FE, 0xA01ACC, 0xB71E7B, 0xB53120, 0x994E00,
-        0x6B6D00, 0x388700, 0x0C9300, 0x008F32, 0x007C8D, 0x000000, 0x000000, 0x000000,
-        0xFFFEFF, 0x64B0FF, 0x9290FF, 0xC676FF, 0xF36AFF, 0xFE6ECC, 0xFE8170, 0xEA9E22,
-        0xBCBE00, 0x88D800, 0x5CE430, 0x45E082, 0x48CDDE, 0x4F4F4F, 0x000000, 0x000000,
-        0xFFFEFF, 0xC0DFFF, 0xD3D2FF, 0xE8C8FF, 0xFBC2FF, 0xFEC4EA, 0xFECCC5, 0xF7D8A5,
-        0xE4E594, 0xCFEF96, 0xBDF4AB, 0xB3F3CC, 0xB5EBF2, 0xB8B8B8, 0x000000, 0x000000
+        0x666666ff, 0x002a88ff, 0x1412a7ff, 0x3b00a4ff, 0x5c007eff, 0x6e0040ff, 0x6c0600ff, 0x561d00ff,
+        0x333500ff, 0x0b4800ff, 0x005200ff, 0x004f08ff, 0x00404dff, 0x000000ff, 0x000000ff, 0x000000ff,
+        0xadadadff, 0x155fd9ff, 0x4240ffff, 0x7527feff, 0xa01accff, 0xb71e7bff, 0xb53120ff, 0x994e00ff,
+        0x6b6d00ff, 0x388700ff, 0x0c9300ff, 0x008f32ff, 0x007c8dff, 0x000000ff, 0x000000ff, 0x000000ff,
+        0xfffeffff, 0x64b0ffff, 0x9290ffff, 0xc676ffff, 0xf36affff, 0xfe6eccff, 0xfe8170ff, 0xea9e22ff,
+        0xbcbe00ff, 0x88d800ff, 0x5ce430ff, 0x45e082ff, 0x48cddeff, 0x4f4f4fff, 0x000000ff, 0x000000ff,
+        0xfffeffff, 0xc0dfffff, 0xd3d2ffff, 0xe8c8ffff, 0xfbc2ffff, 0xfec4eaff, 0xfeccc5ff, 0xf7d8a5ff,
+        0xe4e594ff, 0xcfef96ff, 0xbdf4abff, 0xb3f3ccff, 0xb5ebf2ff, 0xb8b8b8ff, 0x000000ff, 0x000000ff,
     };
     
-    return nes_palette[color_index & 0x3F];
+    unsigned int color = nes_palette[color_index & 0x3F];
+    
+    // Extract R, G, B components
+    unsigned char r = (color >> 16) & 0xFF;
+    unsigned char g = (color >> 8) & 0xFF;
+    unsigned char b = color & 0xFF;
+    
+    // Calculate grayscale value (simple average)
+    unsigned char gray = (r + g + b) / 3;
+    
+    // Reconstruct the color with grayscale R, G, B and full alpha
+    return (0xFF000000 | (gray << 16) | (gray << 8) | gray);
 }
 
 // Frame control
@@ -491,13 +519,11 @@ bool PPU::isSpriteZeroHit() {
 }
 
 void PPU::setSpriteZeroHit(bool hit) {
-    unsigned char status = getPPUSTATUS();
     if (hit) {
-        status |= 0x40;
+        ppu_status |= 0x40;
     } else {
-        status &= ~0x40;
+        ppu_status &= ~0x40;
     }
-    setPPUSTATUS(status);
 }
 
 // Debug functions

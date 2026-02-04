@@ -4,6 +4,8 @@
 Cartridge :: Cartridge(){
     m_CHR_ROM = nullptr;
     m_PRG_ROM = nullptr;
+    prg_rom_size = 0;
+    chr_rom_size = 0;
     scrollMode = false;
     mapper = -1;
     thereIsPRGRAM = false;
@@ -27,15 +29,11 @@ void Cartridge :: loadROM (char * path){
             printf("Error when reading the file: It is not a .nes file\n");
         }else{
 
-            unsigned char prg_rom_size;
-
             fread(&prg_rom_size, sizeof(unsigned char), 1, romFile);
 
             if (!prg_rom_size){
                 printf("Error: No PRG code\n");
             }else{
-
-                unsigned char chr_rom_size;
                 unsigned char flags6, flags7;
                 bool thereIsTrainer, NES2_0MODE;
                 int otherFlags1, otherFlags2;
@@ -59,18 +57,31 @@ void Cartridge :: loadROM (char * path){
                 fread(&otherFlags1, sizeof(int), 1, romFile);
                 fread(&otherFlags2, sizeof(int), 1, romFile);
 
-                m_PRG_ROM = new unsigned char [prg_rom_size * 16384];
+                // Skip trainer if present (512 bytes)
+                if (thereIsTrainer) {
+                    fseek(romFile, 512, SEEK_CUR);
+                }
+
+                // Load PRG-ROM
+                m_PRG_ROM = new unsigned char[prg_rom_size * 16384];
                 fread(m_PRG_ROM, sizeof(unsigned char), prg_rom_size * 16384, romFile);
-                
-                if (chr_rom_size){
-                    m_CHR_ROM = new unsigned char [chr_rom_size * 8192];
+
+                // Load CHR-ROM or allocate CHR-RAM
+                if (chr_rom_size > 0) {
+                    m_CHR_ROM = new unsigned char[chr_rom_size * 8192];
                     fread(m_CHR_ROM, sizeof(unsigned char), chr_rom_size * 8192, romFile);
-                }else{
-                    printf("This ROM uses CHR RAM, not CHR ROM\n");
+                } else {
+                    // If no CHR-ROM, cartridge uses CHR-RAM (8KB)
+                    m_CHR_ROM = new unsigned char[8192]; // Allocate 8KB for CHR-RAM
+                    // Initialize CHR-RAM to 0
+                    for (int i = 0; i < 8192; ++i) {
+                        m_CHR_ROM[i] = 0;
+                    }
+                    thereIsCHRRAM = true;
                 }
             }
-
         }
+        fclose(romFile);
     }
 }
 
@@ -82,8 +93,16 @@ unsigned char * Cartridge :: getPRGROM() {
     return m_PRG_ROM;
 }
 
+unsigned char Cartridge :: getPRGROMSize() {
+    return prg_rom_size;
+}
+
 unsigned char * Cartridge :: getCHRROM() {
     return m_CHR_ROM;
+}
+
+unsigned char Cartridge :: getCHRROMSize() {
+    return chr_rom_size;
 }
 
 unsigned char Cartridge :: getMapper(){
