@@ -12,9 +12,9 @@ private:
     CPU *nes_cpu;
     Cartridge *nes_cartridge;
     
-    unsigned char ppu_memory[PPU_RAM_SIZE];
+    //unsigned char ppu_memory[PPU_RAM_SIZE];
     unsigned char spr_ram[SPR_RAM_SIZE];
-    unsigned char vram[0x2000];  // 8KB VRAM
+    unsigned char vram[0x4000];  // 16KB VRAM
     unsigned char palette_ram[0x20];  // 32 bytes palette RAM
     
     // Internal registers
@@ -58,6 +58,8 @@ private:
     unsigned char sprite_patterns[8];
     unsigned char sprite_attributes[8];
     unsigned char sprite_priorities[8];
+    unsigned char sprite_pattern_low[8];
+    unsigned char sprite_pattern_high[8];
     int sprite_count;
     
 public:

@@ -179,18 +179,12 @@ unsigned char PPU::ppuRead(unsigned short addr) {
     addr &= 0x3FFF;  // Mirror down to 16KB
     
     if (addr < 0x2000) {
-        // Pattern tables
-        if (nes_cartridge->getCHRROM() != nullptr) {
-            unsigned char value = nes_cartridge->getCHRROM()[addr];
-            return value;
-        } else {
-            // CHR RAM
-            return vram[addr];
-        }
+        // Pattern tables are in VRAM
+        return vram[addr];
     } else if (addr < 0x3F00) {
         // Nametables
         unsigned short mirrored_addr = mirrorNametableAddr(addr);
-        return vram[mirrored_addr - 0x2000];
+        return vram[mirrored_addr];
     } else if (addr < 0x4000) {
         // Palette RAM
         addr &= 0x001F;
@@ -212,7 +206,7 @@ void PPU::ppuWrite(unsigned short addr, unsigned char value) {
     } else if (addr < 0x3F00) {
         // Nametables
         unsigned short mirrored_addr = mirrorNametableAddr(addr);
-        vram[mirrored_addr - 0x2000] = value;
+        vram[mirrored_addr] = value;
     } else if (addr < 0x4000) {
         // Palette RAM
         addr &= 0x001F;
@@ -231,20 +225,18 @@ unsigned short PPU::mirrorNametableAddr(unsigned short addr) {
     unsigned short offset = index % 0x0400;
     
     // Get mirroring mode from cartridge
-    bool scrollMode = nes_cartridge->getScrollMode();
+    bool scrollMode = nes_cartridge->getScrollMode(); // 0 for horizontal, 1 for vertical
     
-    if (scrollMode == 0) {
-        // Horizontal mirroring
+    if (scrollMode == 1) { // Vertical Mirroring
         if (nametable == 0 || nametable == 2) {
             return 0x2000 + offset;
-        } else {
+        } else { // nametable == 1 or 3
             return 0x2400 + offset;
         }
-    } else {
-        // Vertical mirroring
+    } else { // Horizontal Mirroring
         if (nametable == 0 || nametable == 1) {
             return 0x2000 + offset;
-        } else {
+        } else { // nametable == 2 or 3
             return 0x2800 + offset;
         }
     }
@@ -365,13 +357,27 @@ void PPU::renderPixel() {
         for (int i = 0; i < sprite_count; i++) {
             int spr_x = pixel_x - sprite_positions[i];
             if (spr_x >= 0 && spr_x < 8) {
-                // Get sprite pixel (simplified)
-                unsigned char spr_pixel = 1;  // Placeholder
+                unsigned char spr_pixel_low = sprite_pattern_low[i];
+                unsigned char spr_pixel_high = sprite_pattern_high[i];
+                
+                if (sprite_attributes[i] & 0x40) { // Horizontal flip
+                    spr_x = 7 - spr_x;
+                }
+
+                unsigned char bit0 = (spr_pixel_low >> (7 - spr_x)) & 1;
+                unsigned char bit1 = (spr_pixel_high >> (7 - spr_x)) & 1;
+                unsigned char spr_pixel = (bit1 << 1) | bit0;
                 
                 if (spr_pixel != 0) {
                     spr_color = readPalette(0x10 + (sprite_attributes[i] & 0x03) * 4 + spr_pixel);
                     spr_opaque = true;
                     bg_priority = !(sprite_attributes[i] & 0x20);
+
+                    // Sprite 0 hit detection
+                    if (i == 0 && bg_opaque && pixel_x < 255) {
+                        setSpriteZeroHit(true);
+                    }
+
                     break;
                 }
             }
@@ -446,17 +452,46 @@ void PPU::evaluateSprites() {
     
     for (int i = 0; i < 64 && sprite_count < 8; i++) {
         unsigned char y = spr_ram[i * 4];
-        unsigned char x = spr_ram[i * 4 + 3];
         unsigned char tile = spr_ram[i * 4 + 1];
         unsigned char attr = spr_ram[i * 4 + 2];
+        unsigned char x = spr_ram[i * 4 + 3];
         
         // Check if sprite is on current scanline
         int diff = scanline - y;
         if (diff >= 0 && diff < sprite_height) {
             sprite_positions[sprite_count] = x;
-            sprite_patterns[sprite_count] = tile;
             sprite_attributes[sprite_count] = attr;
             sprite_priorities[sprite_count] = (attr & 0x20) ? 1 : 0;
+
+            // Fetch sprite pattern data
+            unsigned short pattern_addr_low, pattern_addr_high;
+            if (sprite_height == 8) {
+                // 8x8 sprites
+                unsigned short pattern_table = (getPPUCTRL() & 0x08) ? 0x1000 : 0x0000;
+                unsigned char row = diff;
+                if (attr & 0x80) { // Vertical flip
+                    row = 7 - row;
+                }
+                pattern_addr_low = pattern_table + tile * 16 + row;
+            } else {
+                // 8x16 sprites
+                unsigned short pattern_table = (tile & 0x01) ? 0x1000 : 0x0000;
+                unsigned char tile_index = tile & 0xFE;
+                unsigned char row = diff;
+                if (attr & 0x80) { // Vertical flip
+                    row = 15 - row;
+                }
+                if (row > 7) {
+                    tile_index++;
+                    row -= 8;
+                }
+                pattern_addr_low = pattern_table + tile_index * 16 + row;
+            }
+            pattern_addr_high = pattern_addr_low + 8;
+
+            sprite_pattern_low[sprite_count] = ppuRead(pattern_addr_low);
+            sprite_pattern_high[sprite_count] = ppuRead(pattern_addr_high);
+
             sprite_count++;
         }
     }

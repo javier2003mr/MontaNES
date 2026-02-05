@@ -52,9 +52,22 @@ bool NES::loadCartridge(const std::string& path) {
     // Note: This currently only handles NROM (mapper 0) with 16KB or 32KB.
     // More complex mappers would require more sophisticated memory mapping here.
 
+    // --- Load CHR-ROM into PPU memory ---
+    unsigned char* chr_rom = cartridge->getCHRROM();
+    unsigned char chr_rom_size = cartridge->getCHRROMSize(); // In 8KB units
+    
+    if (chr_rom_size > 0) {
+        // Assuming NROM, where chr_rom_size is 1 (8KB)
+        // This contains both pattern tables.
+        for (int i = 0; i < 8192; i++) {
+            ppu->ppuWrite(i, chr_rom[i]);
+        }
+    }
+
     cartridgeLoaded = true;
     
     // Reset the system to its initial state.
+
     reset();
 
     return true;
@@ -73,9 +86,8 @@ void NES::reset() {
     //cpu->setP(0x24);
     cpu->reset();
 
-
     // Reset the PPU.
-    ppu->reset();
+    //ppu->reset();
 
     // Set initial PPU registers
     cpu->setMemoryValue(0x2000, 0x80); // PPUCTRL: NMI enable, 8x8 sprites, BG/Sprite pattern table $0000, VRAM increment +1, Nametable $2000
