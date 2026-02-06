@@ -351,10 +351,10 @@ void PPU::renderPixel() {
     if (cycle < 1 || cycle > 256) return;
     
     // Shift background registers
-    bg_pattern_low <<= 1;
-    bg_pattern_high <<= 1;
-    bg_palette_low <<= 1;
-    bg_palette_high <<= 1;
+    //bg_pattern_low <<= 1;
+    //bg_pattern_high <<= 1;
+    //bg_palette_low <<= 1;
+    //bg_palette_high <<= 1;
 
     int pixel_x = cycle - 1;
     int pixel_y = scanline;

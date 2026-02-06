@@ -117,7 +117,7 @@ private:
 class EmulatorWindow : public BWindow {
 public:
     EmulatorWindow(PPU* ppu)
-        : BWindow(BRect(100, 100, 100 + 256, 100 + 240), "NES Emulator", B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
+        : BWindow(BRect(100, 100, 100 + 256 * 3, 100 + 240 * 3), "NES Emulator", B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
         fEmulatorView = new EmulatorView(ppu);
         BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
             .Add(fEmulatorView)
