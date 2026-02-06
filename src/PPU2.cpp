@@ -22,10 +22,6 @@ void PPU::reset() {
         frame_buffer[i] = 0;
     }
     
-    for (int i = 0; i < 0x2000; i++) {
-        vram[i] = 0;
-    }
-    
     for (int i = 0; i < 0x20; i++) {
         palette_ram[i] = 0;
     }
@@ -250,7 +246,14 @@ void PPU::runCycle() {
     if (scanline == 261) {
         if (cycle == 1) {
             // Clear VBLANK flag and sprite 0 hit
-            ppu_status &= 0x5F;  // Clear bits 7 and 6
+            unsigned char status = getPPUSTATUS();
+            status &= 0x5F;  // Clear bits 7 and 6
+            setPPUSTATUS(status);
+        } else if (cycle >= 280 && cycle <= 304) {
+            // Copy vertical bits from t to v
+            if (isRenderingEnabled()) {
+                v = (v & 0x041F) | (t & 0xFBE0);
+            }
         }
     }
     
@@ -261,22 +264,40 @@ void PPU::runCycle() {
     
     // Set VBLANK flag at start of VBLANK period
     if (scanline == 241 && cycle == 1) {
-        ppu_status |= 0x80;  // Set VBLANK flag
+        unsigned char status = getPPUSTATUS();
+        status |= 0x80;  // Set VBLANK flag
+        setPPUSTATUS(status);
         
         // Trigger NMI if enabled in PPUCTRL
-        if (ppu_ctrl & 0x80) {
+        if (getPPUCTRL() & 0x80) {
             nes_cpu->nmi();
         }
     }
     
     // Background fetching during visible and pre-render scanlines
-    if (scanline < 240 || scanline == 261) {
+    if (isRenderingEnabled() && (scanline < 240 || scanline == 261)) {
+        // Shift background registers every cycle during rendering
+        if ((cycle >= 2 && cycle <= 257) || (cycle >= 322 && cycle <= 337)) {
+            bg_pattern_low <<= 1;
+            bg_pattern_high <<= 1;
+            bg_palette_low <<= 1;
+            bg_palette_high <<= 1;
+        }
+
+        // Perform background fetches and load shift registers
         if ((cycle >= 1 && cycle <= 256) || (cycle >= 321 && cycle <= 336)) {
             fetchBackgroundData();
+            unsigned char phase = (cycle - 1) % 8;
+            if (phase == 0) { // Every 8 cycles, load the latched tile data into the shift registers
+                bg_pattern_low = (bg_pattern_low & 0xFF00) | bg_low;
+                bg_pattern_high = (bg_pattern_high & 0xFF00) | bg_high;
+                bg_palette_low = (bg_palette_low & 0xFF00) | ((at_byte & 0x01) ? 0xFF : 0x00);
+                bg_palette_high = (bg_palette_high & 0xFF00) | ((at_byte & 0x02) ? 0xFF : 0x00);
+            }
         }
         
-        // Increment coarse X at cycle 256
-        if (cycle == 256) {
+        // Increment coarse X every 8 cycles
+        if (cycle > 0 && cycle <= 256 && cycle % 8 == 0) {
             if ((v & 0x001F) == 31) {
                 v &= ~0x001F;
                 v ^= 0x0400;  // Switch horizontal nametable
@@ -285,25 +306,29 @@ void PPU::runCycle() {
             }
         }
         
-        // Increment Y at cycle 257
-        if (cycle == 257) {
-            evaluateSprites();
-            
-            // Copy horizontal bits from t to v
-            v = (v & 0xFBE0) | (t & 0x041F);
-
-            // Reload shift registers
-            bg_pattern_low = (bg_pattern_low & 0xFF00) | bg_low;
-            bg_pattern_high = (bg_pattern_high & 0xFF00) | bg_high;
-
-            bg_palette_low = (bg_palette_low & 0xFF00) | ((at_byte & 0b01) ? 0xFF : 0x00);
-            bg_palette_high = (bg_palette_high & 0xFF00) | ((at_byte & 0b10) ? 0xFF : 0x00);
+        // Increment Y at cycle 256
+        if (cycle == 256) {
+            if ((v & 0x7000) != 0x7000) { // if fine Y < 7
+                v += 0x1000; // increment fine Y
+            } else {
+                v &= ~0x7000; // fine Y = 0
+                int y = (v & 0x03E0) >> 5; // let y = coarse Y
+                if (y == 29) {
+                    y = 0; // coarse Y = 0
+                    v ^= 0x0800; // switch vertical nametable
+                } else if (y == 31) {
+                    y = 0; // coarse Y = 0, nametable not switched
+                } else {
+                    y++; // increment coarse Y
+                }
+                v = (v & ~0x03E0) | (y << 5); // put coarse Y back into v
+            }
         }
         
-        // Handle fine Y increment
-        if (cycle == 304 && scanline == 261) {
-            // Copy vertical bits from t to v
-            v = (v & 0x041F) | (t & 0xFBE0);
+        // At cycle 257, copy horizontal bits from t to v
+        if (cycle == 257) {
+            evaluateSprites();
+            v = (v & 0xFBE0) | (t & 0x041F);
         }
     }
     
@@ -315,6 +340,9 @@ void PPU::runCycle() {
         if (scanline > 261) {
             scanline = 0;
             odd_frame = !odd_frame;
+            if (odd_frame && isRenderingEnabled()) {
+                cycle = 1; // Skip a cycle on odd frames
+            }
         }
     }
 }
@@ -426,9 +454,7 @@ void PPU::fetchBackgroundData() {
         case 4:
             // Fetch pattern table low byte
             {
-                unsigned short pattern_addr = (getPPUCTRL() & 0x10) << 8;
-                pattern_addr |= nt_byte << 4;
-                pattern_addr |= (v >> 12) & 0x07;
+                unsigned short pattern_addr = (((unsigned short)getPPUCTRL() & 0x10) << 8) + ((unsigned short)nt_byte << 4) + ((v >> 12) & 0x07);
                 bg_low = ppuRead(pattern_addr);
             }
             break;
@@ -436,9 +462,7 @@ void PPU::fetchBackgroundData() {
         case 6:
             // Fetch pattern table high byte
             {
-                unsigned short pattern_addr = (getPPUCTRL() & 0x10) << 8;
-                pattern_addr |= nt_byte << 4;
-                pattern_addr |= (v >> 12) & 0x07;
+                unsigned short pattern_addr = (((unsigned short)getPPUCTRL() & 0x10) << 8) + ((unsigned short)nt_byte << 4) + ((v >> 12) & 0x07);
                 pattern_addr += 8;
                 bg_high = ppuRead(pattern_addr);
             }
