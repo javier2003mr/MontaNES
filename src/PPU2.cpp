@@ -297,7 +297,7 @@ void PPU::runCycle() {
         }
         
         // Increment coarse X every 8 cycles
-        if (cycle > 0 && cycle <= 256 && cycle % 8 == 0) {
+        if (isRenderingEnabled() && (cycle % 8 == 0) && ((cycle >= 8 && cycle <= 256) || (cycle >= 328 && cycle <= 336))) {
             if ((v & 0x001F) == 31) {
                 v &= ~0x001F;
                 v ^= 0x0400;  // Switch horizontal nametable
@@ -526,28 +526,25 @@ unsigned int PPU::readPalette(unsigned char index) {
     
     // Standard NES palette (RGB format)
     static const unsigned int nes_palette[64] = {
-        0x666666ff, 0x002a88ff, 0x1412a7ff, 0x3b00a4ff, 0x5c007eff, 0x6e0040ff, 0x6c0600ff, 0x561d00ff,
-        0x333500ff, 0x0b4800ff, 0x005200ff, 0x004f08ff, 0x00404dff, 0x000000ff, 0x000000ff, 0x000000ff,
-        0xadadadff, 0x155fd9ff, 0x4240ffff, 0x7527feff, 0xa01accff, 0xb71e7bff, 0xb53120ff, 0x994e00ff,
-        0x6b6d00ff, 0x388700ff, 0x0c9300ff, 0x008f32ff, 0x007c8dff, 0x000000ff, 0x000000ff, 0x000000ff,
-        0xfffeffff, 0x64b0ffff, 0x9290ffff, 0xc676ffff, 0xf36affff, 0xfe6eccff, 0xfe8170ff, 0xea9e22ff,
-        0xbcbe00ff, 0x88d800ff, 0x5ce430ff, 0x45e082ff, 0x48cddeff, 0x4f4f4fff, 0x000000ff, 0x000000ff,
-        0xfffeffff, 0xc0dfffff, 0xd3d2ffff, 0xe8c8ffff, 0xfbc2ffff, 0xfec4eaff, 0xfeccc5ff, 0xf7d8a5ff,
-        0xe4e594ff, 0xcfef96ff, 0xbdf4abff, 0xb3f3ccff, 0xb5ebf2ff, 0xb8b8b8ff, 0x000000ff, 0x000000ff,
+        0x666666, 0x002A88, 0x1412A7, 0x3B00A4, 0x5C007E, 0x6E0040, 0x6C0600, 0x561D00,
+        0x333500, 0x0B4800, 0x005200, 0x004F08, 0x00404D, 0x000000, 0x000000, 0x000000,
+        0xADADAD, 0x155FD9, 0x4240FF, 0x7527FE, 0xA01ACC, 0xB71E7B, 0xB53120, 0x994E00,
+        0x6B6D00, 0x388700, 0x0C9300, 0x008F32, 0x007C8D, 0x000000, 0x000000, 0x000000,
+        0xFFFEFF, 0x64B0FF, 0x9290FF, 0xC676FF, 0xF36AFF, 0xFE6ECC, 0xFE8170, 0xEA9E22,
+        0xBCBE00, 0x88D800, 0x5CE430, 0x45E082, 0x48CDDE, 0x4F4F4F, 0x000000, 0x000000,
+        0xFFFEFF, 0xC0DFFF, 0xD3D2FF, 0xE8C8FF, 0xFBC2FF, 0xFEC4EA, 0xFECCC5, 0xF7D8A5,
+        0xE4E594, 0xCFEF96, 0xBDF4AB, 0xB3F3CC, 0xB5EBF2, 0xB8B8B8, 0x000000, 0x000000,
     };
     
-    unsigned int color = nes_palette[color_index & 0x3F];
+    // Get the RRGGBB color from the palette
+    unsigned int color_rgb = nes_palette[color_index & 0x3F];
     
-    // Extract R, G, B components
-    unsigned char r = (color >> 16) & 0xFF;
-    unsigned char g = (color >> 8) & 0xFF;
-    unsigned char b = color & 0xFF;
+    // Convert from 0xRRGGBB to 0xAARRGGBB format for the framebuffer
+    unsigned char r = (color_rgb >> 16) & 0xFF;
+    unsigned char g = (color_rgb >> 8) & 0xFF;
+    unsigned char b = color_rgb & 0xFF;
     
-    // Calculate grayscale value (simple average)
-    unsigned char gray = (r + g + b) / 3;
-    
-    // Reconstruct the color with grayscale R, G, B and full alpha
-    return (0xFF000000 | (gray << 16) | (gray << 8) | gray);
+    return (0xFF000000 | (r << 16) | (g << 8) | b);
 }
 
 // Frame control

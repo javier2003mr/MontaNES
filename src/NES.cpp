@@ -11,6 +11,8 @@ NES::NES() {
 
 NES::~NES() {
     // std::unique_ptr will automatically handle the cleanup of cpu, ppu, and cartridge.
+    if (cpu != nullptr) delete cpu;
+    if (ppu != nullptr) delete ppu;
 }
 
 bool NES::loadCartridge(const std::string& path) {
@@ -36,6 +38,8 @@ bool NES::loadCartridge(const std::string& path) {
     // --- Load PRG-ROM into CPU memory ---
     unsigned char* prg_rom = cartridge->getPRGROM();
     unsigned char prg_rom_size = cartridge->getPRGROMSize(); // In 16KB units
+    
+    printf("PRG ROM Size: %d * 16384\n", prg_rom_size);
 
     if (prg_rom_size == 1) { // 16KB PRG-ROM
         // Mirror the 16KB chunk at 0x8000 and 0xC000
@@ -58,6 +62,7 @@ bool NES::loadCartridge(const std::string& path) {
     // --- Load CHR-ROM into PPU memory ---
     unsigned char* chr_rom = cartridge->getCHRROM();
     unsigned char chr_rom_size = cartridge->getCHRROMSize(); // In 8KB units
+    printf("CHR ROM Size: %d * 8192\n", chr_rom_size);
 
     if (chr_rom_size > 0) {
         // Assuming NROM, where chr_rom_size is 1 (8KB)
@@ -73,7 +78,8 @@ bool NES::loadCartridge(const std::string& path) {
 }
 
 void NES::reset() {
-    if (!cartridgeLoaded) return;
+    
+    //if (!cartridgeLoaded) return;
 
     // Reset CPU state (constructor handles most of this) and set Program Counter.
     // The PC is initialized to the 16-bit address stored at the reset vector ($FFFC).
@@ -83,14 +89,12 @@ void NES::reset() {
     //cpu->setY(0);
     //cpu->setSP(0xFD);
     //cpu->setP(0x24);
+
     cpu->reset();
 
     // Reset the PPU.
     ppu->reset();
-
-    // Set initial PPU registers
-    cpu->setMemoryValue(0x2000, 0x80); // PPUCTRL: NMI enable, 8x8 sprites, BG/Sprite pattern table $0000, VRAM increment +1, Nametable $2000
-    cpu->setMemoryValue(0x2001, 0x18); // PPUMASK: Enable background and sprites
+    
 }
 
 void NES::runFrame() {
