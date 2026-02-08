@@ -32,6 +32,7 @@ private:
     unsigned char ppu_scroll;  // $2005
     unsigned char ppu_addr;    // $2006
     unsigned char ppu_data;    // $2007 (read/write through VRAM)
+    unsigned char data_buffer; // Internal PPU read buffer
     
     // Rendering buffers
     unsigned char background_buffer[256];

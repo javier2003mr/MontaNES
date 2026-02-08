@@ -38,6 +38,7 @@ void PPU::reset() {
     ppu_scroll = 0;
     ppu_addr = 0;
     ppu_data = 0;
+    data_buffer = 0;
 }
 
 // Register getters
@@ -75,7 +76,21 @@ unsigned char PPU::getPPUADDR() {
 }
 
 unsigned char PPU::getPPUDATA() {
-    unsigned char data = ppuRead(v);
+    unsigned char fetched_data = ppuRead(v);
+    unsigned char result;
+
+    if (v > 0x3EFF) {
+        // Palette reads are not buffered and return data immediately.
+        result = fetched_data;
+        // The buffer is filled with the data from the mirrored nametable address,
+        // but for simplicity, we'll just load it with the fetched data.
+        data_buffer = fetched_data;
+    } else {
+        // VRAM reads are buffered; return the buffer's current value.
+        result = data_buffer;
+        // Then, update the buffer with the data we just fetched for the next read.
+        data_buffer = fetched_data;
+    }
     
     // Increment address based on PPUCTRL bit 2
     if (ppu_ctrl & 0x04) { // Use internal ppu_ctrl
@@ -84,7 +99,7 @@ unsigned char PPU::getPPUDATA() {
         v += 1;   // Horizontal increment
     }
     
-    return data;
+    return result;
 }
 
 // Register setters
