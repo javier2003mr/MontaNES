@@ -123,6 +123,7 @@ void PPU::setOAMADDR(unsigned char value) {
     // This should update an internal OAMADDR register, not write to CPU memory.
     // Assuming 'oam_addr' is an internal member variable of PPU.
     // For now, we'll leave this empty, but it needs to be implemented to update an internal register.
+    oam_addr = value;
 }
 
 void PPU::setOAMDATA(unsigned char value) {
@@ -379,7 +380,7 @@ void PPU::renderPixel() {
     unsigned int spr_color = 0;
     bool bg_opaque = false;
     bool spr_opaque = false;
-    bool bg_priority = true;
+    bool bg_priority = false;
     
     // Background rendering
     if (getPPUMASK() & 0x08) {
@@ -414,7 +415,7 @@ void PPU::renderPixel() {
                 if (spr_pixel != 0) {
                     spr_color = readPalette(0x10 + (sprite_attributes[i] & 0x03) * 4 + spr_pixel);
                     spr_opaque = true;
-                    bg_priority = !(sprite_attributes[i] & 0x20);
+                    bg_priority = sprite_attributes[i] & 0x20;
 
                     // Sprite 0 hit detection
                     if (i == 0 && bg_opaque && pixel_x < 255) {
@@ -432,10 +433,10 @@ void PPU::renderPixel() {
     
     if (!spr_opaque && !bg_opaque) {
         final_color = readPalette(0);  // Background color
-    } else if (!spr_opaque) {
-        final_color = bg_color;
     } else if (!bg_opaque) {
         final_color = spr_color;
+    } else if (!spr_opaque) {
+        final_color = bg_color;
     } else {
         if (bg_priority) {
             final_color = bg_color;
