@@ -12,7 +12,7 @@ CPU :: CPU (void){
 void CPU :: reset (void) {
     
     PC = getMemoryValue(0xFFFD) << 8 | getMemoryValue(0xFFFC);
-
+    
     A = 0;
     X = 0;
     Y = 0;
@@ -564,6 +564,7 @@ void CPU :: SHA (unsigned short dir) {
 }
 
 void CPU :: nmi() {
+
     stack_push((PC >> 8) & 0xFF);
     stack_push(PC & 0xFF);
 
@@ -578,6 +579,9 @@ void CPU :: connectPPU(PPU* ppu_ptr) {
     this->ppu = ppu_ptr;
 }
 
+void CPU :: connectJoypad (Joypad * joypad_ptr){
+    this->joypad = joypad_ptr;
+}
 /**************************************************************************************/
 
 // Other functions
@@ -664,6 +668,9 @@ void CPU :: setMemoryValue (unsigned short dir, unsigned char value){
                 return;
             }
             this->ppu->setOAMDMA(value);
+        } else if (dir == 0x4016) {
+            joypad->write4016(value);
+            cpu_memory[dir] = value;
         } else {
             cpu_memory[dir] = value; 
         }
@@ -701,6 +708,8 @@ unsigned char CPU :: getMemoryValue (unsigned short dir){
                     return this->ppu->getPPUDATA();
             }
 
+        }else if (dir == 0x4016){
+            return joypad->read4016();
         }
 
         return cpu_memory[dir];
@@ -771,16 +780,20 @@ int CPU :: emulationCycle(){
     unsigned short aux;
     int pc_plus_1 = (PC + 1) % CPU_RAM_SIZE;
     int pc_plus_2 = (PC + 2) % CPU_RAM_SIZE;
-/*
-    printf("ANTES:\n");
-    printf("PC: %x --> %d\n", PC, PC);
-    printf("Opcode: %x --> %d\n", opcode, opcode);
-    printf("A: %x --> %d\n", A, A);
-    printf("SP: %x --> %d\n", SP, SP);
-    printf("X: %x --> %d\n", X, X);
-    printf("Y: %x --> %d\n", Y, Y);
-    printf("Flags: %x --> %d\n", P, P);
-*/
+    
+    /*
+    if (PC == 0x813D || PC == 0x8140 || PC == 0x8142){
+        printf("ANTES:\n");
+        printf("PC: %x --> %d\n", PC, PC);
+        printf("Opcode: %x --> %d\n", opcode, opcode);
+        printf("A: %x --> %d\n", A, A);
+        printf("SP: %x --> %d\n", SP, SP);
+        printf("X: %x --> %d\n", X, X);
+        printf("Y: %x --> %d\n", Y, Y);
+        printf("Flags: %x --> %d\n", P, P);
+    }
+    */
+
     switch (info.mode)
     {
     case IMPLIED:
@@ -871,20 +884,24 @@ int CPU :: emulationCycle(){
         executeOpcode(info, &aux);
     else
         executeOpcode(info, arg);
-/*
-    printf("DESPUÉS:\n");
-    printf("PC: %x --> %d\n", PC, PC);
-    printf("Opcode: %x --> %d\n", opcode, opcode);
-    printf("A: %x --> %d\n", A, A);
-    printf("SP: %x --> %d\n", SP, SP);
-    printf("X: %x --> %d\n", X, X);
-    printf("Y: %x --> %d\n", Y, Y);
-    printf("Flags: %x --> %d\n", P, P);
-*/
+
+    /*
+    if (PC == 0x813D || PC == 0x8140 || PC == 0x8142){
+        printf("\nDESPUÉS:\n");
+        printf("PC: %x --> %d\n", PC, PC);
+        printf("Opcode: %x --> %d\n", opcode, opcode);
+        printf("A: %x --> %d\n", A, A);
+        printf("SP: %x --> %d\n", SP, SP);
+        printf("X: %x --> %d\n", X, X);
+        printf("Y: %x --> %d\n", Y, Y);
+        printf("Flags: %x --> %d\n", P, P);
+    }
+    */
+
     if (modifyPC)
         PC += info.length;
-    else
-        modifyPC = true;
+
+    modifyPC = true;
 
     instruction_cycles += info.cycles;
     return instruction_cycles;

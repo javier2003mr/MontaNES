@@ -56,6 +56,7 @@ unsigned char PPU::getPPUSTATUS() {
     w = false;
     // Also clears vblank flag (bit 7)
     this->ppu_status &= ~0x80;
+
     return status;
 }
 
@@ -257,14 +258,13 @@ unsigned short PPU::mirrorNametableAddr(unsigned short addr) {
 // Rendering functions
 void PPU::runCycle() {
     // This is the main PPU cycle function that needs to be called 3 times per CPU cycle
-    
+
     // Pre-render scanline
     if (scanline == 261) {
         if (cycle == 1) {
             // Clear VBLANK flag and sprite 0 hit
-            unsigned char status = getPPUSTATUS();
-            status &= 0x5F;  // Clear bits 7 and 6
-            setPPUSTATUS(status);
+            //unsigned char status = getPPUSTATUS();
+            setPPUSTATUS(ppu_status & 0x3F);    // Clear bits 7 and 6
         } else if (cycle >= 280 && cycle <= 304) {
             // Copy vertical bits from t to v
             if (isRenderingEnabled()) {
@@ -280,10 +280,8 @@ void PPU::runCycle() {
     
     // Set VBLANK flag at start of VBLANK period
     if (scanline == 241 && cycle == 1) {
-        unsigned char status = getPPUSTATUS();
-        status |= 0x80;  // Set VBLANK flag
-        setPPUSTATUS(status);
-        
+        setPPUSTATUS(ppu_status | 0x80); // Set VBLANK flag
+
         // Trigger NMI if enabled in PPUCTRL
         if (getPPUCTRL() & 0x80) {
             nes_cpu->nmi();
@@ -361,16 +359,11 @@ void PPU::runCycle() {
             }
         }
     }
+
 }
 
 void PPU::renderPixel() {
     if (cycle < 1 || cycle > 256) return;
-    
-    // Shift background registers
-    //bg_pattern_low <<= 1;
-    //bg_pattern_high <<= 1;
-    //bg_palette_low <<= 1;
-    //bg_palette_high <<= 1;
 
     int pixel_x = cycle - 1;
     int pixel_y = scanline;

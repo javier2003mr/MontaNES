@@ -6,7 +6,7 @@ CXXFLAGS = -I./include -I/boot/system/develop/headers/private/interface
 LDFLAGS = -lbe -lgame -ltranslation
 
 # Source files
-SRCS = src/NES.cpp src/CPU.cpp src/Cartridge.cpp src/PPU2.cpp src/opcode.cpp tests/haiku_gui_test.cpp
+SRCS = src/NES.cpp src/CPU.cpp src/Cartridge.cpp src/PPU2.cpp src/opcode.cpp src/Joypad.cpp tests/haiku_gui_test.cpp
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)

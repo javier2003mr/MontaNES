@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include "Joypad.hpp" // Include Joypad header
 
 // Forward-declare the classes to avoid circular dependencies
 // and to keep the header clean.
@@ -29,6 +30,7 @@ public:
     PPU* getPPU() const;
     CPU* getCPU() const;
     Cartridge* getCartridge() const;
+    Joypad* getJoypad() const; // New accessor for Joypad
 
     bool isCartridgeLoaded() const;
 
@@ -40,6 +42,7 @@ private:
     Cartridge * cartridge;
     CPU * cpu;
     PPU * ppu;
+    Joypad * joypad; // Add Joypad member
 
     bool cartridgeLoaded = false;
 };
