@@ -182,7 +182,7 @@ public:
 
         // 3. Set up the emulator loop
         BMessage tickMsg(kClockTick);
-        fRunner = new BMessageRunner(BMessenger(this), &tickMsg, 16000); // ~60 FPS
+        fRunner = new BMessageRunner(BMessenger(this), &tickMsg, 1000000/60); // ~60 FPS
     }
 
     ~EmulatorApp() {
