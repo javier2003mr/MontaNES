@@ -68,7 +68,9 @@ public:
 
 private:
     void DrawPatternTable(int table, int startX, int startY) {
-        unsigned char* chr_rom = fCartridge->getCHRROM();
+        
+        unsigned char * chr_rom = fPPU->getVRAM();
+        
         if (!chr_rom) return;
 
         uint32_t* bits = (uint32_t*)fBitmap->Bits();

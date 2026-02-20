@@ -75,6 +75,7 @@ public:
     unsigned char getPPUSCROLL();
     unsigned char getPPUADDR();
     unsigned char getPPUDATA();
+    unsigned char * getVRAM();
     
     void setPPUCTRL(unsigned char value);
     void setPPUMASK(unsigned char value);

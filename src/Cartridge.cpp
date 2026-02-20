@@ -203,6 +203,7 @@ void Cartridge :: catchWriteInRAM(unsigned short dir, unsigned char value){
     }
 
     selectedPRGBank = value & 0x07;
+    printf("SelectedPRGBank: %x\n", selectedPRGBank);
 }
 
 unsigned char Cartridge :: getPRGValue(unsigned short dir){

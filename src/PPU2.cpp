@@ -103,6 +103,10 @@ unsigned char PPU::getPPUDATA() {
     return result;
 }
 
+unsigned char * PPU :: getVRAM(){
+    return vram;
+}
+
 // Register setters
 void PPU::setPPUCTRL(unsigned char value) {
     //nes_cpu->setMemoryValue(0x2000, value);
