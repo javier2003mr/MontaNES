@@ -1,6 +1,7 @@
 #include "../include/CPU.h"
 
 void CPU :: initializeOpcodeTable() {
+    
     // Initialize all opcodes as NOP first
     for (int i = 0; i < 256; i++) {
         opcodeTable[i].handler.type = InstructionHandler::TYPE_VOID;

@@ -5,12 +5,17 @@ class Cartridge {
     private:
         unsigned char * m_PRG_ROM;
         unsigned char * m_CHR_ROM;
-        unsigned char prg_rom_size;
-        unsigned char chr_rom_size;
+        unsigned char * m_Trainer;
+        unsigned short prg_rom_size;
+        unsigned short chr_rom_size;
         bool scrollMode;
         unsigned char mapper;
         bool thereIsPRGRAM;
         bool thereIsCHRRAM;
+        unsigned char prg_ram_size;
+        unsigned char chr_ram_size;
+        unsigned char NTSC_or_PAL;
+        unsigned char selectedPRGBank;
     public:
         Cartridge();
         void loadROM (char * path);
@@ -21,6 +26,9 @@ class Cartridge {
         unsigned char getCHRROMSize();
         unsigned char getMapper();
         bool hasExtendedRAM();
+        void catchWriteInRAM(unsigned short dir, unsigned char value);
+        unsigned char getPRGValue(unsigned short dir);
+        unsigned char * getPRGDir(unsigned short dir);
         ~Cartridge();
 };
 

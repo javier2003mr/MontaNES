@@ -166,7 +166,7 @@ public:
         // 1. Initialize Emulator using the NES class
         fNES = new NES();
         // IMPORTANT: Change this path if your .nes file is elsewhere.
-        if (!fNES->loadCartridge("Super_mario_brothers.nes")) {
+        if (!fNES->loadCartridge("CASTLEV.NES")) {
             BAlert* alert = new BAlert("Error", "Failed to load cartridge.\nMake sure 'marioBros.nes' is in the same directory as the executable.", "OK");
             alert->Go();
             be_app->PostMessage(B_QUIT_REQUESTED);

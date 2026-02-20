@@ -41,13 +41,14 @@ bool NES::loadCartridge(const std::string& path) {
     ppu = new PPU (cpu, cartridge);
     cpu->connectPPU(ppu);
     cpu->connectJoypad(joypad);
+    cpu->connectCartridge(cartridge);
 
     // --- Load PRG-ROM into CPU memory ---
     unsigned char* prg_rom = cartridge->getPRGROM();
     unsigned char prg_rom_size = cartridge->getPRGROMSize(); // In 16KB units
     
     printf("PRG ROM Size: %d * 16384\n", prg_rom_size);
-
+/*
     if (prg_rom_size == 1) { // 16KB PRG-ROM
         // Mirror the 16KB chunk at 0x8000 and 0xC000
         for (int i = 0; i < 16384; i++) {
@@ -60,6 +61,7 @@ bool NES::loadCartridge(const std::string& path) {
             cpu->setMemoryValue(0x8000 + i, prg_rom[i]);
         }
     }
+*/
     // Note: This currently only handles NROM (mapper 0) with 16KB or 32KB.
     // More complex mappers would require more sophisticated memory mapping here.
 

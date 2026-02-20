@@ -4,6 +4,7 @@
 #include <functional>
 //#include "PPU2.hpp"
 #include "Joypad.hpp"
+#include "Cartridge.hpp"
 
 #define OPCODE_TABLE_SIZE 256
 #define CPU_RAM_SIZE 65536
@@ -62,6 +63,7 @@ class CPU {
         unsigned char cpu_memory[CPU_RAM_SIZE];
         PPU* ppu = nullptr;
         Joypad * joypad = nullptr;
+        Cartridge * cartridge = nullptr;
 
         // Contador de programa
         unsigned short PC;
@@ -205,6 +207,7 @@ class CPU {
         void nmi();
         void connectPPU(PPU* ppu_ptr);
         void connectJoypad (Joypad * joypad_ptr);
+        void connectCartridge (Cartridge * c);
 
         void setPC(unsigned short value);
         void setA (unsigned char value);

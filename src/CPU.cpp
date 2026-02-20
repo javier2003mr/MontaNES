@@ -6,12 +6,13 @@
 CPU :: CPU (void){ 
 
     initializeOpcodeTable();
-    reset();
+    printf("Opcode Table Initialized\n");
 }
 
 void CPU :: reset (void) {
     
     PC = getMemoryValue(0xFFFD) << 8 | getMemoryValue(0xFFFC);
+    printf("Start address: %x\n", PC);
     
     A = 0;
     X = 0;
@@ -582,6 +583,10 @@ void CPU :: connectPPU(PPU* ppu_ptr) {
 void CPU :: connectJoypad (Joypad * joypad_ptr){
     this->joypad = joypad_ptr;
 }
+
+void CPU :: connectCartridge (Cartridge * c){
+    this->cartridge = c;
+}
 /**************************************************************************************/
 
 // Other functions
@@ -671,6 +676,8 @@ void CPU :: setMemoryValue (unsigned short dir, unsigned char value){
         } else if (dir == 0x4016) {
             joypad->write4016(value);
             cpu_memory[dir] = value;
+        }else if (dir >= 0x8000 && dir <= 0xFFFF){
+            return cartridge->catchWriteInRAM(dir, value);
         } else {
             cpu_memory[dir] = value; 
         }
@@ -710,6 +717,8 @@ unsigned char CPU :: getMemoryValue (unsigned short dir){
 
         }else if (dir == 0x4016){
             return joypad->read4016();
+        }else if (dir >= 0x8000 && dir <= 0xFFFF){
+            return cartridge->getPRGValue(dir);
         }
 
         return cpu_memory[dir];
@@ -728,6 +737,10 @@ unsigned char * CPU :: getMemoryDir (unsigned short dir){
         }else if (dir < 0x4000) {
             
             dir = 0x2000 | (dir % 0x8);
+
+        }else if (dir >= 0x8000) {
+            
+            return cartridge->getPRGDir(dir);
 
         }
 
@@ -775,7 +788,7 @@ int CPU :: emulationCycle(){
     //printf("Opcode: %x\n", opcode);
 
     OpcodeInfo info = opcodeTable[opcode];
-
+    
     unsigned char * arg;
     unsigned short aux;
     int pc_plus_1 = (PC + 1) % CPU_RAM_SIZE;
