@@ -69,10 +69,10 @@ bool NES::loadCartridge(const std::string& path) {
     reset();
 
     // --- Load CHR-ROM into PPU memory ---
-    unsigned char* chr_rom = cartridge->getCHRROM();
+//    unsigned char* chr_rom = cartridge->getCHRROM();
     unsigned char chr_rom_size = cartridge->getCHRROMSize(); // In 8KB units
     printf("CHR ROM Size: %d * 8192\n", chr_rom_size);
-
+/*
     if (chr_rom_size > 0) {
         // Assuming NROM, where chr_rom_size is 1 (8KB)
         // This contains both pattern tables.
@@ -80,7 +80,7 @@ bool NES::loadCartridge(const std::string& path) {
             ppu->ppuWrite(i, chr_rom[i]);
         }
     }
-
+*/
     cartridgeLoaded = true;
 
     return true;

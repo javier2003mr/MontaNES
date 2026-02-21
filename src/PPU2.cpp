@@ -104,7 +104,8 @@ unsigned char PPU::getPPUDATA() {
 }
 
 unsigned char * PPU :: getVRAM(){
-    return vram;
+    //return vram;
+    return nes_cartridge->getCHRROM();
 }
 
 // Register setters
@@ -197,7 +198,8 @@ unsigned char PPU::ppuRead(unsigned short addr) {
     
     if (addr < 0x2000) {
         // Pattern tables are in VRAM
-        return vram[addr];
+        //return vram[addr];
+        return nes_cartridge->getCHRValue(addr);
     } else if (addr < 0x3F00) {
         // Nametables
         unsigned short mirrored_addr = mirrorNametableAddr(addr);
@@ -219,7 +221,8 @@ void PPU::ppuWrite(unsigned short addr, unsigned char value) {
     
     if (addr < 0x2000) {
         // Pattern tables (CHR RAM)
-        vram[addr] = value;
+        //vram[addr] = value;
+        nes_cartridge->catchWriteInVRAM(addr, value);
     } else if (addr < 0x3F00) {
         // Nametables
         unsigned short mirrored_addr = mirrorNametableAddr(addr);

@@ -16,6 +16,7 @@ class Cartridge {
         unsigned char chr_ram_size;
         unsigned char NTSC_or_PAL;
         unsigned char selectedPRGBank;
+        unsigned char selectedCHRBank;
     public:
         Cartridge();
         void loadROM (char * path);
@@ -27,7 +28,9 @@ class Cartridge {
         unsigned char getMapper();
         bool hasExtendedRAM();
         void catchWriteInRAM(unsigned short dir, unsigned char value);
+        void catchWriteInVRAM(unsigned short dir, unsigned char value);
         unsigned char getPRGValue(unsigned short dir);
+        unsigned char getCHRValue(unsigned short dir);
         unsigned char * getPRGDir(unsigned short dir);
         ~Cartridge();
 };
