@@ -4,6 +4,7 @@
 Cartridge :: Cartridge(){
     m_CHR_ROM = nullptr;
     m_PRG_ROM = nullptr;
+    m_PRG_RAM = nullptr;
     m_Trainer = nullptr;
     prg_rom_size = 0;
     chr_rom_size = 0;
@@ -14,7 +15,12 @@ Cartridge :: Cartridge(){
     prg_ram_size = 0;
     NTSC_or_PAL = 0;
     selectedPRGBank = 0;
+    selectedPRGBank2 = 0;
     selectedCHRBank = 0;
+    selectedCHRBank2 = 0;
+    ctrl_reg = 0;
+    shift_count = 0;
+    shift_reg = 0;
 }
 
 void Cartridge :: loadROM (char * path){
@@ -48,6 +54,8 @@ void Cartridge :: loadROM (char * path){
                 fread(&flags6, sizeof(unsigned char), 1, romFile);
 
                 mapper = flags6 >> 4;
+                printf("Mapper: %03x\n", mapper);
+
                 thereIsTrainer = flags6 & 0x04;
                 thereIsPRGRAM = flags6 & 0x02;
                 scrollMode = flags6 & 0x01;
@@ -62,6 +70,11 @@ void Cartridge :: loadROM (char * path){
                     printf("Modo iNES\n");
 
                     fread(&prg_ram_size, sizeof(unsigned char), 1, romFile);
+
+                    if (thereIsPRGRAM){
+                        //m_PRG_RAM = new unsigned char [prg_ram_size * 8192];
+                    }
+
                     fread(&NTSC_or_PAL, sizeof(unsigned char), 1, romFile);
 
                     fread(&otherFlags1, sizeof(short), 1, romFile);
@@ -183,7 +196,6 @@ void Cartridge :: catchWriteInRAM(unsigned short dir, unsigned char value){
     switch (mapper)
     {
     case 0x00:
-        
         if (prg_rom_size == 1){
             m_PRG_ROM[dir % 16384] = value;
         }else if (prg_rom_size == 2){
@@ -191,23 +203,70 @@ void Cartridge :: catchWriteInRAM(unsigned short dir, unsigned char value){
         }
         break;
     case 0x01:
-        break;
-    case 0x02:
-
+    /*
         if (dir < 0xC000) {
             m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)] = value;
         }else{
             m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)] = value;
         }
+    */
+        if (value & 0x80){
+            shift_count = 0;
+            shift_reg = 0;
+        }else{
+            ++shift_count;
+            shift_reg <<= 1;
+            shift_reg |= value & 0x01;
+            if (shift_count == 5){
+                unsigned char selected_reg = (dir >> 13) & 0x03;
+
+                switch (selected_reg)
+                {
+                case 0x00:
+                    ctrl_reg = shift_reg;
+                    break;
+                case 0x01:
+                    selectedCHRBank = shift_reg;
+                    break;
+                case 0x02:
+                    selectedCHRBank2 = shift_reg;
+                    break;
+                case 0x03:
+                    if (ctrl_reg & 0x08){
+                        if (ctrl_reg & 0x04){
+                            selectedPRGBank = shift_reg;
+                        }else{
+                            selectedPRGBank2 = shift_reg;
+                        }
+                    } else {
+                        selectedPRGBank = shift_reg >> 1;
+                        selectedCHRBank2 = (shift_reg >> 1) + 1;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+        break;
+    case 0x02:
+        /*
+        if (dir < 0xC000) {
+            m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)] = value;
+        }else{
+            m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)] = value;
+        }
+        */
         selectedPRGBank = value & 0x07;
         break;
     case 0x03:
-        
+        /*
         if (prg_rom_size == 1){
             m_PRG_ROM[dir % 16384] = value;
         }else if (prg_rom_size == 2){
             m_PRG_ROM[dir % 32768] = value;
         }
+        */
         selectedCHRBank = value & 0x07;
         break;
     case 0x04:
@@ -249,6 +308,11 @@ unsigned char Cartridge :: getPRGValue(unsigned short dir){
         }
         break;
     case 0x01:
+        if (dir < 0xC000) {
+            return m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)];
+        }else{
+            return m_PRG_ROM[selectedPRGBank2 * 16384 + (dir % 16384)];
+        }
         break;
     case 0x02:
 
@@ -292,7 +356,7 @@ unsigned char Cartridge :: getPRGValue(unsigned short dir){
 }
 
 unsigned char * Cartridge :: getPRGDir(unsigned short dir){
-    
+/*    
     if (prg_rom_size == 1){
         return &m_PRG_ROM[dir % 16384];
     }else if (prg_rom_size == 2){
@@ -303,6 +367,46 @@ unsigned char * Cartridge :: getPRGDir(unsigned short dir){
         else
             return &m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)];        
     }
+*/
+    switch (mapper)
+    {
+    case 0x00:
+        
+        if (prg_rom_size == 1){
+            return &m_PRG_ROM[dir % 16384];
+        }else if (prg_rom_size == 2){
+            return &m_PRG_ROM[dir % 32768];
+        }
+        break;
+    case 0x01:
+        if (dir < 0xC000) {
+            return &m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)];
+        }else{
+            return &m_PRG_ROM[selectedPRGBank2 * 16384 + (dir % 16384)];
+        }
+        break;
+    case 0x02:
+
+        if (dir < 0xC000) {
+            return &m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)];
+        }else{
+            return &m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)];
+        }
+        break;
+    case 0x03:
+
+        if (prg_rom_size == 1){
+            return &m_PRG_ROM[dir % 16384];
+        }else if (prg_rom_size == 2){
+            return &m_PRG_ROM[dir % 32768];
+        }
+        break;
+    case 0x04:
+        break;
+    default:
+        break;
+    }
+    return 0;
 
 }
 
@@ -314,6 +418,11 @@ void Cartridge :: catchWriteInVRAM(unsigned short dir, unsigned char value){
         m_CHR_ROM[dir] = value;
         break;
     case 1:
+        if (dir < 0x1000){
+            m_CHR_ROM[selectedCHRBank * 4096 + dir] = value;
+        }else{
+            m_CHR_ROM[selectedCHRBank2 * 4096 + dir] = value;
+        }
         break;
     case 2:
         m_CHR_ROM[dir] = value;
@@ -335,6 +444,11 @@ unsigned char Cartridge :: getCHRValue(unsigned short dir){
         return m_CHR_ROM[dir];
         break;
     case 1:
+        if (dir < 0x1000){
+            return m_CHR_ROM[selectedCHRBank * 4096 + dir];
+        }else{
+            return m_CHR_ROM[selectedPRGBank2 * 4096 + dir];
+        }
         break;
     case 2:
         return m_CHR_ROM[dir];

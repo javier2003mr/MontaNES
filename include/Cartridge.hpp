@@ -5,6 +5,7 @@ class Cartridge {
     private:
         unsigned char * m_PRG_ROM;
         unsigned char * m_CHR_ROM;
+        unsigned char * m_PRG_RAM;
         unsigned char * m_Trainer;
         unsigned short prg_rom_size;
         unsigned short chr_rom_size;
@@ -15,8 +16,16 @@ class Cartridge {
         unsigned char prg_ram_size;
         unsigned char chr_ram_size;
         unsigned char NTSC_or_PAL;
+
+        //Mapper registers
         unsigned char selectedPRGBank;
+        unsigned char selectedPRGBank2;
         unsigned char selectedCHRBank;
+        unsigned char selectedCHRBank2;
+        unsigned char ctrl_reg;
+        unsigned char shift_reg;
+        unsigned char shift_count;
+        
     public:
         Cartridge();
         void loadROM (char * path);
