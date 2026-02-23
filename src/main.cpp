@@ -11,6 +11,8 @@
 #include <app/AppDefs.h>             // ADDED: Provides B_KEY_* constants
 #include <interface/InterfaceDefs.h> // Provides key_info struct and get_key_info function
 
+#include <string>
+
 // Emulator core headers
 #include "NES.h"
 #include "PPU2.hpp"
@@ -164,12 +166,13 @@ private:
 // --- Haiku Application Class ---
 class EmulatorApp : public BApplication {
 public:
-    EmulatorApp() : BApplication("application/x-vnd.nes-emulator") {
+    EmulatorApp(const std::string& romPath) : BApplication("application/x-vnd.nes-emulator") {
         // 1. Initialize Emulator using the NES class
         fNES = new NES();
-        // IMPORTANT: Change this path if your .nes file is elsewhere.
-        if (!fNES->loadCartridge("CASTLEV.NES")) {
-            BAlert* alert = new BAlert("Error", "Failed to load cartridge.\nMake sure 'marioBros.nes' is in the same directory as the executable.", "OK");
+        
+        if (!fNES->loadCartridge(romPath)) {
+            std::string errorMsg = "Failed to load cartridge.\nMake sure '" + romPath + "' is a valid .nes file.";
+            BAlert* alert = new BAlert("Error", errorMsg.c_str(), "OK");
             alert->Go();
             be_app->PostMessage(B_QUIT_REQUESTED);
             return;
@@ -267,8 +270,13 @@ private:
 };
 
 // --- Main Entry Point ---
-int main() {
-    EmulatorApp app;
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <path_to_rom.nes>\n", argv[0]);
+        return 1;
+    }
+
+    EmulatorApp app(argv[1]);
     app.Run();
     return 0;
 }
