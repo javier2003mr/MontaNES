@@ -214,22 +214,14 @@ private:
             // and are used by Haiku's key polling API.
             // NES buttons: A, B, Select, Start, Up, Down, Left, Right
             static const std::map<uint32_t, int> nes_keymap = {
-                //{'a', 0}, // NES A
-                //{'s', 1}, // NES B
-                //{'p', 2}, // NES Select
-                //{B_ENTER, 3}, // NES Start
-                //{B_UP_ARROW, 4}, // NES Up
-                //{B_DOWN_ARROW, 5}, // NES Down
-                //{B_LEFT_ARROW, 6}, // NES Left
-                //{B_RIGHT_ARROW, 7} // NES Right
-                {0x3c, 0}, // NES A
-                {0x3d, 1}, // NES B
-                {0x30, 2}, // NES Select
-                {0x47, 3}, // NES Start
-                {0x57, 4}, // NES Up
-                {0x62, 5}, // NES Down
-                {0x61, 6}, // NES Left
-                {0x63, 7} // NES Right
+                {0x3c, 0}, // NES A ------> A key
+                {0x3d, 1}, // NES B ------> S key
+                {0x30, 2}, // NES Select -> P key
+                {0x47, 3}, // NES Start --> Enter key
+                {0x57, 4}, // NES Up -----> Up row
+                {0x62, 5}, // NES Down ---> Down row
+                {0x61, 6}, // NES Left ---> Left row
+                {0x63, 7} // NES Right ---> Right row
             };
             
             key_info keyInfo;

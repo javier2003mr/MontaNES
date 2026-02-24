@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cstring>
 #include "../include/Cartridge.hpp"
 
 Cartridge :: Cartridge(){
@@ -87,8 +88,16 @@ void Cartridge :: loadROM (char * path){
                     }
 
                     // Load PRG-ROM
-                    m_PRG_ROM = new unsigned char[prg_rom_size * 16384];
-                    fread(m_PRG_ROM, sizeof(unsigned char), prg_rom_size * 16384, romFile);
+                    
+                    if (prg_rom_size == 1){
+                        m_PRG_ROM = new unsigned char[prg_rom_size * 32768];
+                        fread(m_PRG_ROM, sizeof(unsigned char), prg_rom_size * 16384, romFile);
+                        memcpy (m_PRG_ROM + 16384, m_PRG_ROM, 16384 * sizeof(unsigned char));
+                    }else{
+                        m_PRG_ROM = new unsigned char[prg_rom_size * 16384];
+                        fread(m_PRG_ROM, sizeof(unsigned char), prg_rom_size * 16384, romFile);
+                    }
+                    
 
                     // Load CHR-ROM or allocate CHR-RAM
                     if (chr_rom_size > 0) {
@@ -196,11 +205,7 @@ void Cartridge :: catchWriteInRAM(unsigned short dir, unsigned char value){
     switch (mapper)
     {
     case 0x00:
-        if (prg_rom_size == 1){
-            m_PRG_ROM[dir % 16384] = value;
-        }else if (prg_rom_size == 2){
-            m_PRG_ROM[dir % 32768] = value;
-        }
+        m_PRG_ROM[dir % 32768] = value;
         break;
     case 0x01:
     /*
@@ -300,12 +305,7 @@ unsigned char Cartridge :: getPRGValue(unsigned short dir){
     switch (mapper)
     {
     case 0x00:
-        
-        if (prg_rom_size == 1){
-            return m_PRG_ROM[dir % 16384];
-        }else if (prg_rom_size == 2){
-            return m_PRG_ROM[dir % 32768];
-        }
+        return m_PRG_ROM[dir % 32768];
         break;
     case 0x01:
         if (dir < 0xC000) {
@@ -371,12 +371,7 @@ unsigned char * Cartridge :: getPRGDir(unsigned short dir){
     switch (mapper)
     {
     case 0x00:
-        
-        if (prg_rom_size == 1){
-            return &m_PRG_ROM[dir % 16384];
-        }else if (prg_rom_size == 2){
-            return &m_PRG_ROM[dir % 32768];
-        }
+        return &m_PRG_ROM[dir % 32768];
         break;
     case 0x01:
         if (dir < 0xC000) {

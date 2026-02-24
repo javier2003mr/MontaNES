@@ -676,8 +676,8 @@ void CPU :: setMemoryValue (unsigned short dir, unsigned char value){
         } else if (dir == 0x4016) {
             joypad->write4016(value);
             cpu_memory[dir] = value;
-        }else if (dir >= 0x8000 && dir <= 0xFFFF){
-            return cartridge->catchWriteInRAM(dir, value);
+        }else if (dir >= 0x8000){
+            cartridge->catchWriteInRAM(dir, value);
         } else {
             cpu_memory[dir] = value; 
         }
@@ -717,7 +717,7 @@ unsigned char CPU :: getMemoryValue (unsigned short dir){
 
         }else if (dir == 0x4016){
             return joypad->read4016();
-        }else if (dir >= 0x8000 && dir <= 0xFFFF){
+        }else if (dir >= 0x8000){
             return cartridge->getPRGValue(dir);
         }
 
@@ -871,7 +871,7 @@ int CPU :: emulationCycle(){
     case INDIRECT_X:
         aux = (getMemoryValue(pc_plus_1) + X) % 256;
         aux = (getMemoryValue((aux+1) % 256) << 8) + getMemoryValue(aux);
-        arg = getMemoryDir(getMemoryValue((cpu_memory[pc_plus_1] + X) % 256) + getMemoryValue((cpu_memory[pc_plus_1] + X + 1) % 256) * 256);
+        arg = getMemoryDir(getMemoryValue((getMemoryValue(pc_plus_1) + X) % 256) + getMemoryValue((getMemoryValue(pc_plus_1) + X + 1) % 256) * 256);
         break;
     case INDIRECT_Y:
         aux = getMemoryValue(pc_plus_1);
