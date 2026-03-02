@@ -415,7 +415,7 @@ void PPU::renderPixel() {
 
                 if (spr_pixel != 0) {
                     // This is the first opaque sprite pixel we've found.
-                    // Since sprites are evaluated in OAM order, this is the highest priority sprite.
+                    // Priority is determined by the sprite's order in the secondary OAM.
                     spr_color = readPalette(0x10 + (sprite_attributes[i] & 0x03) * 4 + spr_pixel);
                     spr_opaque = true;
                     bg_priority = sprite_attributes[i] & 0x20;

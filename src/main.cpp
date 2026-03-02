@@ -19,6 +19,9 @@
 #include "Cartridge.hpp"
 #include "CPU.h"
 
+bool previousTabState;
+bool fastForward;
+
 // --- Emulator View ---
 // This view is responsible for drawing the main game screen.
 class EmulatorView : public BView {
@@ -187,7 +190,9 @@ public:
 
         // 3. Set up the emulator loop
         BMessage tickMsg(kClockTick);
-        fRunner = new BMessageRunner(BMessenger(this), &tickMsg, 1000000/60); // ~60 FPS
+        fRunner = new BMessageRunner(BMessenger(this), &tickMsg, 1000000 / 60); // ~60 FPS
+        previousTabState = false;
+        fastForward = false;
     }
 
     ~EmulatorApp() {
@@ -244,6 +249,20 @@ private:
                 nes_buttons[4], nes_buttons[5], nes_buttons[6], nes_buttons[7]
             );
 
+            // --- Fast Forward Toggle ---
+            uint32_t tabKey = 0x26;
+            bool tabState = (keyInfo.key_states[tabKey / 8] & (1 << (7 - (tabKey % 8))));
+
+            if (tabState != previousTabState && tabState){
+                if (fastForward){
+                    fRunner->SetInterval(1000000 / 60);
+                }else{
+                    fRunner->SetInterval(1000000 / 120);
+                }
+                fastForward = !fastForward;
+            }
+            previousTabState = tabState;
+
             // The NES class now handles the details of running a frame.
             fNES->runFrame();
 
@@ -259,6 +278,8 @@ private:
     EmulatorWindow*     fEmulatorWindow;
     PatternTableWindow* fPatternTableWindow;
     BMessageRunner*     fRunner;
+    bool                fFastForward;
+    bool                fTabKeyState;
 };
 
 // --- Main Entry Point ---
