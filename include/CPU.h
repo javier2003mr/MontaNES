@@ -2,7 +2,7 @@
 #define CPUCLASS
 
 #include <functional>
-//#include "PPU2.hpp"
+//#include "PPU.hpp"
 #include "Joypad.hpp"
 #include "Cartridge.hpp"
 

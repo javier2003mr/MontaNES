@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../include/PPU2.hpp"
+#include "../include/PPU.hpp"
 
 // Constructor
 PPU::PPU(CPU *cpu, Cartridge *cart) : nes_cpu(cpu), nes_cartridge(cart) {
@@ -400,10 +400,11 @@ void PPU::renderPixel() {
     if (getPPUMASK() & 0x10) {
         for (int i = 0; i < sprite_count; i++) {
             int spr_x = pixel_x - sprite_positions[i];
+
             if (spr_x >= 0 && spr_x < 8) {
                 unsigned char spr_pixel_low = sprite_pattern_low[i];
                 unsigned char spr_pixel_high = sprite_pattern_high[i];
-                
+
                 if (sprite_attributes[i] & 0x40) { // Horizontal flip
                     spr_x = 7 - spr_x;
                 }
@@ -411,17 +412,22 @@ void PPU::renderPixel() {
                 unsigned char bit0 = (spr_pixel_low >> (7 - spr_x)) & 1;
                 unsigned char bit1 = (spr_pixel_high >> (7 - spr_x)) & 1;
                 unsigned char spr_pixel = (bit1 << 1) | bit0;
-                
+
                 if (spr_pixel != 0) {
+                    // This is the first opaque sprite pixel we've found.
+                    // Since sprites are evaluated in OAM order, this is the highest priority sprite.
                     spr_color = readPalette(0x10 + (sprite_attributes[i] & 0x03) * 4 + spr_pixel);
                     spr_opaque = true;
                     bg_priority = sprite_attributes[i] & 0x20;
 
-                    // Sprite 0 hit detection
-                    if (i == 0 && bg_opaque && pixel_x < 255) {
+                    // Sprite 0 hit detection:
+                    // Check if the background is opaque, this sprite is OAM sprite 0,
+                    // and we are not at the screen edge.
+                    if (bg_opaque && sprite_oam_indices[i] == 0 && pixel_x < 255) {
                         setSpriteZeroHit(true);
                     }
 
+                    // We found the highest priority sprite, so we can stop.
                     break;
                 }
             }
@@ -432,7 +438,7 @@ void PPU::renderPixel() {
     unsigned int final_color = 0;
     
     if (!spr_opaque && !bg_opaque) {
-        final_color = readPalette(0);  // Background color
+        final_color = readPalette(0);  // Backdrop color
     } else if (!bg_opaque) {
         final_color = spr_color;
     } else if (!spr_opaque) {
@@ -501,7 +507,7 @@ void PPU::evaluateSprites() {
         if (diff >= 0 && diff < sprite_height) {
             sprite_positions[sprite_count] = x;
             sprite_attributes[sprite_count] = attr;
-            sprite_priorities[sprite_count] = (attr & 0x20) ? 1 : 0;
+            sprite_oam_indices[sprite_count] = i;
 
             // Fetch sprite pattern data
             unsigned short pattern_addr_low, pattern_addr_high;

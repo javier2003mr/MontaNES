@@ -15,7 +15,7 @@
 
 // Emulator core headers
 #include "NES.h"
-#include "PPU2.hpp"
+#include "PPU.hpp"
 #include "Cartridge.hpp"
 #include "CPU.h"
 
@@ -221,14 +221,14 @@ private:
                 {0x57, 4}, // NES Up -----> Up row
                 {0x62, 5}, // NES Down ---> Down row
                 {0x61, 6}, // NES Left ---> Left row
-                {0x63, 7} // NES Right ---> Right row
+                {0x63, 7}, // NES Right ---> Right row
             };
             
             key_info keyInfo;
             get_key_info(&keyInfo); // Get the current state of all keys
             
             bool nes_buttons[8] = {false}; // Initialize all to false
-            
+
             // Check our mapped keys
             for (auto const& [haikuKey, nesButtonIndex] : nes_keymap) {
                 // Haiku stores key states in a bitmask.

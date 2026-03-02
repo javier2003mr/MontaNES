@@ -13,7 +13,7 @@
 
 // Emulator core headers
 #include "NES.h"
-#include "PPU2.hpp"
+#include "PPU.hpp"
 #include "Cartridge.hpp"
 #include "CPU.h"
 

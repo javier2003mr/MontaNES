@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <functional>
 #include "../include/CPU.h"
-#include "../include/PPU2.hpp"
+#include "../include/PPU.hpp"
 
 CPU :: CPU (void){ 
 

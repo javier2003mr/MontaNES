@@ -58,7 +58,7 @@ private:
     unsigned char sprite_positions[8];
     unsigned char sprite_patterns[8];
     unsigned char sprite_attributes[8];
-    unsigned char sprite_priorities[8];
+    unsigned char sprite_oam_indices[8];
     unsigned char sprite_pattern_low[8];
     unsigned char sprite_pattern_high[8];
     int sprite_count;

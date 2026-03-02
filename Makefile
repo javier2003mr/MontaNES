@@ -27,7 +27,7 @@ TEST_SHOW_CHR_OBJ = $(OBJ_DIR)/show_chr.o
 ALL_OBJS = $(MAIN_OBJS) $(TEST_CPU_OBJ) $(TEST_PPU_OBJ) $(TEST_GUI_OBJ) $(TEST_SHOW_CHR_OBJ)
 
 # Target executables
-TARGET = $(BIN_DIR)/nes_emulator
+TARGET = $(BIN_DIR)/montaNES
 TEST_CPU_TARGET = $(BIN_DIR)/test_cpu
 TEST_PPU_TARGET = $(BIN_DIR)/test_load_patterns
 TEST_GUI_TARGET = $(BIN_DIR)/haiku_gui
