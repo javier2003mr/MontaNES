@@ -10,11 +10,20 @@
 #include <map> // For std::map
 #include <app/AppDefs.h>             // ADDED: Provides B_KEY_* constants
 #include <interface/InterfaceDefs.h> // Provides key_info struct and get_key_info function
+#include <MenuBar.h>
+#include <Menu.h>
+#include <MenuItem.h>
+#include <FilePanel.h>
+#include <Path.h>
 
 #include <string>
 
 // Emulator core headers
 #include "NES.h"
+
+// Message constants
+const uint32_t kMsgFileOpen = 'flop';
+
 #include "PPU.hpp"
 #include "Cartridge.hpp"
 #include "CPU.h"
@@ -45,6 +54,10 @@ public:
         DrawBitmap(fBitmap, Bounds());
     }
 
+    void SetPPU(PPU* ppu) {
+        fPPU = ppu;
+    }
+
 private:
     PPU*      fPPU;
     BBitmap*  fBitmap;
@@ -69,6 +82,14 @@ public:
         DrawPatternTable(0, 0, 0);
         DrawPatternTable(1, 128, 0);
         DrawBitmap(fBitmap, Bounds());
+    }
+
+    void SetPPU(PPU* ppu) {
+        fPPU = ppu;
+    }
+
+    void SetCartridge(Cartridge* cart) {
+        fCartridge = cart;
     }
 
 private:
@@ -128,10 +149,41 @@ class EmulatorWindow : public BWindow {
 public:
     EmulatorWindow(PPU* ppu)
         : BWindow(BRect(100, 100, 100 + 256 * 3, 100 + 240 * 3), "NES Emulator", B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
+        
         fEmulatorView = new EmulatorView(ppu);
+
+        // Create Menu Bar
+        BMenuBar* menuBar = new BMenuBar("menuBar");
+        BMenu* fileMenu = new BMenu("File");
+        fileMenu->AddItem(new BMenuItem("Open", new BMessage(kMsgFileOpen), 'O'));
+        menuBar->AddItem(fileMenu);
+
         BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+            .Add(menuBar)
             .Add(fEmulatorView)
             .End();
+
+        fFilePanel = new BFilePanel(B_OPEN_PANEL, new BMessenger(be_app));
+    }
+
+    ~EmulatorWindow() {
+        delete fFilePanel;
+    }
+
+    virtual void MessageReceived(BMessage* message) {
+        switch (message->what) {
+            case kMsgFileOpen:
+                fFilePanel->Show();
+                break;
+            default:
+                BWindow::MessageReceived(message);
+                break;
+        }
+    }
+
+    virtual bool QuitRequested() {
+        be_app->PostMessage(B_QUIT_REQUESTED);
+        return true;
     }
 
     void FrameRendered() {
@@ -140,8 +192,14 @@ public:
             Unlock();
         }
     }
+
+    void SetPPU(PPU* ppu) {
+        fEmulatorView->SetPPU(ppu);
+    }
+
 private:
     EmulatorView* fEmulatorView;
+    BFilePanel*   fFilePanel;
 };
 
 // --- Pattern Table Window ---
@@ -161,6 +219,14 @@ public:
             Unlock();
         }
     }
+
+    void SetPPU(PPU* ppu) {
+        fPatternView->SetPPU(ppu);
+    }
+
+    void SetCartridge(Cartridge* cart) {
+        fPatternView->SetCartridge(cart);
+    }
 private:
     PatternTableView* fPatternView;
 };
@@ -169,21 +235,13 @@ private:
 // --- Haiku Application Class ---
 class EmulatorApp : public BApplication {
 public:
-    EmulatorApp(const std::string& romPath) : BApplication("application/x-vnd.nes-emulator") {
-        // 1. Initialize Emulator using the NES class
-        fNES = new NES();
-        
-        if (!fNES->loadCartridge(romPath)) {
-            std::string errorMsg = "Failed to load cartridge.\nMake sure '" + romPath + "' is a valid .nes file.";
-            BAlert* alert = new BAlert("Error", errorMsg.c_str(), "OK");
-            alert->Go();
-            be_app->PostMessage(B_QUIT_REQUESTED);
-            return;
-        }
+    EmulatorApp() : BApplication("application/x-vnd.nes-emulator") {
+        // 1. Initialize Emulator to nullptr
+        fNES = nullptr;
 
-        // 2. Create Windows, passing components from the NES object
-        fEmulatorWindow = new EmulatorWindow(fNES->getPPU());
-        fPatternTableWindow = new PatternTableWindow(fNES->getPPU(), fNES->getCartridge());
+        // 2. Create Windows with nullptr components
+        fEmulatorWindow = new EmulatorWindow(nullptr);
+        fPatternTableWindow = new PatternTableWindow(nullptr, nullptr);
 
         fEmulatorWindow->Show();
         fPatternTableWindow->Show();
@@ -197,7 +255,19 @@ public:
 
     ~EmulatorApp() {
         delete fRunner;
-        delete fNES; // This will delete cpu, ppu, and cartridge
+        if (fNES) {
+            delete fNES;
+        }
+    }
+
+    virtual void RefsReceived(BMessage* message) {
+        entry_ref ref;
+        if (message->FindRef("refs", &ref) == B_OK) {
+            BEntry entry(&ref, true);
+            BPath path;
+            entry.GetPath(&path);
+            LoadNewRom(path.Path());
+        }
     }
 
     virtual void MessageReceived(BMessage* message) {
@@ -205,10 +275,35 @@ public:
             case kClockTick:
                 _ClockTick();
                 break;
+            case kMsgFileOpen:
+                // This is handled by the window, but we could add logic here if needed
+                break;
             default:
                 BApplication::MessageReceived(message);
                 break;
         }
+    }
+
+    void LoadNewRom(const std::string& romPath) {
+        if (fNES) {
+            delete fNES;
+            fNES = nullptr;
+        }
+
+        fNES = new NES();
+        if (!fNES->loadCartridge(romPath)) {
+            std::string errorMsg = "Failed to load cartridge.\nMake sure '" + romPath + "' is a valid .nes file.";
+            BAlert* alert = new BAlert("Error", errorMsg.c_str(), "OK");
+            alert->Go();
+            delete fNES;
+            fNES = nullptr;
+            return;
+        }
+
+        // Update windows with new PPU and Cartridge
+        fEmulatorWindow->SetPPU(fNES->getPPU());
+        fPatternTableWindow->SetPPU(fNES->getPPU());
+        fPatternTableWindow->SetCartridge(fNES->getCartridge());
     }
 
 private:
@@ -284,12 +379,12 @@ private:
 
 // --- Main Entry Point ---
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s <path_to_rom.nes>\n", argv[0]);
-        return 1;
+    EmulatorApp app;
+
+    if (argc == 2) {
+        app.LoadNewRom(argv[1]);
     }
 
-    EmulatorApp app(argv[1]);
     app.Run();
     return 0;
 }

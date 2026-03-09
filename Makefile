@@ -3,7 +3,7 @@
 # Compiler and flags
 CXX = g++
 CXXFLAGS = -I./include -I/boot/system/develop/headers/private/interface
-LDFLAGS = -lbe -lgame -ltranslation
+LDFLAGS = -lbe -lgame -ltranslation -ltracker
 
 # Directories
 OBJ_DIR = obj

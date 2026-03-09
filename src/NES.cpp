@@ -1,7 +1,7 @@
 #include "NES.h"
 #include "Cartridge.hpp"
 #include "CPU.h"
-#include "PPU2.hpp" // Using the more complete PPU implementation
+#include "PPU.hpp" // Using the more complete PPU implementation
 #include <iostream>
 
 NES::NES() {
