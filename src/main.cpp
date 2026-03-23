@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <map> // For std::map
-#include <app/AppDefs.h>             // ADDED: Provides B_KEY_* constants
 #include <interface/InterfaceDefs.h> // Provides key_info struct and get_key_info function
 #include <MenuBar.h>
 #include <Menu.h>

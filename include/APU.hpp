@@ -1,10 +1,12 @@
 #ifndef APU_CLASS
 #define APU_CLASS
 
+#include <SoundPlayer.h>
+
 #define TAM_APU_REGISTERS 4
 
 class APU {
-
+    
     private:
 
         // AUDIO WAVES REGISTERS
@@ -22,12 +24,24 @@ class APU {
         // Frame Counter register
         unsigned char reg4017;
 
+        static void AudioCallback(void* cookie, void* buffer, size_t size, const media_raw_audio_format& format);
+        BSoundPlayer* player;
+        bool is_playing;
+
     public:
 
         void reset();
         unsigned char getAudioValue(unsigned short dir);
         unsigned char * getAudioDir(unsigned short dir);
         void setAudioValue(unsigned short dir, unsigned char value);
+        void AudioCallback(void* cookie, void* buffer, size_t size, const media_raw_audio_format& format);
+        double getDutyCycle(int pulse_index);
+        double getVolume (int pulse_index);
+        double getPulseTimer (int pulse_index)
+
+        void start();
+        void stop();
+        bool isPlaying();
 };
 
 #endif
