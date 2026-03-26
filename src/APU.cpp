@@ -1,14 +1,19 @@
 #include "APU.hpp"
+#include <stdio.h>
 
 const int32 SAMPLE_RATE = 44100;
 const size_t BUFFER_SIZE = 1250 * sizeof(float);
 const float AMPLITUDE = 0.1f;
 const float FREQUENCY = 440.0f; // A4 note
 
+APU :: APU(){
+    player = nullptr;
+}
+
 void APU :: reset(){
     
     // Inicialización de los registros
-    for (int i = 0; i < 4; ++i){
+    for (int i = 0; i < TAM_APU_REGISTERS; ++i){
         regPulse1[i] = 0x00;
         regPulse2[i] = 0x00;
         regTriangle[i] = 0x00;
@@ -27,58 +32,78 @@ void APU :: reset(){
     is_playing = false;
     
     media_raw_audio_format format;
-
+    
     format.frame_rate = SAMPLE_RATE;
     format.channel_count = 1; // Mono
     format.format = media_raw_audio_format::B_AUDIO_FLOAT;
     format.buffer_size = BUFFER_SIZE; // 10ms buffer
     format.byte_order = B_MEDIA_LITTLE_ENDIAN;
 
+    if (player != nullptr){
+        delete player;
+    }
+    
     player = new BSoundPlayer (&format, "MontaNES Audio", &APU::AudioCallback, NULL, this);
 
+    if (player->InitCheck() != B_OK) {
+        printf("La inicialización de la APU ha fallado: %s\n", strerror(player->InitCheck()));
+        delete player;
+        player = nullptr;
+    } else {
+        player->SetVolume(AMPLITUDE);
+        printf("APU inicializada con exito\n");
+    }
 }
 
 unsigned char APU :: getAudioValue(unsigned short dir){
 
+    unsigned char temp = 0;
+
     dir = dir - 0x4000;
 
     if (dir < 0x04){
-        return regPulse1[dir % TAM_APU_REGISTERS];
+        temp = regPulse1[dir % TAM_APU_REGISTERS];
     }else if (dir < 0x08){
-        return regPulse2[dir % TAM_APU_REGISTERS];
+        temp = regPulse2[dir % TAM_APU_REGISTERS];
     }else if (dir < 0x0C){
-        return regTriangle[dir % TAM_APU_REGISTERS];
+        temp = regTriangle[dir % TAM_APU_REGISTERS];
     }else if (dir < 0x10){
-        return regNoise[dir % TAM_APU_REGISTERS];
+        temp = regNoise[dir % TAM_APU_REGISTERS];
     }else if (dir < 0x15){
-        return regDMC[dir % TAM_APU_REGISTERS];
+        temp = regDMC[dir % TAM_APU_REGISTERS];
     }else if (dir == 0x15){
-        return reg4015;
+        temp = reg4015;
     }else if (dir == 0x17){
-        return reg4017;
+        temp = reg4017;
     }
+
+    return temp;
 
 }
 
 unsigned char * APU :: getAudioDir(unsigned short dir){
 
+    unsigned char *temp = nullptr;
+
     dir = dir - 0x4000;
 
     if (dir < 0x04){
-        return &regPulse1[dir % TAM_APU_REGISTERS];
+        temp = &regPulse1[dir % TAM_APU_REGISTERS];
     }else if (dir < 0x08){
-        return &regPulse2[dir % TAM_APU_REGISTERS];
+        temp = &regPulse2[dir % TAM_APU_REGISTERS];
     }else if (dir < 0x0C){
-        return &regTriangle[dir % TAM_APU_REGISTERS];
+        temp = &regTriangle[dir % TAM_APU_REGISTERS];
     }else if (dir < 0x10){
-        return &regNoise[dir % TAM_APU_REGISTERS];
+        temp = &regNoise[dir % TAM_APU_REGISTERS];
     }else if (dir < 0x15){
-        return &regDMC[dir % TAM_APU_REGISTERS];
+        temp = &regDMC[dir % TAM_APU_REGISTERS];
     }else if (dir == 0x15){
-        return &reg4015;
+        temp = &reg4015;
     }else if (dir == 0x17){
-        return &reg4017;
+        temp = &reg4017;
     }
+
+    return temp;
 
 }
 
@@ -134,6 +159,18 @@ double APU :: getDutyCycle(int pulse_index){
 
 }
 
+unsigned char APU :: getLengthCounter(int pulse_index){
+    return (!pulse_index) ? ((regPulse1[3] & 0xF8) >> 3) : ((regPulse2[3] & 0xF8) >> 3);
+}
+
+bool APU :: getLengthCounterHalt(int pulse_index){
+    return (!pulse_index) ? (regPulse1[0] & 0x20) != 0 : (regPulse2[0] & 0x20) != 0;
+}
+
+bool APU :: getEnvelopeFlag(int pulse_index){
+    return (!pulse_index) ? (regPulse1[0] & 0x10) != 0 : (regPulse2[0] & 0x10) != 0;
+}
+
 double APU :: getVolume (int pulse_index){
     
     unsigned char volume_raw;
@@ -146,7 +183,7 @@ double APU :: getVolume (int pulse_index){
 
 }
 
-double APU :: getPulseTimer (int pulse_index){
+unsigned short APU :: getPulseTimer (int pulse_index){
 
     unsigned short timer;
 
@@ -156,11 +193,28 @@ double APU :: getPulseTimer (int pulse_index){
 
 }
 
+bool APU :: getSweepEnableFlag(int pulse_index){
+    return (!pulse_index) ? (regPulse1[1] & 0x80) != 0 : (regPulse2[1] & 0x80) != 0;
+}
+
+unsigned char APU :: getSweepDividersPeriod(int pulse_index){
+    return (!pulse_index) ? (regPulse1[1] & 0x70) >> 4 : (regPulse2[1] & 0x70) >> 4;
+}
+
+bool APU :: getSweepNegativeFlag(int pulse_index){
+    return (!pulse_index) ? (regPulse1[1] & 0x04) != 0 : (regPulse2[1] & 0x04) != 0;
+}
+
+unsigned char APU :: getSweepShiftCount(int pulse_index){
+    return (!pulse_index) ? (regPulse1[1] & 0x03) : (regPulse2[1] & 0x03);
+}
+
 void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw_audio_format& format) {
 
     //Pulse audio
+    APU * apu = static_cast<APU*>(cookie);
 
     //Duty cycle ----> 00: 12'5%, 01: 25%, 10: 50%, 11: %75
-    getDutyCycle(0);
-    getDutyCycle(1);
+    apu->getDutyCycle(0);
+    apu->getDutyCycle(1);
 }

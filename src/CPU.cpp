@@ -587,6 +587,11 @@ void CPU :: connectJoypad (Joypad * joypad_ptr){
 void CPU :: connectCartridge (Cartridge * c){
     this->cartridge = c;
 }
+
+void CPU :: connectAPU (APU * a){
+    this->apu = a;
+}
+
 /**************************************************************************************/
 
 // Other functions
@@ -666,7 +671,6 @@ void CPU :: setMemoryValue (unsigned short dir, unsigned char value){
                     this->ppu->setPPUDATA(value);
                     break;
             }
-
         } else if (dir == 0x4014) {
             if (this->ppu == nullptr) {
                 printf("CPU::setMemoryValue - ERROR: PPU pointer is nullptr when writing to OAMDMA 0x%04X\n", dir);
@@ -676,6 +680,8 @@ void CPU :: setMemoryValue (unsigned short dir, unsigned char value){
         } else if (dir == 0x4016) {
             joypad->write4016(value);
             cpu_memory[dir] = value;
+        } else if (dir >= 0x4000 && dir <= 0x4017){
+            apu->setAudioValue(dir, value);
         }else if (dir >= 0x8000){
             cartridge->catchWriteInRAM(dir, value);
         } else {
@@ -714,9 +720,10 @@ unsigned char CPU :: getMemoryValue (unsigned short dir){
                 case 0x2007:
                     return this->ppu->getPPUDATA();
             }
-
         }else if (dir == 0x4016){
             return joypad->read4016();
+        }else if (dir >= 0x4000 && dir <= 0x4017 && dir != 0x4014){
+            return apu->getAudioValue(dir);
         }else if (dir >= 0x8000){
             return cartridge->getPRGValue(dir);
         }

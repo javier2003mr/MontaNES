@@ -10,6 +10,7 @@ NES::NES() {
     cpu = nullptr;
     ppu = nullptr;
     cartridge = nullptr;
+    apu = nullptr;
     joypad = new Joypad(); // Initialize Joypad
 }
 
@@ -19,6 +20,7 @@ NES::~NES() {
     if (ppu != nullptr) delete ppu;
     if (cartridge != nullptr) delete cartridge; // Assuming cartridge is also dynamically allocated
     if (joypad != nullptr) delete joypad; // Delete Joypad
+    if (apu != nullptr) delete apu;
 }
 
 bool NES::loadCartridge(const std::string& path) {
@@ -39,9 +41,11 @@ bool NES::loadCartridge(const std::string& path) {
     //ppu = std::make_unique<PPU>(cpu.get(), cartridge.get());
     cpu = new CPU;
     ppu = new PPU (cpu, cartridge);
+    apu = new APU;
     cpu->connectPPU(ppu);
     cpu->connectJoypad(joypad);
     cpu->connectCartridge(cartridge);
+    cpu->connectAPU(apu);
 
     // --- Load PRG-ROM into CPU memory ---
     unsigned char* prg_rom = cartridge->getPRGROM();
@@ -104,6 +108,8 @@ void NES::reset() {
     // Reset the PPU.
     ppu->reset();
     
+    // Reset the APU.
+    apu->reset();
 }
 
 void NES::runFrame() {
@@ -146,6 +152,10 @@ Cartridge* NES::getCartridge() const {
 
 Joypad* NES::getJoypad() const {
     return joypad;
+}
+
+APU * NES :: getAPU() const{
+    return apu;
 }
 
 bool NES::isCartridgeLoaded() const {

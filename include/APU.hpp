@@ -30,14 +30,24 @@ class APU {
 
     public:
 
+        APU();
+
         void reset();
         unsigned char getAudioValue(unsigned short dir);
         unsigned char * getAudioDir(unsigned short dir);
         void setAudioValue(unsigned short dir, unsigned char value);
-        void AudioCallback(void* cookie, void* buffer, size_t size, const media_raw_audio_format& format);
+        
+        //Pulse wave
         double getDutyCycle(int pulse_index);
         double getVolume (int pulse_index);
-        double getPulseTimer (int pulse_index)
+        unsigned short getPulseTimer (int pulse_index);
+        unsigned char getLengthCounter(int pulse_index);
+        bool getLengthCounterHalt(int pulse_index);
+        bool getEnvelopeFlag(int pulse_index);
+        bool getSweepEnableFlag(int pulse_index);
+        unsigned char getSweepDividersPeriod(int pulse_index);
+        bool getSweepNegativeFlag(int pulse_index);
+        unsigned char getSweepShiftCount(int pulse_index);
 
         void start();
         void stop();

@@ -4,12 +4,16 @@
 #include <string>
 #include <memory>
 #include "Joypad.hpp" // Include Joypad header
+#include "CPU.h"
+#include "PPU.hpp"
+#include "Cartridge.hpp"
+#include "APU.hpp"
 
 // Forward-declare the classes to avoid circular dependencies
 // and to keep the header clean.
-class CPU;
-class PPU;
-class Cartridge;
+//class CPU;
+//class PPU;
+//class Cartridge;
 
 class NES {
 public:
@@ -31,6 +35,7 @@ public:
     CPU* getCPU() const;
     Cartridge* getCartridge() const;
     Joypad* getJoypad() const; // New accessor for Joypad
+    APU * getAPU() const;
 
     bool isCartridgeLoaded() const;
 
@@ -43,6 +48,7 @@ private:
     CPU * cpu;
     PPU * ppu;
     Joypad * joypad; // Add Joypad member
+    APU * apu;
 
     bool cartridgeLoaded = false;
 };
