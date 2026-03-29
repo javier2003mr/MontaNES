@@ -187,7 +187,7 @@ unsigned short APU :: getPulseTimer (int pulse_index){
 
     unsigned short timer;
 
-    timer = (!pulse_index) ? regPulse1[2] & ((regPulse1[3] & 0x07) << 8) : regPulse2[2] & ((regPulse2[3] & 0x07) << 8);
+    timer = (!pulse_index) ? regPulse1[2] | ((regPulse1[3] & 0x07) << 8) : regPulse2[2] | ((regPulse2[3] & 0x07) << 8);
 
     return timer;
 
@@ -205,8 +205,69 @@ bool APU :: getSweepNegativeFlag(int pulse_index){
     return (!pulse_index) ? (regPulse1[1] & 0x04) != 0 : (regPulse2[1] & 0x04) != 0;
 }
 
-unsigned char APU :: getSweepShiftCount(int pulse_index){
-    return (!pulse_index) ? (regPulse1[1] & 0x03) : (regPulse2[1] & 0x03);
+unsigned char APU::getSweepShiftCount(int pulse_index) {
+    if (pulse_index == 0) {
+        return (regPulse1[1] >> 0) & 0x07;
+    } else {
+        return (regPulse2[1] >> 0) & 0x07;
+    }
+}
+
+//Noise wave
+bool APU::getNoiseEnvelopeLoop() {
+    return (regNoise[0] >> 5) & 0x01;
+}
+
+bool APU::getNoiseConstantVolume() {
+    return (regNoise[0] >> 4) & 0x01;
+}
+
+unsigned char APU::getNoiseVolumeEnvelope() {
+    return regNoise[0] & 0x0F;
+}
+
+bool APU::getNoiseMode() {
+    return (regNoise[2] >> 7) & 0x01;
+}
+
+unsigned char APU::getNoisePeriod() {
+    return regNoise[2] & 0x0F;
+}
+
+unsigned char APU::getNoiseLengthCounterLoad() {
+    return (regNoise[3] >> 3) & 0x1F;
+}
+
+//Triangular wave
+bool APU::getTriangleLengthCounterHalt() {
+    return (regTriangle[0] >> 7) & 0x01;
+}
+
+unsigned char APU::getTriangleLinearCounterLoad() {
+    return regTriangle[0] & 0x7F;
+}
+
+unsigned short APU::getTriangleTimer() {
+    return (unsigned short)regTriangle[2] | (((unsigned short)regTriangle[3] & 0x07) << 8);
+}
+
+unsigned char APU::getTriangleLengthCounterLoad() {
+    return (regTriangle[3] >> 3) & 0x1F;
+}
+
+
+void APU :: start(){
+    if (player && !is_playing){
+        player->Start();
+        is_playing = true;
+    }
+}
+
+void APU :: stop(){
+    if (player && is_playing){
+        player->Stop();
+        is_playing = false;
+    }
 }
 
 void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw_audio_format& format) {
@@ -214,7 +275,13 @@ void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw
     //Pulse audio
     APU * apu = static_cast<APU*>(cookie);
 
-    //Duty cycle ----> 00: 12'5%, 01: 25%, 10: 50%, 11: %75
+    /*Duty cycle: 
+    00: 12'5% -------> 0 1 0 0 0 0 0 0
+    01: 25%, --------> 0 1 1 0 0 0 0 0 
+    10: 50%, --------> 0 1 1 1 1 0 0 0
+    11: %75 ---------> 1 0 0 1 1 1 1 1
+    */
+
     apu->getDutyCycle(0);
     apu->getDutyCycle(1);
 }

@@ -49,6 +49,20 @@ class APU {
         bool getSweepNegativeFlag(int pulse_index);
         unsigned char getSweepShiftCount(int pulse_index);
 
+        //Noise wave
+        bool getNoiseEnvelopeLoop();
+        bool getNoiseConstantVolume();
+        unsigned char getNoiseVolumeEnvelope();
+        bool getNoiseMode();
+        unsigned char getNoisePeriod();
+        unsigned char getNoiseLengthCounterLoad();
+
+        //Triangular wave
+        bool getTriangleLengthCounterHalt();
+        unsigned char getTriangleLinearCounterLoad();
+        unsigned short getTriangleTimer();
+        unsigned char getTriangleLengthCounterLoad();
+
         void start();
         void stop();
         bool isPlaying();
