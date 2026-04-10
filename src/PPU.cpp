@@ -370,9 +370,9 @@ void PPU::runCycle() {
 }
 
 void PPU::renderPixel() {
-    if (cycle < 1 || cycle > 256) return;
+    if (cycle <= 1 || cycle > 257) return;
 
-    int pixel_x = cycle - 1;
+    int pixel_x = cycle - 2;
     int pixel_y = scanline;
     int pixel_index = pixel_y * 256 + pixel_x;
     

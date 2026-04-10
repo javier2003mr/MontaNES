@@ -20,7 +20,10 @@ NES::~NES() {
     if (ppu != nullptr) delete ppu;
     if (cartridge != nullptr) delete cartridge; // Assuming cartridge is also dynamically allocated
     if (joypad != nullptr) delete joypad; // Delete Joypad
-    if (apu != nullptr) delete apu;
+    if (apu != nullptr) {
+        apu->stop(); // Stop the APU before deleting it
+        delete apu;
+    }
 }
 
 bool NES::loadCartridge(const std::string& path) {
@@ -72,6 +75,9 @@ bool NES::loadCartridge(const std::string& path) {
     // Reset the system to its initial state before loading CHR ROM.
     reset();
 
+    // Start the APU after everything is initialized and reset
+    apu->start();
+
     // --- Load CHR-ROM into PPU memory ---
 //    unsigned char* chr_rom = cartridge->getCHRROM();
     unsigned char chr_rom_size = cartridge->getCHRROMSize(); // In 8KB units
@@ -113,6 +119,7 @@ void NES::reset() {
 }
 
 void NES::runFrame() {
+
     if (!cartridgeLoaded) return;
 
     // This loop runs the emulator for a duration equivalent to one NTSC frame.
@@ -121,6 +128,7 @@ void NES::runFrame() {
     const int total_cycles_per_frame = 29781;
 
     while (cpu_cycles_this_frame < total_cycles_per_frame) {
+
         // The CPU executes one instruction and returns the number of cycles it took.
         int cycles = cpu->emulationCycle();
         cpu_cycles_this_frame += cycles;

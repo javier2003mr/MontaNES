@@ -1,13 +1,16 @@
 #include "APU.hpp"
 #include <stdio.h>
 
-const int32 SAMPLE_RATE = 44100;
-const size_t BUFFER_SIZE = 1250 * sizeof(float);
-const float AMPLITUDE = 0.1f;
-const float FREQUENCY = 440.0f; // A4 note
-
 APU :: APU(){
     player = nullptr;
+}
+
+APU :: ~APU(){
+    if (player){
+        player->Stop();
+        delete player;
+        player = nullptr;
+    }
 }
 
 void APU :: reset(){
@@ -27,6 +30,30 @@ void APU :: reset(){
     regPulse1[0] = regPulse2[0] = regNoise[0] = 0x30;
     regPulse1[1] = regPulse2[1] = 0x08;
     regTriangle[0] = 0x80;
+
+    // Initialize new member variables
+    for (int i = 0; i < 2; ++i) {
+        pulse_timer_counter[i] = 0;
+        pulse_current_sequence_step[i] = 0;
+        pulse_envelope_volume[i] = 0;
+        pulse_length_counter[i] = 0;
+        pulse_sweep_counter[i] = 0;
+        pulse_output[i] = 0.0f;
+    }
+
+    // Initialize new member variables for Triangular Wave
+    triangle_timer_counter = 0;
+    triangle_linear_counter = 0;
+    triangle_length_counter = 0;
+    triangle_current_sequence_step = 0;
+    triangle_output = 0.0f;
+
+    // Initialize new member variables for Noise Channel
+    noise_timer_counter = 0;
+    noise_envelope_volume = 0;
+    noise_length_counter = 0;
+    noise_shift_register = 1; // Initial value for LFSR
+    noise_output = 0.0f;
 
     //Parte del codigo de BSoundPlayer
     is_playing = false;
@@ -129,6 +156,7 @@ void APU :: setAudioValue(unsigned short dir, unsigned char value){
 
 }
 
+// Pulse Wave
 double APU :: getDutyCycle(int pulse_index){
     
     unsigned char duty_cycle_raw;
@@ -213,6 +241,43 @@ unsigned char APU::getSweepShiftCount(int pulse_index) {
     }
 }
 
+float APU::generatePulseSample(int pulse_index) {
+
+    // Get current duty cycle pattern
+    unsigned char duty_cycle_raw = (pulse_index == 0) ? (regPulse1[0] & 0xC0) >> 6 : (regPulse2[0] & 0xC0) >> 6;
+    const unsigned char* current_duty_sequence = DUTY_CYCLE_SEQUENCES[duty_cycle_raw];
+
+    // Get timer period
+    unsigned short timer_period = getPulseTimer(pulse_index);
+
+    // Update timer counter
+    if (pulse_timer_counter[pulse_index] == 0) {
+        pulse_timer_counter[pulse_index] = timer_period;
+        pulse_current_sequence_step[pulse_index] = (pulse_current_sequence_step[pulse_index] + 1) % 8;
+    } else {
+        pulse_timer_counter[pulse_index]--;
+
+        if (pulse_timer_counter[pulse_index] < 8){
+            pulse_output[pulse_index] = 0.0f;
+            return pulse_output[pulse_index];
+        }
+            
+    }
+
+    // Get volume
+    double volume = getVolume(pulse_index); // This already returns a normalized value (0.0 to 1.0)
+
+    // Determine output based on duty cycle and volume
+    if (current_duty_sequence[pulse_current_sequence_step[pulse_index]] == 1) {
+        pulse_output[pulse_index] = volume;
+    } else {
+        //pulse_output[pulse_index] = -volume; // Output -volume when low
+        pulse_output[pulse_index] = 0;
+    }
+
+    return pulse_output[pulse_index];
+}
+
 //Noise wave
 bool APU::getNoiseEnvelopeLoop() {
     return (regNoise[0] >> 5) & 0x01;
@@ -255,10 +320,67 @@ unsigned char APU::getTriangleLengthCounterLoad() {
     return (regTriangle[3] >> 3) & 0x1F;
 }
 
+float APU::generateTriangleSample() {
+    // Get timer period
+    unsigned short timer_period = getTriangleTimer();
+
+    // Update timer counter
+    if (triangle_timer_counter == 0) {
+        triangle_timer_counter = timer_period;
+        triangle_current_sequence_step = (triangle_current_sequence_step + 1) % 32;
+    } else {
+        triangle_timer_counter--;
+    }
+
+    // Get output from sequence, normalized to -1 to 1
+    // The sequence values are 0-15. To normalize to -1 to 1, we can map 0 to -1, 15 to 1.
+    // (value / 7.5) - 1.0
+    triangle_output = ((float)TRIANGLE_SEQUENCE[triangle_current_sequence_step] / 7.5f) - 1.0f;
+
+    return triangle_output;
+}
+
+float APU::generateNoiseSample() {
+    // Get timer period
+    unsigned char period_index = getNoisePeriod();
+    unsigned short timer_period = NOISE_PERIODS[period_index];
+
+    // Update timer counter
+    if (noise_timer_counter == 0) {
+        noise_timer_counter = timer_period;
+
+        // Shift LFSR
+        unsigned short feedback_bit;
+        if (getNoiseMode()) { // Short mode (mode bit is 1)
+            feedback_bit = (noise_shift_register & 0x0001) ^ ((noise_shift_register & 0x0040) >> 6); // Bit 0 XOR Bit 6
+        } else { // Long mode (mode bit is 0)
+            feedback_bit = (noise_shift_register & 0x0001) ^ ((noise_shift_register & 0x0002) >> 1); // Bit 0 XOR Bit 1
+        }
+        noise_shift_register >>= 1;
+        noise_shift_register |= (feedback_bit << 14); // Set bit 14
+
+    } else {
+        noise_timer_counter--;
+    }
+
+    // Get volume
+    unsigned char volume_raw = getNoiseVolumeEnvelope();
+    float volume = (float)volume_raw / 15.0f; // Normalize 0-15 to 0-1
+
+    // Determine output based on LFSR's first bit and volume
+    if (!(noise_shift_register & 0x0001)) { // If bit 0 is 0
+        noise_output = volume;
+    } else {
+        noise_output = -volume;
+    }
+
+    return noise_output;
+}
 
 void APU :: start(){
     if (player && !is_playing){
         player->Start();
+        player->SetHasData(true);
         is_playing = true;
     }
 }
@@ -266,22 +388,30 @@ void APU :: start(){
 void APU :: stop(){
     if (player && is_playing){
         player->Stop();
+        player->SetHasData(false);
         is_playing = false;
     }
 }
 
 void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw_audio_format& format) {
+    APU* apu = static_cast<APU*>(cookie);
+    float* float_buffer = static_cast<float*>(buffer);
+    size_t num_samples = size / sizeof(float);
 
-    //Pulse audio
-    APU * apu = static_cast<APU*>(cookie);
+    for (size_t i = 0; i < num_samples; ++i) {
+        /*float pulse1_sample = apu->generatePulseSample(0); // Pulse 1
+        float pulse2_sample = apu->generatePulseSample(1); // Pulse 2
+        float triangle_sample = apu->generateTriangleSample(); // Triangle
+        float noise_sample = apu->generateNoiseSample(); // Noise
 
-    /*Duty cycle: 
-    00: 12'5% -------> 0 1 0 0 0 0 0 0
-    01: 25%, --------> 0 1 1 0 0 0 0 0 
-    10: 50%, --------> 0 1 1 1 1 0 0 0
-    11: %75 ---------> 1 0 0 1 1 1 1 1
-    */
+        // Mix the four channels (simple sum for now)
+        // The output should be between -1 and 1.
+        // For now, let's just sum and then divide by 4 to keep it within -1 to 1 range.
+        float mixed_sample = (pulse1_sample + pulse2_sample + triangle_sample + noise_sample) / 4.0f;*/
 
-    apu->getDutyCycle(0);
-    apu->getDutyCycle(1);
+        float mixed_sample = (apu->generatePulseSample(0) + apu->generatePulseSample(1)) / 2.0f;
+
+        // Apply overall amplitude
+        float_buffer[i] = mixed_sample; // * AMPLITUDE;
+    }
 }
