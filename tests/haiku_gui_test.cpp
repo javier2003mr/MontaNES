@@ -15,7 +15,7 @@
 #include "NES.h"
 #include "PPU.hpp"
 #include "Cartridge.hpp"
-#include "CPU.h"
+#include "CPU.hpp"
 
 // --- Emulator View ---
 // This view is responsible for drawing the main game screen.

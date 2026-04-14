@@ -51,6 +51,7 @@ private:
     APU * apu;
 
     bool cartridgeLoaded = false;
+    unsigned int apu_frame_sequencer_timer;
 };
 
 #endif // NES_H

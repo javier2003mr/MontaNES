@@ -39,6 +39,12 @@ void APU :: reset(){
         pulse_length_counter[i] = 0;
         pulse_sweep_counter[i] = 0;
         pulse_output[i] = 0.0f;
+        pulse_envelope_divider[i] = 0;
+        pulse_envelope_counter[i] = 0;
+        pulse_envelope_start_flag[i] = true;
+        pulse_sweep_divider[i] = 0;
+        pulse_sweep_reload_flag[i] = true;
+        pulse_current_period[i] = getPulseTimer(i); // Initialize with current timer value
     }
 
     // Initialize new member variables for Triangular Wave
@@ -47,13 +53,12 @@ void APU :: reset(){
     triangle_length_counter = 0;
     triangle_current_sequence_step = 0;
     triangle_output = 0.0f;
+    triangle_linear_counter_reload_value = 0;
+    triangle_linear_counter_reload_flag = false;
 
-    // Initialize new member variables for Noise Channel
-    noise_timer_counter = 0;
-    noise_envelope_volume = 0;
-    noise_length_counter = 0;
-    noise_shift_register = 1; // Initial value for LFSR
-    noise_output = 0.0f;
+    // Initialize frame sequencer
+    frame_sequencer_counter = 0;
+    frame_sequencer_timer = 0;
 
     //Parte del codigo de BSoundPlayer
     is_playing = false;
@@ -63,7 +68,7 @@ void APU :: reset(){
     format.frame_rate = SAMPLE_RATE;
     format.channel_count = 1; // Mono
     format.format = media_raw_audio_format::B_AUDIO_FLOAT;
-    format.buffer_size = BUFFER_SIZE; // 10ms buffer
+    format.buffer_size = BUFFER_SIZE;
     format.byte_order = B_MEDIA_LITTLE_ENDIAN;
 
     if (player != nullptr){
@@ -140,10 +145,35 @@ void APU :: setAudioValue(unsigned short dir, unsigned char value){
 
     if (dir < 0x04){
         regPulse1[dir % TAM_APU_REGISTERS] = value;
+        if (dir % TAM_APU_REGISTERS == 3) { // Write to $4003
+            pulse_length_counter[0] = LENGTH_COUNTER_TABLE[(value >> 3) & 0x1F];
+            pulse_envelope_start_flag[0] = true; // Restart envelope
+            pulse_current_period[0] = getPulseTimer(0); // Update current period
+        } else if (dir % TAM_APU_REGISTERS == 2) { // Write to $4002
+            pulse_current_period[0] = getPulseTimer(0); // Update current period
+        } else if (dir % TAM_APU_REGISTERS == 1) { // Write to $4001 (sweep)
+            pulse_sweep_reload_flag[0] = true;
+        }
     }else if (dir < 0x08){
         regPulse2[dir % TAM_APU_REGISTERS] = value;
+        if (dir % TAM_APU_REGISTERS == 3) { // Write to $4007
+            pulse_length_counter[1] = LENGTH_COUNTER_TABLE[(value >> 3) & 0x1F];
+            pulse_envelope_start_flag[1] = true; // Restart envelope
+            pulse_current_period[1] = getPulseTimer(1); // Update current period
+        } else if (dir % TAM_APU_REGISTERS == 2) { // Write to $4006
+            pulse_current_period[1] = getPulseTimer(1); // Update current period
+        } else if (dir % TAM_APU_REGISTERS == 1) { // Write to $4005 (sweep)
+            pulse_sweep_reload_flag[1] = true;
+        }
     }else if (dir < 0x0C){
         regTriangle[dir % TAM_APU_REGISTERS] = value;
+        if (dir % TAM_APU_REGISTERS == 0) { // Write to $4008
+            triangle_linear_counter_reload_value = value & 0x7F;
+            triangle_linear_counter_reload_flag = true;
+        } else if (dir % TAM_APU_REGISTERS == 3) { // Write to $400B
+            triangle_length_counter = LENGTH_COUNTER_TABLE[(value >> 3) & 0x1F];
+            triangle_linear_counter_reload_flag = true;
+        }
     }else if (dir < 0x10){
         regNoise[dir % TAM_APU_REGISTERS] = value;
     }else if (dir < 0x15){
@@ -201,14 +231,15 @@ bool APU :: getEnvelopeFlag(int pulse_index){
 
 double APU :: getVolume (int pulse_index){
     
-    unsigned char volume_raw;
-    double volume;
+    unsigned char reg0 = (!pulse_index) ? regPulse1[0] : regPulse2[0];
+    bool constant_volume_flag = (reg0 >> 4) & 0x01; // Bit 4 (C)
+    unsigned char volume_envelope_period = reg0 & 0x0F; // Bits 3-0 (V/P)
 
-    volume_raw = (!pulse_index) ? (regPulse1[0] & 0x0F) : (regPulse2[0] & 0x0F);
-    volume = (double) volume_raw / 0x0F;
-
-    return volume;
-
+    if (constant_volume_flag) {
+        return (double)volume_envelope_period / 0x0F;
+    } else {
+        return (double)pulse_envelope_volume[pulse_index] / 0x0F;
+    }
 }
 
 unsigned short APU :: getPulseTimer (int pulse_index){
@@ -242,17 +273,18 @@ unsigned char APU::getSweepShiftCount(int pulse_index) {
 }
 
 float APU::generatePulseSample(int pulse_index) {
+    
+    bool length_counter_halt = getLengthCounterHalt(pulse_index);
+
+    
 
     // Get current duty cycle pattern
     unsigned char duty_cycle_raw = (pulse_index == 0) ? (regPulse1[0] & 0xC0) >> 6 : (regPulse2[0] & 0xC0) >> 6;
     const unsigned char* current_duty_sequence = DUTY_CYCLE_SEQUENCES[duty_cycle_raw];
 
-    // Get timer period
-    unsigned short timer_period = getPulseTimer(pulse_index);
-
     // Update timer counter
     if (pulse_timer_counter[pulse_index] == 0) {
-        pulse_timer_counter[pulse_index] = timer_period;
+        pulse_timer_counter[pulse_index] = pulse_current_period[pulse_index];
         pulse_current_sequence_step[pulse_index] = (pulse_current_sequence_step[pulse_index] + 1) % 8;
     } else {
         pulse_timer_counter[pulse_index]--;
@@ -261,18 +293,19 @@ float APU::generatePulseSample(int pulse_index) {
             pulse_output[pulse_index] = 0.0f;
             return pulse_output[pulse_index];
         }
-            
     }
 
-    // Get volume
-    double volume = getVolume(pulse_index); // This already returns a normalized value (0.0 to 1.0)
+    // Get volume (now uses envelope volume)
+    double volume = getVolume(pulse_index);
 
+    // If length counter is 0, silence the channel
+    // Muting conditions from sweep unit
     // Determine output based on duty cycle and volume
-    if (current_duty_sequence[pulse_current_sequence_step[pulse_index]] == 1) {
+    if (current_duty_sequence[pulse_current_sequence_step[pulse_index]] == 1 &&
+        !(pulse_current_period[pulse_index] < 8 || pulse_current_period[pulse_index] > 0x7FF || pulse_length_counter[pulse_index] == 0 || pulse_timer_counter[1] < 8)) {
         pulse_output[pulse_index] = volume;
     } else {
-        //pulse_output[pulse_index] = -volume; // Output -volume when low
-        pulse_output[pulse_index] = 0;
+        pulse_output[pulse_index] = 0.0f;
     }
 
     return pulse_output[pulse_index];
@@ -332,10 +365,7 @@ float APU::generateTriangleSample() {
         triangle_timer_counter--;
     }
 
-    // Get output from sequence, normalized to -1 to 1
-    // The sequence values are 0-15. To normalize to -1 to 1, we can map 0 to -1, 15 to 1.
-    // (value / 7.5) - 1.0
-    triangle_output = ((float)TRIANGLE_SEQUENCE[triangle_current_sequence_step] / 7.5f) - 1.0f;
+    triangle_output = ((float)TRIANGLE_SEQUENCE[triangle_current_sequence_step] / 15.0f);// - 1.0f;
 
     return triangle_output;
 }
@@ -343,7 +373,7 @@ float APU::generateTriangleSample() {
 float APU::generateNoiseSample() {
     // Get timer period
     unsigned char period_index = getNoisePeriod();
-    unsigned short timer_period = NOISE_PERIODS[period_index];
+    unsigned short timer_period = 0;//NOISE_PERIODS[period_index];
 
     // Update timer counter
     if (noise_timer_counter == 0) {
@@ -377,6 +407,186 @@ float APU::generateNoiseSample() {
     return noise_output;
 }
 
+void APU::updateEnvelope(int channel_index) {
+    unsigned char reg0 = (channel_index == 0) ? regPulse1[0] : regPulse2[0];
+    bool envelope_loop_halt = (reg0 >> 5) & 0x01; // Bit 5 (L/H)
+    bool constant_volume_flag = (reg0 >> 4) & 0x01; // Bit 4 (C)
+    unsigned char volume_envelope_period = reg0 & 0x0F; // Bits 3-0 (V/P)
+
+    if (pulse_envelope_start_flag[channel_index]) {
+        pulse_envelope_start_flag[channel_index] = false;
+        pulse_envelope_volume[channel_index] = 0x0F;
+        pulse_envelope_divider[channel_index] = volume_envelope_period;
+    } else {
+        if (pulse_envelope_divider[channel_index] > 0) {
+            pulse_envelope_divider[channel_index]--;
+        } else {
+            pulse_envelope_divider[channel_index] = volume_envelope_period;
+            if (pulse_envelope_volume[channel_index] > 0) {
+                pulse_envelope_volume[channel_index]--;
+            } else if (envelope_loop_halt) {
+                pulse_envelope_volume[channel_index] = 0x0F;
+            }
+        }
+    }
+
+    if (constant_volume_flag) {
+        pulse_envelope_volume[channel_index] = volume_envelope_period;
+    }
+}
+
+void APU::updateSweep(int channel_index) {
+    unsigned char reg1 = (channel_index == 0) ? regPulse1[1] : regPulse2[1];
+    bool sweep_enabled = (reg1 >> 7) & 0x01;
+    unsigned char sweep_period = ((reg1 >> 4) & 0x07) + 1; // Period is 1-8
+    bool sweep_negative = (reg1 >> 3) & 0x01;
+    unsigned char sweep_shift = reg1 & 0x07;
+
+    if (pulse_sweep_reload_flag[channel_index]) {
+        pulse_sweep_divider[channel_index] = sweep_period;
+        pulse_sweep_reload_flag[channel_index] = false;
+    } else {
+        if (pulse_sweep_divider[channel_index] > 0) {
+            pulse_sweep_divider[channel_index]--;
+        } else {
+            pulse_sweep_divider[channel_index] = sweep_period;
+            if (sweep_enabled && sweep_shift > 0) {
+                unsigned short current_period = pulse_current_period[channel_index];
+                unsigned short change_amount = current_period >> sweep_shift;
+                unsigned short target_period;
+
+                if (sweep_negative) {
+                    target_period = current_period - change_amount;
+                    if (channel_index == 0) { // Pulse 1 has 1's complement
+                        target_period--;
+                    }
+                } else {
+                    target_period = current_period + change_amount;
+                }
+
+                if (target_period < 8 || target_period > 0x7FF) {
+                    // Mute channel
+                    pulse_length_counter[channel_index] = 0;
+                } else {
+                    pulse_current_period[channel_index] = target_period;
+                }
+            }
+        }
+    }
+}
+
+void APU::updateLengthCounter(int channel_index) {
+    bool length_counter_halt;
+    if (channel_index < 2) { // Pulse channels
+        length_counter_halt = getLengthCounterHalt(channel_index);
+        if (!length_counter_halt && pulse_length_counter[channel_index] > 0) {
+            pulse_length_counter[channel_index]--;
+        }
+    } else if (channel_index == 2) { // Triangle channel
+        length_counter_halt = getTriangleLengthCounterHalt();
+        if (!length_counter_halt && triangle_length_counter > 0) {
+            triangle_length_counter--;
+        }
+    }
+    // Noise and DMC length counters would go here
+}
+
+void APU::updateTriangleLinearCounter() {
+    if (triangle_linear_counter_reload_flag) {
+        triangle_linear_counter = triangle_linear_counter_reload_value;
+    } else {
+        if (triangle_linear_counter > 0) {
+            triangle_linear_counter--;
+        }
+    }
+    if (!getTriangleLengthCounterHalt()) { // If control flag is clear
+        triangle_linear_counter_reload_flag = false;
+    }
+}
+
+bool APU :: getPulseStatus(int pulse_index){
+    return (!pulse_index) ? (reg4015 & 0x01 != 0) : (reg4015 & 0x02 != 0);
+}
+
+bool APU :: getTriangleStatus(){
+    return (reg4015 & 0x04 != 0);
+}
+
+bool APU :: getNoiseStatus(){
+    return (reg4015 & 0x08 != 0);
+}
+
+bool APU :: getStepMode(){
+    return (reg4017 & 0x80 != 0);
+}
+
+bool APU :: getIRQInhibitFlag(){
+    return (reg4017 & 0x40 != 0);
+}
+
+void APU :: updatePulseTimer(int pulse_index){
+    // Update timer counter
+    if (pulse_timer_counter[pulse_index] == 0) {
+        pulse_timer_counter[pulse_index] = pulse_current_period[pulse_index];
+        pulse_current_sequence_step[pulse_index] = (pulse_current_sequence_step[pulse_index] + 1) % 8;
+    } else {
+        pulse_timer_counter[pulse_index]--; 
+    }
+}
+
+void APU :: clock(){
+    updatePulseTimer(0);
+    updatePulseTimer(1);
+}
+
+void APU :: step(){
+    
+    // Mode 0: 4 Steps
+    if (!getStepMode()){
+
+        updateEnvelope(0); // Pulse 1
+        updateEnvelope(1); // Pulse 2
+        
+        if (frame_sequencer_counter == 1 || frame_sequencer_counter == 3){
+            updateLengthCounter(0); // Pulse 1
+            updateLengthCounter(1); // Pulse 2
+            updateLengthCounter(2); // Triangle
+            updateSweep(0); // Pulse 1
+            updateSweep(1); // Pulse 2
+        }
+
+        // IRQ if enabled at step 3
+        if (frame_sequencer_counter == 3){
+            if (!getIRQInhibitFlag()){
+                // CPU NMI
+            }
+        }
+
+        frame_sequencer_counter = (frame_sequencer_counter + 1) % 4;
+
+    // Mode 1: 5 Steps
+    }else{
+        
+        if (frame_sequencer_counter != 3){
+            updateEnvelope(0); // Pulse 1
+            updateEnvelope(1); // Pulse 2
+            updateTriangleLinearCounter();
+        }
+
+        if (frame_sequencer_counter == 1 || frame_sequencer_counter == 4){
+            updateLengthCounter(0); // Pulse 1
+            updateLengthCounter(1); // Pulse 2
+            updateLengthCounter(2); // Triangle
+            updateSweep(0); // Pulse 1
+            updateSweep(1); // Pulse 2
+        }
+
+        frame_sequencer_counter = (frame_sequencer_counter + 1) % 5;
+
+    }
+
+}
+
 void APU :: start(){
     if (player && !is_playing){
         player->Start();
@@ -394,24 +604,29 @@ void APU :: stop(){
 }
 
 void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw_audio_format& format) {
+
     APU* apu = static_cast<APU*>(cookie);
     float* float_buffer = static_cast<float*>(buffer);
     size_t num_samples = size / sizeof(float);
 
+    float pulse1_sample;
+    float pulse2_sample;
+    float triangle_sample;
+    float noise_sample;
+
     for (size_t i = 0; i < num_samples; ++i) {
-        /*float pulse1_sample = apu->generatePulseSample(0); // Pulse 1
-        float pulse2_sample = apu->generatePulseSample(1); // Pulse 2
-        float triangle_sample = apu->generateTriangleSample(); // Triangle
-        float noise_sample = apu->generateNoiseSample(); // Noise
+    
+        pulse1_sample = (apu->getPulseStatus(0)) ? apu->generatePulseSample(0) : 0;
+        pulse2_sample = (apu->getPulseStatus(1)) ? apu->generatePulseSample(1) : 0;
+        triangle_sample = (apu->getTriangleStatus()) ? apu->generateTriangleSample() : 0;
+        noise_sample = (apu->getNoiseStatus()) ? apu->generateNoiseSample() : 0;
 
-        // Mix the four channels (simple sum for now)
-        // The output should be between -1 and 1.
-        // For now, let's just sum and then divide by 4 to keep it within -1 to 1 range.
-        float mixed_sample = (pulse1_sample + pulse2_sample + triangle_sample + noise_sample) / 4.0f;*/
+        //float mixed_sample = (apu->generatePulseSample(0) + apu->generatePulseSample(1)) / 4.0f;
+        //float mixed_sample = apu->generateTriangleSample();
+        //float mixed_sample = apu->generatePulseSample(0) / 4.0;
 
-        float mixed_sample = (apu->generatePulseSample(0) + apu->generatePulseSample(1)) / 2.0f;
-
-        // Apply overall amplitude
-        float_buffer[i] = mixed_sample; // * AMPLITUDE;
+        //float_buffer[i] = (pulse1_sample + pulse2_sample + triangle_sample + noise_sample) / 4.0f;
+        //float_buffer[i] = (pulse1_sample + pulse2_sample + triangle_sample) / 4.0f;
+        float_buffer[i] = (pulse1_sample + pulse2_sample) / 4.0f;
     }
 }

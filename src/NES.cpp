@@ -12,6 +12,7 @@ NES::NES() {
     cartridge = nullptr;
     apu = nullptr;
     joypad = new Joypad(); // Initialize Joypad
+    apu_frame_sequencer_timer = 0;
 }
 
 NES::~NES() {
@@ -116,6 +117,8 @@ void NES::reset() {
     
     // Reset the APU.
     apu->reset();
+
+    apu_frame_sequencer_timer = 0;
 }
 
 void NES::runFrame() {
@@ -127,6 +130,10 @@ void NES::runFrame() {
     int cpu_cycles_this_frame = 0;
     const int total_cycles_per_frame = 29781;
 
+    //bool extra_apu_clock = false;
+
+    int current_apu_step = 0;
+
     while (cpu_cycles_this_frame < total_cycles_per_frame) {
 
         // The CPU executes one instruction and returns the number of cycles it took.
@@ -137,11 +144,53 @@ void NES::runFrame() {
         for (int i = 0; i < cycles * 3; i++) {
             ppu->runCycle();
         }
+
+        /*
+        if (!extra_apu_clock && (cycles % 2 == 1)){
+            extra_apu_clock = true;
+        }else if (extra_apu_clock && (cycles % 2 == 1)){
+            extra_apu_clock = false;
+            apu->clock();
+        }
+
+        for (int i = 0; i < cycles/2; ++i){
+            apu->clock();
+        }
+        */
+
+        // APU Frame Sequencer timing
+        apu_frame_sequencer_timer += cycles;
+
+        if (!apu->getStepMode()) { // 4-step sequence
+            if ((apu_frame_sequencer_timer >= APU_FRAME_COUNTER_4STEP_0 && current_apu_step == 0) ||
+                (apu_frame_sequencer_timer >= APU_FRAME_COUNTER_4STEP_1 && current_apu_step == 1) ||
+                (apu_frame_sequencer_timer >= APU_FRAME_COUNTER_4STEP_2 && current_apu_step == 2) ||
+                (apu_frame_sequencer_timer >= APU_FRAME_COUNTER_4STEP_3 && current_apu_step == 3)) {
+                ++current_apu_step;
+                apu->step();
+            }
+            if (apu_frame_sequencer_timer >= APU_FRAME_COUNTER_4STEP_RESET) {
+                //apu->step(); // Final step for reset
+                apu_frame_sequencer_timer = 0;
+                current_apu_step = 0;
+            }
+        } else { // 5-step sequence
+            if ((apu_frame_sequencer_timer >= APU_FRAME_COUNTER_5STEP_0 && current_apu_step == 0) ||
+                (apu_frame_sequencer_timer >= APU_FRAME_COUNTER_5STEP_1 && current_apu_step == 1) ||
+                (apu_frame_sequencer_timer >= APU_FRAME_COUNTER_5STEP_2 && current_apu_step == 2) ||
+                (apu_frame_sequencer_timer >= APU_FRAME_COUNTER_5STEP_3 && current_apu_step == 3)) {
+                ++current_apu_step;
+                apu->step();
+            }
+            if (apu_frame_sequencer_timer >= APU_FRAME_COUNTER_5STEP_RESET) {
+                apu->step();
+                apu_frame_sequencer_timer = 0;
+                current_apu_step = 0;
+            }
+        }
     }
     // At the end of this loop, the PPU's framebuffer has a complete image.
 }
-
-// --- Accessors ---
 
 PPU* NES::getPPU() const {
     //return ppu.get();

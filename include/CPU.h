@@ -29,6 +29,7 @@ enum AddressingMode {
 
 
 class PPU; // Forward declaration
+class APU;
 
 class CPU {
     private:
