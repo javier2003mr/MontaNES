@@ -4,6 +4,7 @@
 CXX = g++
 CXXFLAGS = -I./include -I/boot/system/develop/headers/private/interface
 LDFLAGS = -lbe -lgame -ltranslation -ltracker -lmedia
+OPTFLAG = -O2
 
 # Directories
 OBJ_DIR = obj
@@ -39,48 +40,48 @@ all: $(TARGET) # $(TEST_CPU_TARGET) $(TEST_PPU_TARGET) $(TEST_GUI_TARGET) $(TEST
 # Rule to link the main executable
 $(TARGET): $(MAIN_OBJS)
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $^ -o $@ $(LDFLAGS)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(OPTFLAG)
 
 # Rule to link test_cpu
 $(TEST_CPU_TARGET): $(TEST_CPU_OBJ) $(OBJ_DIR)/CPU.o $(OBJ_DIR)/opcode.o
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $^ -o $@ $(LDFLAGS)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(OPTFLAG)
 
 # Rule to link test_load_patterns
 $(TEST_PPU_TARGET): $(TEST_PPU_OBJ) $(OBJ_DIR)/PPU2.o $(OBJ_DIR)/Cartridge.o
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $^ -o $@ $(LDFLAGS)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(OPTFLAG)
 
 # Rule to link haiku_gui
 $(TEST_GUI_TARGET): $(TEST_GUI_OBJ) $(MAIN_OBJS)
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $^ -o $@ $(LDFLAGS)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(OPTFLAG)
 
 # Rule to link show_chr
 $(TEST_SHOW_CHR_TARGET): $(TEST_SHOW_CHR_OBJ) $(OBJ_DIR)/PPU2.o $(OBJ_DIR)/Cartridge.o
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $^ -o $@ $(LDFLAGS)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(OPTFLAG)
 
 # Rule to compile source files into object files in obj/
 $(OBJ_DIR)/%.o: src/%.cpp
 	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@ $(OPTFLAG)
 
 $(OBJ_DIR)/test_cpu.o: $(TEST_CPU_SRC)
 	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@ $(OPTFLAG)
 
 $(OBJ_DIR)/test_load_patterns.o: $(TEST_PPU_SRC)
 	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@ $(OPTFLAG)
 
 $(OBJ_DIR)/haiku_gui_test.o: $(TEST_GUI_SRC)
 	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@ $(OPTFLAG)
 
 $(OBJ_DIR)/show_chr.o: $(TEST_SHOW_CHR_SRC)
 	@mkdir -p $(OBJ_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@ $(OPTFLAG)
 
 # Clean rule
 clean:

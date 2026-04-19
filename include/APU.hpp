@@ -5,10 +5,11 @@
 
 #define TAM_APU_REGISTERS 4
 
-const int32 SAMPLE_RATE = 44100;
+const int SAMPLE_RATE = 44100;
+const float NES_CPU_FREQ = 1789772.7272f; // NES CPU frequency in Hz
 const size_t BUFFER_SIZE = 40 * sizeof(float);
 const float AMPLITUDE = 1.0f;
-const float FREQUENCY = 440.0f; // Nota LA (A)
+const float DOWNSAMPLING_RATIO = NES_CPU_FREQ / SAMPLE_RATE;
 
 static const unsigned char DUTY_CYCLE_SEQUENCES[4][8] = {
     {0, 1, 0, 0, 0, 0, 0, 0}, // 00: 12.5%

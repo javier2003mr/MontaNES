@@ -276,8 +276,6 @@ float APU::generatePulseSample(int pulse_index) {
     
     bool length_counter_halt = getLengthCounterHalt(pulse_index);
 
-    
-
     // Get current duty cycle pattern
     unsigned char duty_cycle_raw = (pulse_index == 0) ? (regPulse1[0] & 0xC0) >> 6 : (regPulse2[0] & 0xC0) >> 6;
     const unsigned char* current_duty_sequence = DUTY_CYCLE_SEQUENCES[duty_cycle_raw];
@@ -609,11 +607,11 @@ void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw
     float* float_buffer = static_cast<float*>(buffer);
     size_t num_samples = size / sizeof(float);
 
-    float pulse1_sample;
-    float pulse2_sample;
-    float triangle_sample;
-    float noise_sample;
-
+    float pulse1_sample = 0;
+    float pulse2_sample = 0;
+    float triangle_sample = 0;
+    float noise_sample = 0;
+/*
     for (size_t i = 0; i < num_samples; ++i) {
     
         pulse1_sample = (apu->getPulseStatus(0)) ? apu->generatePulseSample(0) : 0;
@@ -629,4 +627,25 @@ void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw
         //float_buffer[i] = (pulse1_sample + pulse2_sample + triangle_sample) / 4.0f;
         float_buffer[i] = (pulse1_sample + pulse2_sample) / 4.0f;
     }
+*/
+
+    for (size_t i = 0; i < num_samples; ++i) {
+        
+        float average = 0;
+
+        for (int j = 0; j < 20; ++j){
+            pulse1_sample = (apu->getPulseStatus(0)) ? apu->generatePulseSample(0) : 0;
+            pulse2_sample = (apu->getPulseStatus(1)) ? apu->generatePulseSample(1) : 0;
+            //triangle_sample = (apu->getTriangleStatus()) ? apu->generateTriangleSample() : 0;
+            //noise_sample = (apu->getNoiseStatus()) ? apu->generateNoiseSample() : 0;
+            
+            average += (pulse1_sample + pulse2_sample) / 4.0f;
+        }
+        //printf("AVERAGE: %f\n", average / (NES_CPU_FREQ / DOWNSAMPLING_RATIO));
+        float_buffer[i] = average / 20;
+        //printf("AVERAGE: %f\n", (pulse1_sample + pulse2_sample) / 4.0f);
+
+        //float_buffer[i] = (pulse1_sample + pulse2_sample) / 4.0f;
+    }
+
 }
