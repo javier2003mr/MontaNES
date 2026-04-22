@@ -14,7 +14,7 @@
 #include <MenuItem.h>
 #include <FilePanel.h>
 #include <Path.h>
-
+#include <fstream>
 #include <string>
 
 // Emulator core headers
@@ -27,8 +27,19 @@ const uint32_t kMsgFileOpen = 'flop';
 #include "Cartridge.hpp"
 #include "CPU.h"
 
+using namespace std;
+
 bool previousTabState;
 bool fastForward;
+
+unsigned char a_key = 0x3c;
+unsigned char b_key = 0x3d;
+unsigned char select_key = 0x30;
+unsigned char start_key = 0x47;
+unsigned char up_key = 0x57;
+unsigned char down_key = 0x62;
+unsigned char left_key = 0x61;
+unsigned char right_key = 0x63;
 
 // --- Emulator View ---
 // This view is responsible for drawing the main game screen.
@@ -313,14 +324,14 @@ private:
             // and are used by Haiku's key polling API.
             // NES buttons: A, B, Select, Start, Up, Down, Left, Right
             static const std::map<uint32_t, int> nes_keymap = {
-                {0x3c, 0}, // NES A ------> A key
-                {0x3d, 1}, // NES B ------> S key
-                {0x30, 2}, // NES Select -> P key
-                {0x47, 3}, // NES Start --> Enter key
-                {0x57, 4}, // NES Up -----> Up row
-                {0x62, 5}, // NES Down ---> Down row
-                {0x61, 6}, // NES Left ---> Left row
-                {0x63, 7}, // NES Right ---> Right row
+                {a_key, 0}, // NES A ------> A key
+                {b_key, 1}, // NES B ------> S key
+                {select_key, 2}, // NES Select -> P key
+                {start_key, 3}, // NES Start --> Enter key
+                {up_key, 4}, // NES Up -----> Up row
+                {down_key, 5}, // NES Down ---> Down row
+                {left_key, 6}, // NES Left ---> Left row
+                {right_key, 7}, // NES Right ---> Right row
             };
             
             key_info keyInfo;
@@ -376,8 +387,49 @@ private:
     bool                fTabKeyState;
 };
 
+void loadKeys(const char * path){
+
+    unsigned char keys[8];
+    FILE * fkeys;
+
+    fkeys = fopen(path, "rb");
+    if (fkeys != NULL){
+        fread(keys, sizeof(unsigned char), 8, fkeys);
+        for (int i = 0; i < 8; ++i){
+            printf("%x\n", keys[i]);
+        }
+    }
+    fclose(fkeys);
+}
+
+void storeKeys(const char * path){
+
+    unsigned char keys[8];
+
+    keys[0] = a_key;
+    keys[1] = b_key;
+    keys[2] = select_key;
+    keys[3] = start_key;
+    keys[4] = up_key;
+    keys[5] = down_key;
+    keys[6] = left_key;
+    keys[7] = right_key;
+
+    FILE * fkeys;
+
+    fkeys = fopen(path, "wb");
+    if (fkeys != NULL){
+        fwrite(keys, sizeof(unsigned char), 8, fkeys);
+    }
+    fclose(fkeys);
+}
+
 // --- Main Entry Point ---
 int main(int argc, char* argv[]) {
+
+    const char * c = "./keyconfig.txt";
+    loadKeys(c);
+    storeKeys(c);
     EmulatorApp app;
 
     if (argc == 2) {
