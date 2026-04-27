@@ -1,0 +1,180 @@
+#include "KeyConfig.hpp"
+#include <cstdio>
+#include <Path.h>
+#include <File.h>
+
+
+// --- Implementación de KeyConfView ---
+KeyConfView::KeyConfView(BRect frame)
+    : BView(frame, "KeyConfView", B_FOLLOW_ALL, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE),
+      fSavePanel(nullptr),
+      fTimer(nullptr),
+      fActiveKey(0)
+{
+    // Configura el color de fondo de la ventana
+    SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
+
+    // Inicializa la configuración por defecto (ej: teclas 'a', 'b', 'c'...)
+    for (int i = 0; i < 8; i++) {
+        fKeySettings[i] = 'a' + i;
+    }
+
+    // Crea los 8 botones para capturar teclas
+    for (int i = 0; i < 8; i++) {
+        BMessage* msg = new BMessage(MSG_KEY1 + i);
+        BString label;
+        label << "Capturar tecla " << i + 1;
+        BRect rect(20, 20 + i * 40, 160, 50 + i * 40);
+        fKeyButtons[i] = new BButton(rect, nullptr, label.String(), msg);
+        AddChild(fKeyButtons[i]);
+    }
+
+    // Crea los botones de "Guardar" y "Cancelar"
+    BRect saveRect(180, 20, 280, 50);
+    fSaveButton = new BButton(saveRect, nullptr, "Guardar", new BMessage(MSG_SAVE));
+    AddChild(fSaveButton);
+
+    BRect cancelRect(180, 70, 280, 100);
+    fCancelButton = new BButton(cancelRect, nullptr, "Cancelar", new BMessage(MSG_CANCEL));
+    AddChild(fCancelButton);
+
+    // Prepara el panel de guardado
+    fSavePanel = new BFilePanel(B_SAVE_PANEL, nullptr, nullptr, 0, false, new BMessage(MSG_SAVE_PANEL));
+    fSavePanel->SetTarget(this);
+}
+
+KeyConfView::~KeyConfView()
+{
+    delete fSavePanel;
+    StopCapture();
+}
+
+void KeyConfView::AttachedToWindow()
+{
+    BView::AttachedToWindow();
+    // Establece esta vista como objetivo de los mensajes de los botones
+    for (int i = 0; i < 8; i++) {
+        fKeyButtons[i]->SetTarget(this);
+    }
+    fSaveButton->SetTarget(this);
+    fCancelButton->SetTarget(this);
+    // Habilita que la vista reciba eventos de teclado
+    MakeFocus(true);
+}
+
+void KeyConfView::MessageReceived(BMessage* msg)
+{
+    switch (msg->what) {
+        // Mensajes de los botones de captura de tecla
+        case MSG_KEY1 ... MSG_KEY1 + 7:
+            StartCapture(msg->what);
+            break;
+        // Mensaje del botón "Guardar"
+        case MSG_SAVE:
+            fSavePanel->Show();
+            break;
+        // Mensaje de confirmación del panel de guardado
+        case MSG_SAVE_PANEL:
+        {
+            entry_ref ref;
+            if (msg->FindRef("directory", &ref) == B_OK) {
+                BPath path(&ref);
+                // Se obtiene el nombre del archivo
+                const char* name = nullptr;
+                if (msg->FindString("name", &name) == B_OK) {
+                    path.Append(name);
+                }
+                _SaveToFile(path);
+            }
+            break;
+        }
+        // Mensaje del botón "Cancelar"
+        case MSG_CANCEL:
+            CancelSettings();
+            Window()->PostMessage(B_QUIT_REQUESTED); // Request the window to close
+            break;
+        // Mensaje del temporizador para finalizar la captura
+        case MSG_TIMER:
+            StopCapture();
+            break;
+        default:
+            BView::MessageReceived(msg);
+            break;
+    }
+}
+
+void KeyConfView::KeyDown(const char* bytes, uint32_t numBytes)
+{
+    // Solo actúa si hay una tecla activa y no se ha cancelado el temporizador
+    if (fActiveKey != 0 && numBytes > 0) {
+        int index = fActiveKey - MSG_KEY1;
+        if (index >= 0 && index < 8) {
+            fKeySettings[index] = bytes[0];
+            // Actualiza la etiqueta del botón para mostrar la tecla capturada
+            BString label;
+            label << "Tecla " << index + 1 << ": " << bytes[0];
+            fKeyButtons[index]->SetLabel(label.String());
+        }
+        StopCapture();
+    }
+    BView::KeyDown(bytes, numBytes);
+}
+
+void KeyConfView::StartCapture(uint32_t keyMsgWhat)
+{
+    StopCapture(); // Detiene cualquier captura en curso
+
+    fActiveKey = keyMsgWhat;
+
+    // Crea un temporizador de 5 segundos que enviará un mensaje
+    BMessage timerMsg(MSG_TIMER);
+    fTimer = new BMessageRunner(BMessenger(this), &timerMsg, 5000000LL, 1);
+    if (fTimer->InitCheck() != B_OK) {
+        delete fTimer;
+        fTimer = nullptr;
+        fActiveKey = 0;
+        return;
+    }
+    // Cambia la etiqueta del botón para indicar que está en modo captura
+    int index = keyMsgWhat - MSG_KEY1;
+    BString label;
+    label << "Capturando tecla " << index + 1 << "...";
+    fKeyButtons[index]->SetLabel(label.String());
+}
+
+void KeyConfView::StopCapture()
+{
+    if (fTimer) {
+        delete fTimer;
+        fTimer = nullptr;
+    }
+    // Restaura las etiquetas de los botones a su estado normal
+    for (int i = 0; i < 8; i++) {
+        BString label;
+        label << "Tecla " << i + 1 << ": " << fKeySettings[i];
+        fKeyButtons[i]->SetLabel(label.String());
+    }
+    fActiveKey = 0;
+}
+
+void KeyConfView::_SaveToFile(const BPath& path)
+{
+    BFile file(path.Path(), B_WRITE_ONLY | B_CREATE_FILE | B_ERASE_FILE);
+    if (file.InitCheck() == B_OK) {
+        // Escribe la configuración (formato simple, una letra por línea)
+        for (int i = 0; i < 8; i++) {
+            char line[4];
+            sprintf(line, "%c\n", fKeySettings[i]);
+            file.Write(line, 2);
+        }
+    }
+}
+
+void KeyConfView::CancelSettings()
+{
+    // Restablece los valores por defecto
+    for (int i = 0; i < 8; i++) {
+        fKeySettings[i] = 'a' + i;
+    }
+    StopCapture();
+}

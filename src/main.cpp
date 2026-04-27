@@ -19,13 +19,15 @@
 
 // Emulator core headers
 #include "NES.h"
-
-// Message constants
-const uint32_t kMsgFileOpen = 'flop';
-
 #include "PPU.hpp"
 #include "Cartridge.hpp"
 #include "CPU.h"
+
+#include "KeyConfig.hpp"
+
+// Message constants
+const uint32_t kMsgFileOpen = 'flop';
+const uint32_t kMsgKeyConfOpen = 'kopn';
 
 using namespace std;
 
@@ -164,9 +166,15 @@ public:
 
         // Create Menu Bar
         BMenuBar* menuBar = new BMenuBar("menuBar");
+
         BMenu* fileMenu = new BMenu("File");
         fileMenu->AddItem(new BMenuItem("Open", new BMessage(kMsgFileOpen), 'O'));
+
+        BMenu* keysMenu = new BMenu("Config");
+        keysMenu->AddItem(new BMenuItem("Gamepad", new BMessage(kMsgKeyConfOpen)));
+
         menuBar->AddItem(fileMenu);
+        menuBar->AddItem(keysMenu);
 
         BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
             .Add(menuBar)
@@ -174,6 +182,9 @@ public:
             .End();
 
         fFilePanel = new BFilePanel(B_OPEN_PANEL, new BMessenger(be_app));
+        
+        //BRect frame(100, 100, 420, 500);
+        //fKeyConfWindow = new KeyConfWindow(frame);
     }
 
     ~EmulatorWindow() {
@@ -184,6 +195,12 @@ public:
         switch (message->what) {
             case kMsgFileOpen:
                 fFilePanel->Show();
+                break;
+            case kMsgKeyConfOpen:
+                keyConfWindow = new KeyConfWindow();
+                keyConfWindow->Show();
+                keyConfWindow->SetWorkspaces(B_CURRENT_WORKSPACE);
+                keyConfWindow->Activate();                
                 break;
             default:
                 BWindow::MessageReceived(message);
@@ -210,6 +227,7 @@ public:
 private:
     EmulatorView* fEmulatorView;
     BFilePanel*   fFilePanel;
+    KeyConfWindow* keyConfWindow;
 };
 
 // --- Pattern Table Window ---
