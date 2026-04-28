@@ -3,6 +3,35 @@
 #include <Path.h>
 #include <File.h>
 
+unsigned char keys[8];
+
+void loadKeys(const char * path){
+
+    //unsigned char keys[8];
+    FILE * fkeys;
+
+    fkeys = fopen(path, "rb");
+    if (fkeys != NULL){
+        fread(keys, sizeof(unsigned char), 8, fkeys);
+    }
+    fclose(fkeys);
+    
+    printf("Key settings loaded\n");
+}
+
+void storeKeys(const char * path){
+
+    FILE * fkeys;
+
+    fkeys = fopen(path, "wb");
+    if (fkeys != NULL){
+        fwrite(keys, sizeof(unsigned char), 8, fkeys);
+    }
+    fclose(fkeys);
+
+    printf("Key settings saved\n");
+}
+
 
 // --- Implementación de KeyConfView ---
 KeyConfView::KeyConfView(BRect frame)
@@ -37,10 +66,6 @@ KeyConfView::KeyConfView(BRect frame)
     BRect cancelRect(180, 70, 280, 100);
     fCancelButton = new BButton(cancelRect, nullptr, "Cancelar", new BMessage(MSG_CANCEL));
     AddChild(fCancelButton);
-
-    // Prepara el panel de guardado
-    fSavePanel = new BFilePanel(B_SAVE_PANEL, nullptr, nullptr, 0, false, new BMessage(MSG_SAVE_PANEL));
-    fSavePanel->SetTarget(this);
 }
 
 KeyConfView::~KeyConfView()
@@ -71,11 +96,13 @@ void KeyConfView::MessageReceived(BMessage* msg)
             break;
         // Mensaje del botón "Guardar"
         case MSG_SAVE:
-            fSavePanel->Show();
+            storeKeys("./keyconfig");
+            //fSavePanel->Show();
             break;
         // Mensaje de confirmación del panel de guardado
         case MSG_SAVE_PANEL:
         {
+            /*
             entry_ref ref;
             if (msg->FindRef("directory", &ref) == B_OK) {
                 BPath path(&ref);
@@ -86,11 +113,13 @@ void KeyConfView::MessageReceived(BMessage* msg)
                 }
                 _SaveToFile(path);
             }
+            */
+            //storeKeys("./keyconfig");
             break;
         }
         // Mensaje del botón "Cancelar"
         case MSG_CANCEL:
-            CancelSettings();
+            //CancelSettings();
             Window()->PostMessage(B_QUIT_REQUESTED); // Request the window to close
             break;
         // Mensaje del temporizador para finalizar la captura
@@ -126,9 +155,9 @@ void KeyConfView::StartCapture(uint32_t keyMsgWhat)
 
     fActiveKey = keyMsgWhat;
 
-    // Crea un temporizador de 5 segundos que enviará un mensaje
+    // Crea un temporizador de 3 segundos que enviará un mensaje
     BMessage timerMsg(MSG_TIMER);
-    fTimer = new BMessageRunner(BMessenger(this), &timerMsg, 5000000LL, 1);
+    fTimer = new BMessageRunner(BMessenger(this), &timerMsg, 3000000LL, 1);
     if (fTimer->InitCheck() != B_OK) {
         delete fTimer;
         fTimer = nullptr;
@@ -157,6 +186,7 @@ void KeyConfView::StopCapture()
     fActiveKey = 0;
 }
 
+/*
 void KeyConfView::_SaveToFile(const BPath& path)
 {
     BFile file(path.Path(), B_WRITE_ONLY | B_CREATE_FILE | B_ERASE_FILE);
@@ -169,7 +199,8 @@ void KeyConfView::_SaveToFile(const BPath& path)
         }
     }
 }
-
+*/
+/*
 void KeyConfView::CancelSettings()
 {
     // Restablece los valores por defecto
@@ -178,3 +209,4 @@ void KeyConfView::CancelSettings()
     }
     StopCapture();
 }
+*/

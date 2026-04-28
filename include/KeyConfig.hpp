@@ -11,6 +11,22 @@
 #include <LayoutBuilder.h>
 #include <cstdio>
 
+extern unsigned char keys[8];
+
+void loadKeys(const char * path);
+void storeKeys(const char * path);
+
+/*
+unsigned char a_key = 0x3c;
+unsigned char b_key = 0x3d;
+unsigned char select_key = 0x30;
+unsigned char start_key = 0x47;
+unsigned char up_key = 0x57;
+unsigned char down_key = 0x62;
+unsigned char left_key = 0x61;
+unsigned char right_key = 0x63;
+*/
+
 // Constantes para los mensajes que usarán los botones
 const uint32_t MSG_KEY1 = 'key1';
 const uint32_t MSG_KEY2 = 'key2';
@@ -38,9 +54,9 @@ private:
     // Métodos privados para la lógica interna
     void StartCapture(uint32_t keyMsgWhat); // Inicia el temporizador de captura para un botón
     void StopCapture(); // Detiene el temporizador
-    void SaveSettings(); // Guarda la configuración en el archivo seleccionado
-    void CancelSettings(); // Revierte los cambios a los valores predefinidos
-    void _SaveToFile(const BPath& path); // Escribe los datos en el archivo
+    //void SaveSettings(); // Guarda la configuración en el archivo seleccionado
+    //void CancelSettings(); // Revierte los cambios a los valores predefinidos
+    //void _SaveToFile(const BPath& path); // Escribe los datos en el archivo
 
     // Miembros de datos
     BButton* fKeyButtons[8]; // Array para los 8 botones de teclas
