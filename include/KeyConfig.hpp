@@ -11,10 +11,13 @@
 #include <LayoutBuilder.h>
 #include <cstdio>
 
+extern bool capturing;
+extern int kindex;
 extern unsigned char keys[8];
 
 void loadKeys(const char * path);
 void storeKeys(const char * path);
+int CaptureKey(void * p);
 
 /*
 unsigned char a_key = 0x3c;
@@ -48,6 +51,7 @@ public:
     virtual void MessageReceived(BMessage* msg) override; // Recibe y procesa mensajes
     virtual void AttachedToWindow() override; // Se ejecuta al mostrar la ventana
     virtual void KeyDown(const char* bytes, uint32_t numBytes); // Captura teclas durante el período de 5s
+    void setKeySettings(int index, unsigned char code);
     ~KeyConfView(); // Destructor
 
 private:

@@ -2,6 +2,10 @@
 #include <cstdio>
 #include <Path.h>
 #include <File.h>
+#include <interface/InterfaceDefs.h> // Provides key_info struct and get_key_info function
+
+bool capturing = false;
+int kindex = 0;
 
 unsigned char keys[8];
 
@@ -15,6 +19,9 @@ void loadKeys(const char * path){
         fread(keys, sizeof(unsigned char), 8, fkeys);
     }
     fclose(fkeys);
+    for (int i = 0; i < 8; ++i){
+        printf("%x\n", keys[i]);
+    }
     
     printf("Key settings loaded\n");
 }
@@ -45,7 +52,7 @@ KeyConfView::KeyConfView(BRect frame)
 
     // Inicializa la configuración por defecto (ej: teclas 'a', 'b', 'c'...)
     for (int i = 0; i < 8; i++) {
-        fKeySettings[i] = 'a' + i;
+        fKeySettings[i] = keys[i];
     }
 
     // Crea los 8 botones para capturar teclas
@@ -96,6 +103,9 @@ void KeyConfView::MessageReceived(BMessage* msg)
             break;
         // Mensaje del botón "Guardar"
         case MSG_SAVE:
+            for (int i = 0; i < 8; ++i){
+                keys[i] = fKeySettings[i];
+            }
             storeKeys("./keyconfig");
             //fSavePanel->Show();
             break;
@@ -169,6 +179,43 @@ void KeyConfView::StartCapture(uint32_t keyMsgWhat)
     BString label;
     label << "Capturando tecla " << index + 1 << "...";
     fKeyButtons[index]->SetLabel(label.String());
+
+    kindex = index;
+    capturing = true;
+    resume_thread(spawn_thread(&CaptureKey, "Capture Thread", 100, this));
+}
+
+int CaptureKey(void * p){
+
+    KeyConfView * view = static_cast<KeyConfView*>(p);
+
+    unsigned char captured_key = 0; // Local variable for the captured key
+
+    while(capturing){
+        //printf("HOLA\n");
+        key_info keyInfo;
+        get_key_info(&keyInfo); // Get the current state of all keys
+
+        // Iterate through all possible raw key codes (0-127, as key_states is 16 bytes * 8 bits/byte = 128 bits)
+        // Haiku key codes are typically 0-127.
+        for (int i = 0; i < 128; ++i) {
+            if (keyInfo.key_states[i / 8] & (1 << (7 - (i % 8)))) {
+                // Key 'i' is pressed
+                captured_key = (unsigned char)i;
+                keys[kindex] = captured_key; // Store in the global keys array
+                capturing = false; // Stop capturing
+                printf("Captured:%i %x\n",kindex, captured_key);
+                view->setKeySettings(kindex, captured_key);
+                break; // Exit the for loop
+            }
+        }
+    }
+
+    return 0;
+}
+
+void KeyConfView::setKeySettings(int index, unsigned char code){
+    fKeySettings[index] = code;
 }
 
 void KeyConfView::StopCapture()
@@ -183,6 +230,7 @@ void KeyConfView::StopCapture()
         label << "Tecla " << i + 1 << ": " << fKeySettings[i];
         fKeyButtons[i]->SetLabel(label.String());
     }
+    capturing = false;
     fActiveKey = 0;
 }
 
