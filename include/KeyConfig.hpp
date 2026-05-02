@@ -50,7 +50,6 @@ public:
     KeyConfView(BRect frame); // Constructor
     virtual void MessageReceived(BMessage* msg) override; // Recibe y procesa mensajes
     virtual void AttachedToWindow() override; // Se ejecuta al mostrar la ventana
-    virtual void KeyDown(const char* bytes, uint32_t numBytes); // Captura teclas durante el período de 5s
     void setKeySettings(int index, unsigned char code);
     ~KeyConfView(); // Destructor
 

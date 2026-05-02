@@ -334,7 +334,7 @@ private:
             // The key codes are defined in <interface/InterfaceDefs.h>
             // and are used by Haiku's key polling API.
             // NES buttons: A, B, Select, Start, Up, Down, Left, Right
-            static const std::map<uint32_t, int> nes_keymap = {
+            const std::map<uint32_t, int> nes_keymap = {
                 {keys[0], 0}, // NES A ------> A key
                 {keys[1], 1}, // NES B ------> S key
                 {keys[2], 2}, // NES Select -> P key

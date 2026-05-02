@@ -3,6 +3,7 @@
 #include <Path.h>
 #include <File.h>
 #include <interface/InterfaceDefs.h> // Provides key_info struct and get_key_info function
+#include <ios>
 
 bool capturing = false;
 int kindex = 0;
@@ -109,24 +110,6 @@ void KeyConfView::MessageReceived(BMessage* msg)
             storeKeys("./keyconfig");
             //fSavePanel->Show();
             break;
-        // Mensaje de confirmación del panel de guardado
-        case MSG_SAVE_PANEL:
-        {
-            /*
-            entry_ref ref;
-            if (msg->FindRef("directory", &ref) == B_OK) {
-                BPath path(&ref);
-                // Se obtiene el nombre del archivo
-                const char* name = nullptr;
-                if (msg->FindString("name", &name) == B_OK) {
-                    path.Append(name);
-                }
-                _SaveToFile(path);
-            }
-            */
-            //storeKeys("./keyconfig");
-            break;
-        }
         // Mensaje del botón "Cancelar"
         case MSG_CANCEL:
             //CancelSettings();
@@ -140,23 +123,6 @@ void KeyConfView::MessageReceived(BMessage* msg)
             BView::MessageReceived(msg);
             break;
     }
-}
-
-void KeyConfView::KeyDown(const char* bytes, uint32_t numBytes)
-{
-    // Solo actúa si hay una tecla activa y no se ha cancelado el temporizador
-    if (fActiveKey != 0 && numBytes > 0) {
-        int index = fActiveKey - MSG_KEY1;
-        if (index >= 0 && index < 8) {
-            fKeySettings[index] = bytes[0];
-            // Actualiza la etiqueta del botón para mostrar la tecla capturada
-            BString label;
-            label << "Tecla " << index + 1 << ": " << bytes[0];
-            fKeyButtons[index]->SetLabel(label.String());
-        }
-        StopCapture();
-    }
-    BView::KeyDown(bytes, numBytes);
 }
 
 void KeyConfView::StartCapture(uint32_t keyMsgWhat)
@@ -202,7 +168,7 @@ int CaptureKey(void * p){
             if (keyInfo.key_states[i / 8] & (1 << (7 - (i % 8)))) {
                 // Key 'i' is pressed
                 captured_key = (unsigned char)i;
-                keys[kindex] = captured_key; // Store in the global keys array
+                //keys[kindex] = captured_key; // Store in the global keys array
                 capturing = false; // Stop capturing
                 printf("Captured:%i %x\n",kindex, captured_key);
                 view->setKeySettings(kindex, captured_key);
@@ -227,34 +193,9 @@ void KeyConfView::StopCapture()
     // Restaura las etiquetas de los botones a su estado normal
     for (int i = 0; i < 8; i++) {
         BString label;
-        label << "Tecla " << i + 1 << ": " << fKeySettings[i];
+        label << "Tecla " << i + 1 << ": " << std::hex << fKeySettings[i];
         fKeyButtons[i]->SetLabel(label.String());
     }
     capturing = false;
     fActiveKey = 0;
 }
-
-/*
-void KeyConfView::_SaveToFile(const BPath& path)
-{
-    BFile file(path.Path(), B_WRITE_ONLY | B_CREATE_FILE | B_ERASE_FILE);
-    if (file.InitCheck() == B_OK) {
-        // Escribe la configuración (formato simple, una letra por línea)
-        for (int i = 0; i < 8; i++) {
-            char line[4];
-            sprintf(line, "%c\n", fKeySettings[i]);
-            file.Write(line, 2);
-        }
-    }
-}
-*/
-/*
-void KeyConfView::CancelSettings()
-{
-    // Restablece los valores por defecto
-    for (int i = 0; i < 8; i++) {
-        fKeySettings[i] = 'a' + i;
-    }
-    StopCapture();
-}
-*/
