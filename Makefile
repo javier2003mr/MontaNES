@@ -11,12 +11,14 @@ OBJ_DIR = obj
 BIN_DIR = bin
 
 # Source files
-# Source files
 MAIN_SRCS = $(wildcard src/*.cpp)
 TEST_CPU_SRC = tests/CPU/test_cpu.cpp
 TEST_PPU_SRC = tests/PPU/test_load_patterns.cpp
 TEST_GUI_SRC = tests/haiku_gui_test.cpp
 TEST_SHOW_CHR_SRC = tests/show_chr.cpp
+
+RDEF_FILE = icono.rdef                # cambia al nombre de tu .rdef
+RES_OBJ   = $(OBJ_DIR)/icono.rsrc     # archivo compilado de recursos
 
 # Object files
 MAIN_OBJS = $(patsubst src/%.cpp,$(OBJ_DIR)/%.o,$(MAIN_SRCS))
@@ -37,10 +39,15 @@ TEST_SHOW_CHR_TARGET = $(BIN_DIR)/show_chr
 # Default rule
 all: $(TARGET) # $(TEST_CPU_TARGET) $(TEST_PPU_TARGET) $(TEST_GUI_TARGET) $(TEST_SHOW_CHR_TARGET)
 
+# Regla para compilar .rdef a .rsrc ---
+$(RES_OBJ): $(RDEF_FILE) | $(OBJ_DIR)
+	rc $< -o $@
+
 # Rule to link the main executable
-$(TARGET): $(MAIN_OBJS)
+$(TARGET): $(MAIN_OBJS) $(RES_OBJ)
 	@mkdir -p $(BIN_DIR)
-	$(CXX) $^ -o $@ $(LDFLAGS) $(OPTFLAG)
+	$(CXX) $(MAIN_OBJS) -o $@ $(LDFLAGS) $(OPTFLAG)
+	xres -o $@ $(RES_OBJ)
 
 # Rule to link test_cpu
 $(TEST_CPU_TARGET): $(TEST_CPU_OBJ) $(OBJ_DIR)/CPU.o $(OBJ_DIR)/opcode.o
@@ -85,5 +92,5 @@ $(OBJ_DIR)/show_chr.o: $(TEST_SHOW_CHR_SRC)
 
 # Clean rule
 clean:
-	rm -f $(ALL_OBJS) $(TARGET) $(TEST_CPU_TARGET) $(TEST_PPU_TARGET) $(TEST_GUI_TARGET) $(TEST_SHOW_CHR_TARGET)
+	rm -f $(ALL_OBJS) $(RES_OBJ) $(TARGET) $(TEST_CPU_TARGET) $(TEST_PPU_TARGET) $(TEST_GUI_TARGET) $(TEST_SHOW_CHR_TARGET)
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
