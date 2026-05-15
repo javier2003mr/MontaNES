@@ -3,7 +3,7 @@
 # Compiler and flags
 CXX = g++
 CXXFLAGS = -I./include -I/boot/system/develop/headers/private/interface
-LDFLAGS = -lbe -lgame -ltranslation -ltracker -lmedia
+LDFLAGS = -lbe -lgame -ltranslation -ltracker -lmedia -llocalestub -lstdc++
 OPTFLAG = -O2
 
 # Directories
@@ -94,3 +94,53 @@ $(OBJ_DIR)/show_chr.o: $(TEST_SHOW_CHR_SRC)
 clean:
 	rm -f $(ALL_OBJS) $(RES_OBJ) $(TARGET) $(TEST_CPU_TARGET) $(TEST_PPU_TARGET) $(TEST_GUI_TARGET) $(TEST_SHOW_CHR_TARGET)
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
+
+# Internationalization (catkeys)
+NAME = montaNES
+APP_MIME_SIG = x-vnd.Haiku-$(NAME)
+CATKEYS_DIR := locales
+CATALOGS_DIR := $(OBJ_DIR)/$(APP_MIME_SIG)
+LOCALES = en es ja fr de # Add other languages here, e.g., es fr de
+
+# Pseudo-function for converting a list of language codes in LOCALES variable
+# to a corresponding list of catkeys files in $(CATALOGS_DIR)/xx.catalog
+# The "function" appends the .catalog suffix and prepends the
+# $(CATALOGS_DIR)/ path.
+define LOCALES_LIST_TO_CATALOGS
+        $(addprefix $(CATALOGS_DIR)/, $(addsuffix .catalog, $(foreach lang, $(LOCALES), $(lang))))
+endef
+
+CATALOGS = $(LOCALES_LIST_TO_CATALOGS)
+
+# Create the localization sources directory if it doesn't exist.
+$(CATKEYS_DIR)::
+	@[ -d $(CATKEYS_DIR) ] || mkdir $(CATKEYS_DIR) >/dev/null 2>&1
+
+# Create the localization data directory if it doesn't exist.
+$(CATALOGS_DIR):: $(OBJ_DIR)
+	@[ -d $(CATALOGS_DIR) ] || mkdir $(CATALOGS_DIR) >/dev/null 2>&1
+
+# Rule to preprocess program sources into file ready for collecting catkeys.
+$(OBJ_DIR)/$(NAME).pre : $(MAIN_SRCS) include/KeyConfig.hpp
+	@mkdir -p $(OBJ_DIR)
+	-cat $(MAIN_SRCS) include/KeyConfig.hpp | $(CXX) -E -x c++ $(CXXFLAGS) -DB_COLLECTING_CATKEYS - | grep -av '^#' > $(OBJ_DIR)/$(NAME).pre
+
+# Rules to collect localization catkeys.
+catkeys : $(addprefix $(CATKEYS_DIR)/, $(addsuffix .catkeys, $(LOCALES)))
+
+$(CATKEYS_DIR)/%.catkeys : $(CATKEYS_DIR) $(OBJ_DIR)/$(NAME).pre
+	collectcatkeys -s $(APP_MIME_SIG) $(OBJ_DIR)/$(NAME).pre -o $@ -l $(basename $(notdir $@))
+
+# Rule to create localization catalogs.
+catalogs : $(CATALOGS_DIR) $(CATALOGS)
+
+# Rule to compile localization data catalogs.
+$(CATALOGS_DIR)/%.catalog : $(CATKEYS_DIR)/%.catkeys
+	linkcatkeys -o "$ @" -s $(APP_MIME_SIG) -l $(notdir $(basename $ @)) $<
+
+# Alternate way of storing localization catalogs: bind them into the program
+# executable's resources.
+bindcatalogs :
+	$(foreach lc,$(LOCALES),\
+		linkcatkeys -o $(TARGET) -s $(APP_MIME_SIG) -tr -l $(lc) $(CATKEYS_DIR)/$(lc).catkeys;\
+	)

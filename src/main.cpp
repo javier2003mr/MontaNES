@@ -16,6 +16,8 @@
 #include <Path.h>
 #include <fstream>
 #include <string>
+#include <Catalog.h>
+#include <Locale.h>
 
 // Emulator core headers
 #include "NES.h"
@@ -24,6 +26,10 @@
 #include "CPU.h"
 
 #include "KeyConfig.hpp"
+
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "MontaNES"
 
 // Message constants
 const uint32_t kMsgFileOpen = 'flop';
@@ -153,18 +159,18 @@ private:
 class EmulatorWindow : public BWindow {
 public:
     EmulatorWindow(PPU* ppu)
-        : BWindow(BRect(100, 100, 100 + 256 * 3, 100 + 240 * 3), "NES Emulator", B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
+        : BWindow(BRect(100, 100, 100 + 256 * 3, 100 + 240 * 3), B_TRANSLATE("NES Emulator"), B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
         
         fEmulatorView = new EmulatorView(ppu);
 
         // Create Menu Bar
         BMenuBar* menuBar = new BMenuBar("menuBar");
 
-        BMenu* fileMenu = new BMenu("File");
-        fileMenu->AddItem(new BMenuItem("Open", new BMessage(kMsgFileOpen), 'O'));
+        BMenu* fileMenu = new BMenu(B_TRANSLATE("File"));
+        fileMenu->AddItem(new BMenuItem(B_TRANSLATE("Open"), new BMessage(kMsgFileOpen), 'O'));
 
-        BMenu* keysMenu = new BMenu("Config");
-        keysMenu->AddItem(new BMenuItem("Gamepad", new BMessage(kMsgKeyConfOpen)));
+        BMenu* keysMenu = new BMenu(B_TRANSLATE("Config"));
+        keysMenu->AddItem(new BMenuItem(B_TRANSLATE("Gamepad"), new BMessage(kMsgKeyConfOpen)));
 
         menuBar->AddItem(fileMenu);
         menuBar->AddItem(keysMenu);
@@ -227,7 +233,7 @@ private:
 class PatternTableWindow : public BWindow {
 public:
     PatternTableWindow(PPU* ppu, Cartridge* cart)
-        : BWindow(BRect(650, 100, 650 + 512, 100 + 256), "Pattern Tables", B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
+        : BWindow(BRect(650, 100, 650 + 512, 100 + 256), B_TRANSLATE("Pattern Tables"), B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
         fPatternView = new PatternTableView(ppu, cart);
         BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
             .Add(fPatternView)
@@ -256,7 +262,7 @@ private:
 // --- Haiku Application Class ---
 class EmulatorApp : public BApplication {
 public:
-    EmulatorApp() : BApplication("application/x-vnd.nes-emulator") {
+    EmulatorApp() : BApplication("application/x-vnd.Haiku-montaNES") {
         // 1. Initialize Emulator to nullptr
         fNES = nullptr;
 
@@ -401,7 +407,7 @@ private:
 // --- Main Entry Point ---
 int main(int argc, char* argv[]) {
 
-    const char * c = "./keyconfig";
+    const char * c = "../keyconfig";
     loadKeys(c);
     
     EmulatorApp app;

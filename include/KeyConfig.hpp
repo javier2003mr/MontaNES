@@ -10,6 +10,11 @@
 #include <Application.h>
 #include <LayoutBuilder.h>
 #include <cstdio>
+#include <Catalog.h>
+#include <Locale.h>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "KeyNES"
 
 extern bool capturing;
 extern int kindex;
@@ -57,9 +62,6 @@ private:
     // Métodos privados para la lógica interna
     void StartCapture(uint32_t keyMsgWhat); // Inicia el temporizador de captura para un botón
     void StopCapture(); // Detiene el temporizador
-    //void SaveSettings(); // Guarda la configuración en el archivo seleccionado
-    //void CancelSettings(); // Revierte los cambios a los valores predefinidos
-    //void _SaveToFile(const BPath& path); // Escribe los datos en el archivo
 
     // Miembros de datos
     BButton* fKeyButtons[8]; // Array para los 8 botones de teclas
@@ -77,7 +79,7 @@ private:
 class KeyConfWindow : public BWindow {
 public:
     KeyConfWindow()
-        : BWindow(BRect (100, 100, 420, 500), "Configurador de Teclas", B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS)
+        : BWindow(BRect (100, 100, 420, 500), B_TRANSLATE("Key Configuration"), B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS)
     {
         KeyConfView* view = new KeyConfView(Bounds());
         AddChild(view);

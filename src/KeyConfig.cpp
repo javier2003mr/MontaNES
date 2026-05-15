@@ -4,6 +4,11 @@
 #include <File.h>
 #include <interface/InterfaceDefs.h> // Provides key_info struct and get_key_info function
 #include <ios>
+#include <Catalog.h>
+#include <Locale.h>
+
+#undef B_TRANSLATION_CONTEXT
+#define B_TRANSLATION_CONTEXT "KeyNES2"
 
 bool capturing = false;
 int kindex = 0;
@@ -60,7 +65,7 @@ KeyConfView::KeyConfView(BRect frame)
     for (int i = 0; i < 8; i++) {
         BMessage* msg = new BMessage(MSG_KEY1 + i);
         BString label;
-        label << "Capturar tecla " << i + 1;
+        label << B_TRANSLATE("Capture Key") << " " << i + 1;
         BRect rect(20, 20 + i * 40, 160, 50 + i * 40);
         fKeyButtons[i] = new BButton(rect, nullptr, label.String(), msg);
         AddChild(fKeyButtons[i]);
@@ -68,11 +73,11 @@ KeyConfView::KeyConfView(BRect frame)
 
     // Crea los botones de "Guardar" y "Cancelar"
     BRect saveRect(180, 20, 280, 50);
-    fSaveButton = new BButton(saveRect, nullptr, "Guardar", new BMessage(MSG_SAVE));
+    fSaveButton = new BButton(saveRect, nullptr, B_TRANSLATE("Save"), new BMessage(MSG_SAVE));
     AddChild(fSaveButton);
 
     BRect cancelRect(180, 70, 280, 100);
-    fCancelButton = new BButton(cancelRect, nullptr, "Cancelar", new BMessage(MSG_CANCEL));
+    fCancelButton = new BButton(cancelRect, nullptr, B_TRANSLATE("Cancel"), new BMessage(MSG_CANCEL));
     AddChild(fCancelButton);
 }
 
@@ -143,7 +148,7 @@ void KeyConfView::StartCapture(uint32_t keyMsgWhat)
     // Cambia la etiqueta del botón para indicar que está en modo captura
     int index = keyMsgWhat - MSG_KEY1;
     BString label;
-    label << "Capturando tecla " << index + 1 << "...";
+    label << B_TRANSLATE("Capturing Key") << " " << index + 1 << "...";
     fKeyButtons[index]->SetLabel(label.String());
 
     kindex = index;
@@ -193,7 +198,7 @@ void KeyConfView::StopCapture()
     // Restaura las etiquetas de los botones a su estado normal
     for (int i = 0; i < 8; i++) {
         BString label;
-        label << "Tecla " << i + 1 << ": " << std::hex << fKeySettings[i];
+        label << B_TRANSLATE("Key") << " " << i + 1 << ": " << std::hex << fKeySettings[i];
         fKeyButtons[i]->SetLabel(label.String());
     }
     capturing = false;
