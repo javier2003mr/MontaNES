@@ -556,7 +556,7 @@ void APU :: step(){
         // IRQ if enabled at step 3
         if (frame_sequencer_counter == 3){
             if (!getIRQInhibitFlag()){
-                // CPU NMI
+                // CPU IRQ
             }
         }
 
@@ -611,23 +611,6 @@ void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw
     float pulse2_sample = 0;
     float triangle_sample = 0;
     float noise_sample = 0;
-/*
-    for (size_t i = 0; i < num_samples; ++i) {
-    
-        pulse1_sample = (apu->getPulseStatus(0)) ? apu->generatePulseSample(0) : 0;
-        pulse2_sample = (apu->getPulseStatus(1)) ? apu->generatePulseSample(1) : 0;
-        triangle_sample = (apu->getTriangleStatus()) ? apu->generateTriangleSample() : 0;
-        noise_sample = (apu->getNoiseStatus()) ? apu->generateNoiseSample() : 0;
-
-        //float mixed_sample = (apu->generatePulseSample(0) + apu->generatePulseSample(1)) / 4.0f;
-        //float mixed_sample = apu->generateTriangleSample();
-        //float mixed_sample = apu->generatePulseSample(0) / 4.0;
-
-        //float_buffer[i] = (pulse1_sample + pulse2_sample + triangle_sample + noise_sample) / 4.0f;
-        //float_buffer[i] = (pulse1_sample + pulse2_sample + triangle_sample) / 4.0f;
-        float_buffer[i] = (pulse1_sample + pulse2_sample) / 4.0f;
-    }
-*/
 
     for (size_t i = 0; i < num_samples; ++i) {
         
@@ -641,11 +624,7 @@ void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw
             
             average += (pulse1_sample + pulse2_sample) / 4.0f;
         }
-        //printf("AVERAGE: %f\n", average / (NES_CPU_FREQ / DOWNSAMPLING_RATIO));
         float_buffer[i] = average / 20;
-        //printf("AVERAGE: %f\n", (pulse1_sample + pulse2_sample) / 4.0f);
-
-        //float_buffer[i] = (pulse1_sample + pulse2_sample) / 4.0f;
     }
 
 }

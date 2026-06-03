@@ -80,38 +80,7 @@ void Cartridge :: loadROM (char * path){
 
                     fread(&otherFlags1, sizeof(short), 1, romFile);
                     fread(&otherFlags2, sizeof(int), 1, romFile);
-                    
-                    // Read trainer if present (512 bytes)
-                    if (thereIsTrainer) {
-                        //fseek(romFile, 512, SEEK_CUR); <---- Skip trainer
-                        fread(m_Trainer, sizeof(unsigned char), 512, romFile);
-                    }
 
-                    // Load PRG-ROM
-                    
-                    if (prg_rom_size == 1){
-                        m_PRG_ROM = new unsigned char[prg_rom_size * 32768];
-                        fread(m_PRG_ROM, sizeof(unsigned char), prg_rom_size * 16384, romFile);
-                        memcpy (m_PRG_ROM + 16384, m_PRG_ROM, 16384 * sizeof(unsigned char));
-                    }else{
-                        m_PRG_ROM = new unsigned char[prg_rom_size * 16384];
-                        fread(m_PRG_ROM, sizeof(unsigned char), prg_rom_size * 16384, romFile);
-                    }
-                    
-
-                    // Load CHR-ROM or allocate CHR-RAM
-                    if (chr_rom_size > 0) {
-                        m_CHR_ROM = new unsigned char[chr_rom_size * 8192];
-                        fread(m_CHR_ROM, sizeof(unsigned char), chr_rom_size * 8192, romFile);
-                    } else {
-                        // If no CHR-ROM, cartridge uses CHR-RAM (8KB)
-                        m_CHR_ROM = new unsigned char[8192]; // Allocate 8KB for CHR-RAM
-                        // Initialize CHR-RAM to 0
-                        for (int i = 0; i < 8192; ++i) {
-                            m_CHR_ROM[i] = 0;
-                        }
-                        thereIsCHRRAM = true;
-                    }
                 }else{
 
                     printf("Modo NES 2.0\n");
@@ -138,30 +107,36 @@ void Cartridge :: loadROM (char * path){
                     chr_ram_size = 64 << aux;
 
                     fread(&otherFlags1, sizeof(int), 1, romFile);
+                }
+                
+                // Read trainer if present (512 bytes)
+                if (thereIsTrainer) {
+                    //fseek(romFile, 512, SEEK_CUR); <---- Skip trainer
+                    fread(m_Trainer, sizeof(unsigned char), 512, romFile);
+                }
 
-                    // Read trainer if present (512 bytes)
-                    if (thereIsTrainer) {
-                        //fseek(romFile, 512, SEEK_CUR); <---- Skip trainer
-                        fread(m_Trainer, sizeof(unsigned char), 512, romFile);
-                    }
-
-                    // Load PRG-ROM
+                // Load PRG-ROM                    
+                if (prg_rom_size == 1){
+                    m_PRG_ROM = new unsigned char[prg_rom_size * 32768];
+                    fread(m_PRG_ROM, sizeof(unsigned char), prg_rom_size * 16384, romFile);
+                    memcpy (m_PRG_ROM + 16384, m_PRG_ROM, 16384 * sizeof(unsigned char));
+                }else{
                     m_PRG_ROM = new unsigned char[prg_rom_size * 16384];
                     fread(m_PRG_ROM, sizeof(unsigned char), prg_rom_size * 16384, romFile);
+                }
 
-                    // Load CHR-ROM or allocate CHR-RAM
-                    if (chr_rom_size > 0) {
-                        m_CHR_ROM = new unsigned char[chr_rom_size * 8192];
-                        fread(m_CHR_ROM, sizeof(unsigned char), chr_rom_size * 8192, romFile);
-                    } else {
-                        // If no CHR-ROM, cartridge uses CHR-RAM (8KB)
-                        m_CHR_ROM = new unsigned char[8192]; // Allocate 8KB for CHR-RAM
-                        // Initialize CHR-RAM to 0
-                        for (int i = 0; i < 8192; ++i) {
-                            m_CHR_ROM[i] = 0;
-                        }
-                        thereIsCHRRAM = true;
+                // Load CHR-ROM or allocate CHR-RAM
+                if (chr_rom_size > 0) {
+                    m_CHR_ROM = new unsigned char[chr_rom_size * 8192];
+                    fread(m_CHR_ROM, sizeof(unsigned char), chr_rom_size * 8192, romFile);
+                } else {
+                    // If no CHR-ROM, cartridge uses CHR-RAM (8KB)
+                    m_CHR_ROM = new unsigned char[8192]; // Allocate 8KB for CHR-RAM
+                    // Initialize CHR-RAM to 0
+                    for (int i = 0; i < 8192; ++i) {
+                        m_CHR_ROM[i] = 0;
                     }
+                    thereIsCHRRAM = true;
                 }
             }
         }
@@ -208,13 +183,7 @@ void Cartridge :: catchWriteInRAM(unsigned short dir, unsigned char value){
         m_PRG_ROM[dir % 32768] = value;
         break;
     case 0x01:
-    /*
-        if (dir < 0xC000) {
-            m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)] = value;
-        }else{
-            m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)] = value;
-        }
-    */
+
         if (value & 0x80){
             shift_count = 0;
             shift_reg = 0;
@@ -255,23 +224,9 @@ void Cartridge :: catchWriteInRAM(unsigned short dir, unsigned char value){
         }
         break;
     case 0x02:
-        /*
-        if (dir < 0xC000) {
-            m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)] = value;
-        }else{
-            m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)] = value;
-        }
-        */
         selectedPRGBank = value & 0x07;
         break;
     case 0x03:
-        /*
-        if (prg_rom_size == 1){
-            m_PRG_ROM[dir % 16384] = value;
-        }else if (prg_rom_size == 2){
-            m_PRG_ROM[dir % 32768] = value;
-        }
-        */
         selectedCHRBank = value & 0x07;
         break;
     case 0x04:
@@ -279,25 +234,7 @@ void Cartridge :: catchWriteInRAM(unsigned short dir, unsigned char value){
     default:
         break;
     }
-/*
-    if (prg_rom_size == 1){
-        m_PRG_ROM[dir % 16384] = value;
-    }else if (prg_rom_size == 2){
-        m_PRG_ROM[dir % 32768] = value;
-    }else{
-        if (dir < 0xC000) {
-            //printf("Direccion: %x\n", selectedPRGBank * 16384 + (dir % 16384));
-            //printf("VALOR: %x\n", m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)]);
-            m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)] = value;
-        }else{
-            //printf("Direccion: %x\n", (prg_rom_size - 1) * 16384 + (dir % 16384));
-            //printf("VALOR: %x\n", m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)]);
-            m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)] = value;
-        }
-    }
 
-    selectedPRGBank = value & 0x07;
-*/
 }
 
 unsigned char Cartridge :: getPRGValue(unsigned short dir){
@@ -336,38 +273,10 @@ unsigned char Cartridge :: getPRGValue(unsigned short dir){
         break;
     }
     return 0;
-/*
-    if (prg_rom_size == 1){
-        return m_PRG_ROM[dir % 16384];
-    }else if (prg_rom_size == 2){
-        return m_PRG_ROM[dir % 32768];
-    }else{
-        if (dir < 0xC000) {
-            //printf("Direccion: %x\n", selectedPRGBank * 16384 + (dir % 16384));
-            //printf("VALOR: %x\n", m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)]);
-            return m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)];
-        }else{
-            //printf("Direccion: %x\n", (prg_rom_size - 1) * 16384 + (dir % 16384));
-            //printf("VALOR: %x\n", m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)]);
-            return m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)];
-        }
-    }
-*/
 }
 
 unsigned char * Cartridge :: getPRGDir(unsigned short dir){
-/*    
-    if (prg_rom_size == 1){
-        return &m_PRG_ROM[dir % 16384];
-    }else if (prg_rom_size == 2){
-        return &m_PRG_ROM[dir % 32768];
-    }else{
-        if (dir < 0xC000) 
-            return &m_PRG_ROM[selectedPRGBank * 16384 + (dir % 16384)];
-        else
-            return &m_PRG_ROM[(prg_rom_size - 1) * 16384 + (dir % 16384)];        
-    }
-*/
+
     switch (mapper)
     {
     case 0x00:

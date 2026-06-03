@@ -1,13 +1,13 @@
 1	ja	x-vnd.Haiku-montaNES	3073713191
-Capturing Key	KeyNES2		Capturing Key
-Cancel	KeyNES2		Cancel
-Pattern Tables	MontaNES		Pattern Tables
-Save	KeyNES2		Save
-Key Configuration	KeyNES		Key Configuration
-NES Emulator	MontaNES		NES Emulator
-Gamepad	MontaNES		Gamepad
-File	MontaNES		File
-Key	KeyNES2		Key
-Capture Key	KeyNES2		Capture Key
-Open	MontaNES		Open
-Config	MontaNES		Config
+Capturing Key	KeyNES2		キーのキャプチャ
+Cancel	KeyNES2		キャンセル
+Pattern Tables	MontaNES		パターンテーブル
+Save	KeyNES2		保存
+Key Configuration	KeyNES		キー構成
+NES Emulator	MontaNES		MontaNES
+Gamepad	MontaNES		ゲームパッド
+File	MontaNES		ファイル
+Key	KeyNES2		鍵
+Capture Key	KeyNES2		キャプチャキー
+Open	MontaNES		開ける
+Config	MontaNES		構成

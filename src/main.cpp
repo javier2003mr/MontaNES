@@ -34,6 +34,7 @@
 // Message constants
 const uint32_t kMsgFileOpen = 'flop';
 const uint32_t kMsgKeyConfOpen = 'kopn';
+const uint32_t kMsgPttrnOpen = 'popn';
 
 using namespace std;
 
@@ -154,6 +155,38 @@ private:
     BBitmap*    fBitmap;
 };
 
+// --- Pattern Table Window ---
+class PatternTableWindow : public BWindow {
+public:
+    PatternTableWindow(PPU* ppu, Cartridge* cart)
+        : BWindow(BRect(650, 100, 650 + 512, 100 + 256), B_TRANSLATE("Pattern Tables"), B_TITLED_WINDOW, B_NOT_CLOSABLE | B_ASYNCHRONOUS_CONTROLS) {
+        fPatternView = new PatternTableView(ppu, cart);
+        BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
+            .Add(fPatternView)
+            .End();
+    }
+
+    void FrameRendered() {
+        if (Lock()) {
+            fPatternView->Invalidate();
+            Unlock();
+        }
+    }
+
+    //void Quit(){
+    //    Hide();
+    //}
+
+    void SetPPU(PPU* ppu) {
+        fPatternView->SetPPU(ppu);
+    }
+
+    void SetCartridge(Cartridge* cart) {
+        fPatternView->SetCartridge(cart);
+    }
+private:
+    PatternTableView* fPatternView;
+};
 
 // --- Main Emulator Window ---
 class EmulatorWindow : public BWindow {
@@ -172,8 +205,12 @@ public:
         BMenu* keysMenu = new BMenu(B_TRANSLATE("Config"));
         keysMenu->AddItem(new BMenuItem(B_TRANSLATE("Gamepad"), new BMessage(kMsgKeyConfOpen)));
 
+        BMenu* pttrnMenu = new BMenu(B_TRANSLATE("Pattern Window"));
+        pttrnMenu->AddItem(new BMenuItem(B_TRANSLATE("Show"), new BMessage(kMsgPttrnOpen)));
+
         menuBar->AddItem(fileMenu);
         menuBar->AddItem(keysMenu);
+        menuBar->AddItem(pttrnMenu);
 
         BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
             .Add(menuBar)
@@ -187,7 +224,7 @@ public:
     }
 
     ~EmulatorWindow() {
-        delete fFilePanel;
+        if (fFilePanel) delete fFilePanel;
     }
 
     virtual void MessageReceived(BMessage* message) {
@@ -200,6 +237,9 @@ public:
                 keyConfWindow->Show();
                 keyConfWindow->SetWorkspaces(B_CURRENT_WORKSPACE);
                 keyConfWindow->Activate();                
+                break;
+            case kMsgPttrnOpen:
+                fPatternWindow->Show();
                 break;
             default:
                 BWindow::MessageReceived(message);
@@ -223,41 +263,16 @@ public:
         fEmulatorView->SetPPU(ppu);
     }
 
+    void SetPatternWindow(PatternTableWindow * f){
+        fPatternWindow = f;
+    }
+
 private:
     EmulatorView* fEmulatorView;
     BFilePanel*   fFilePanel;
     KeyConfWindow* keyConfWindow;
+    PatternTableWindow* fPatternWindow;
 };
-
-// --- Pattern Table Window ---
-class PatternTableWindow : public BWindow {
-public:
-    PatternTableWindow(PPU* ppu, Cartridge* cart)
-        : BWindow(BRect(650, 100, 650 + 512, 100 + 256), B_TRANSLATE("Pattern Tables"), B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
-        fPatternView = new PatternTableView(ppu, cart);
-        BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-            .Add(fPatternView)
-            .End();
-    }
-
-    void FrameRendered() {
-        if (Lock()) {
-            fPatternView->Invalidate();
-            Unlock();
-        }
-    }
-
-    void SetPPU(PPU* ppu) {
-        fPatternView->SetPPU(ppu);
-    }
-
-    void SetCartridge(Cartridge* cart) {
-        fPatternView->SetCartridge(cart);
-    }
-private:
-    PatternTableView* fPatternView;
-};
-
 
 // --- Haiku Application Class ---
 class EmulatorApp : public BApplication {
@@ -269,6 +284,7 @@ public:
         // 2. Create Windows with nullptr components
         fEmulatorWindow = new EmulatorWindow(nullptr);
         fPatternTableWindow = new PatternTableWindow(nullptr, nullptr);
+        fEmulatorWindow->SetPatternWindow(fPatternTableWindow);
 
         fEmulatorWindow->Show();
         fPatternTableWindow->Show();
@@ -407,7 +423,7 @@ private:
 // --- Main Entry Point ---
 int main(int argc, char* argv[]) {
 
-    const char * c = "../keyconfig";
+    const char * c = "./keyconfig";
     loadKeys(c);
     
     EmulatorApp app;

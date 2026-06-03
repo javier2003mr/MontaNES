@@ -41,8 +41,6 @@ bool NES::loadCartridge(const std::string& path) {
     }
 
     // With a valid cartridge, create the other components.
-    //cpu = std::make_unique<CPU>();
-    //ppu = std::make_unique<PPU>(cpu.get(), cartridge.get());
     cpu = new CPU;
     ppu = new PPU (cpu, cartridge);
     apu = new APU;
@@ -56,20 +54,7 @@ bool NES::loadCartridge(const std::string& path) {
     unsigned char prg_rom_size = cartridge->getPRGROMSize(); // In 16KB units
     
     printf("PRG ROM Size: %d * 16384\n", prg_rom_size);
-/*
-    if (prg_rom_size == 1) { // 16KB PRG-ROM
-        // Mirror the 16KB chunk at 0x8000 and 0xC000
-        for (int i = 0; i < 16384; i++) {
-            cpu->setMemoryValue(0x8000 + i, prg_rom[i]);
-            cpu->setMemoryValue(0xC000 + i, prg_rom[i]);
-        }
-    } else if (prg_rom_size == 2) { // 32KB PRG-ROM
-        // Load the full 32KB chunk from 0x8000 to 0xFFFF
-        for (int i = 0; i < 32768; i++) {
-            cpu->setMemoryValue(0x8000 + i, prg_rom[i]);
-        }
-    }
-*/
+
     // Note: This currently only handles NROM (mapper 0) with 16KB or 32KB.
     // More complex mappers would require more sophisticated memory mapping here.
 
@@ -83,32 +68,13 @@ bool NES::loadCartridge(const std::string& path) {
 //    unsigned char* chr_rom = cartridge->getCHRROM();
     unsigned char chr_rom_size = cartridge->getCHRROMSize(); // In 8KB units
     printf("CHR ROM Size: %d * 8192\n", chr_rom_size);
-/*
-    if (chr_rom_size > 0) {
-        // Assuming NROM, where chr_rom_size is 1 (8KB)
-        // This contains both pattern tables.
-        for (int i = 0; i < 8192; i++) {
-            ppu->ppuWrite(i, chr_rom[i]);
-        }
-    }
-*/
+
     cartridgeLoaded = true;
 
     return true;
 }
 
 void NES::reset() {
-    
-    //if (!cartridgeLoaded) return;
-
-    // Reset CPU state (constructor handles most of this) and set Program Counter.
-    // The PC is initialized to the 16-bit address stored at the reset vector ($FFFC).
-    //cpu->setPC(cpu->getMemoryValue(0xFFFC) | (cpu->getMemoryValue(0xFFFD) << 8));
-    //cpu->setA(0);
-    //cpu->setX(0);
-    //cpu->setY(0);
-    //cpu->setSP(0xFD);
-    //cpu->setP(0x24);
 
     cpu->reset();
 
@@ -125,12 +91,9 @@ void NES::runFrame() {
 
     if (!cartridgeLoaded) return;
 
-    // This loop runs the emulator for a duration equivalent to one NTSC frame.
-    // The number of CPU cycles per frame is approximately 29781.
+    //Numero de ciclos para NTSC
     int cpu_cycles_this_frame = 0;
     const int total_cycles_per_frame = 29781;
-
-    //bool extra_apu_clock = false;
 
     int current_apu_step = 0;
 
@@ -145,19 +108,6 @@ void NES::runFrame() {
             ppu->runCycle();
         }
 
-        /*
-        if (!extra_apu_clock && (cycles % 2 == 1)){
-            extra_apu_clock = true;
-        }else if (extra_apu_clock && (cycles % 2 == 1)){
-            extra_apu_clock = false;
-            apu->clock();
-        }
-
-        for (int i = 0; i < cycles/2; ++i){
-            apu->clock();
-        }
-        */
-
         // APU Frame Sequencer timing
         apu_frame_sequencer_timer += cycles;
 
@@ -170,7 +120,7 @@ void NES::runFrame() {
                 apu->step();
             }
             if (apu_frame_sequencer_timer >= APU_FRAME_COUNTER_4STEP_RESET) {
-                //apu->step(); // Final step for reset
+
                 apu_frame_sequencer_timer = 0;
                 current_apu_step = 0;
             }
@@ -189,21 +139,19 @@ void NES::runFrame() {
             }
         }
     }
-    // At the end of this loop, the PPU's framebuffer has a complete image.
+
+    //Ya se ha generado un frame
 }
 
 PPU* NES::getPPU() const {
-    //return ppu.get();
     return ppu;
 }
 
 CPU* NES::getCPU() const {
-    //return cpu.get();
     return cpu;
 }
 
 Cartridge* NES::getCartridge() const {
-    //return cartridge.get();
     return cartridge;
 }
 

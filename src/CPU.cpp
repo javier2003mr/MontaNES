@@ -792,27 +792,12 @@ int CPU :: emulationCycle(){
 
     unsigned char opcode = getMemoryValue(PC);
 
-    //printf("Opcode: %x\n", opcode);
-
     OpcodeInfo info = opcodeTable[opcode];
     
     unsigned char * arg;
     unsigned short aux;
     int pc_plus_1 = (PC + 1) % CPU_RAM_SIZE;
     int pc_plus_2 = (PC + 2) % CPU_RAM_SIZE;
-    
-    /*
-    if (PC == 0x813D || PC == 0x8140 || PC == 0x8142){
-        printf("ANTES:\n");
-        printf("PC: %x --> %d\n", PC, PC);
-        printf("Opcode: %x --> %d\n", opcode, opcode);
-        printf("A: %x --> %d\n", A, A);
-        printf("SP: %x --> %d\n", SP, SP);
-        printf("X: %x --> %d\n", X, X);
-        printf("Y: %x --> %d\n", Y, Y);
-        printf("Flags: %x --> %d\n", P, P);
-    }
-    */
 
     switch (info.mode)
     {
@@ -905,18 +890,6 @@ int CPU :: emulationCycle(){
     else
         executeOpcode(info, arg);
 
-    /*
-    if (PC == 0x813D || PC == 0x8140 || PC == 0x8142){
-        printf("\nDESPUÉS:\n");
-        printf("PC: %x --> %d\n", PC, PC);
-        printf("Opcode: %x --> %d\n", opcode, opcode);
-        printf("A: %x --> %d\n", A, A);
-        printf("SP: %x --> %d\n", SP, SP);
-        printf("X: %x --> %d\n", X, X);
-        printf("Y: %x --> %d\n", Y, Y);
-        printf("Flags: %x --> %d\n", P, P);
-    }
-    */
 
     if (modifyPC)
         PC += info.length;
