@@ -23,8 +23,18 @@ void loadKeys(const char * path){
     fkeys = fopen(path, "rb");
     if (fkeys != NULL){
         fread(keys, sizeof(unsigned char), 8, fkeys);
+    }else{
+        keys[0] = 0x3c;
+        keys[1] = 0x3d;
+        keys[2] = 0x30;
+        keys[3] = 0x47;
+        keys[4] = 0x57;
+        keys[5] = 0x62;
+        keys[6] = 0x61;
+        keys[7] = 0x63;
     }
     fclose(fkeys);
+    printf("Configuracion de teclas:\n");
     for (int i = 0; i < 8; ++i){
         printf("%x\n", keys[i]);
     }

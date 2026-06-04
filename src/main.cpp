@@ -79,8 +79,8 @@ private:
 // This view is responsible for drawing the PPU's pattern tables.
 class PatternTableView : public BView {
 public:
-    PatternTableView(PPU* ppu, Cartridge* cart)
-        : BView("pattern_table_view", B_WILL_DRAW), fPPU(ppu), fCartridge(cart) {
+    PatternTableView(PPU* ppu)
+        : BView("pattern_table_view", B_WILL_DRAW), fPPU(ppu) {
         fBitmap = new BBitmap(BRect(0, 0, 255, 127), B_RGB32, true);
     }
 
@@ -89,7 +89,7 @@ public:
     }
 
     virtual void Draw(BRect updateRect) {
-        if (!fPPU || !fCartridge) return;
+        if (!fPPU) return;
         
         DrawPatternTable(0, 0, 0);
         DrawPatternTable(1, 128, 0);
@@ -100,9 +100,6 @@ public:
         fPPU = ppu;
     }
 
-    void SetCartridge(Cartridge* cart) {
-        fCartridge = cart;
-    }
 
 private:
     void DrawPatternTable(int table, int startX, int startY) {
@@ -151,16 +148,15 @@ private:
     }
 
     PPU*        fPPU;
-    Cartridge*  fCartridge;
     BBitmap*    fBitmap;
 };
 
 // --- Pattern Table Window ---
 class PatternTableWindow : public BWindow {
 public:
-    PatternTableWindow(PPU* ppu, Cartridge* cart)
+    PatternTableWindow(PPU* ppu)
         : BWindow(BRect(650, 100, 650 + 512, 100 + 256), B_TRANSLATE("Pattern Tables"), B_TITLED_WINDOW, B_NOT_CLOSABLE | B_ASYNCHRONOUS_CONTROLS) {
-        fPatternView = new PatternTableView(ppu, cart);
+        fPatternView = new PatternTableView(ppu);
         BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
             .Add(fPatternView)
             .End();
@@ -173,17 +169,10 @@ public:
         }
     }
 
-    //void Quit(){
-    //    Hide();
-    //}
-
     void SetPPU(PPU* ppu) {
         fPatternView->SetPPU(ppu);
     }
 
-    void SetCartridge(Cartridge* cart) {
-        fPatternView->SetCartridge(cart);
-    }
 private:
     PatternTableView* fPatternView;
 };
@@ -192,7 +181,7 @@ private:
 class EmulatorWindow : public BWindow {
 public:
     EmulatorWindow(PPU* ppu)
-        : BWindow(BRect(100, 100, 100 + 256 * 3, 100 + 240 * 3), B_TRANSLATE("NES Emulator"), B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
+        : BWindow(BRect(100, 100, 100 + 256 * 3, 100 + 240 * 3), "MontaNES", B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS) {
         
         fEmulatorView = new EmulatorView(ppu);
 
@@ -300,7 +289,7 @@ public:
 
         // 2. Create Windows with nullptr components
         fEmulatorWindow = new EmulatorWindow(nullptr);
-        fPatternTableWindow = new PatternTableWindow(nullptr, nullptr);
+        fPatternTableWindow = new PatternTableWindow(nullptr);
         fEmulatorWindow->SetPatternWindow(fPatternTableWindow);
 
         fEmulatorWindow->Show();
@@ -364,7 +353,6 @@ public:
         // Update windows with new PPU and Cartridge
         fEmulatorWindow->SetPPU(fNES->getPPU());
         fPatternTableWindow->SetPPU(fNES->getPPU());
-        fPatternTableWindow->SetCartridge(fNES->getCartridge());
     }
 
 private:
@@ -441,7 +429,7 @@ private:
 // --- Main Entry Point ---
 int main(int argc, char* argv[]) {
 
-    const char * c = "./keyconfig";
+    const char * c = "../keyconfig";
     loadKeys(c);
     
     EmulatorApp app;

@@ -273,8 +273,6 @@ unsigned char APU::getSweepShiftCount(int pulse_index) {
 }
 
 float APU::generatePulseSample(int pulse_index) {
-    
-    bool length_counter_halt = getLengthCounterHalt(pulse_index);
 
     // Get current duty cycle pattern
     unsigned char duty_cycle_raw = (pulse_index == 0) ? (regPulse1[0] & 0xC0) >> 6 : (regPulse2[0] & 0xC0) >> 6;
@@ -287,10 +285,10 @@ float APU::generatePulseSample(int pulse_index) {
     } else {
         pulse_timer_counter[pulse_index]--;
 
-        if (pulse_timer_counter[pulse_index] < 8){
-            pulse_output[pulse_index] = 0.0f;
-            return pulse_output[pulse_index];
-        }
+        //if (pulse_timer_counter[pulse_index] < 8){
+          //  pulse_output[pulse_index] = 0.0f;
+          //  return pulse_output[pulse_index];
+        //}
     }
 
     // Get volume (now uses envelope volume)
@@ -300,7 +298,10 @@ float APU::generatePulseSample(int pulse_index) {
     // Muting conditions from sweep unit
     // Determine output based on duty cycle and volume
     if (current_duty_sequence[pulse_current_sequence_step[pulse_index]] == 1 &&
-        !(pulse_current_period[pulse_index] < 8 || pulse_current_period[pulse_index] > 0x7FF || pulse_length_counter[pulse_index] == 0 || pulse_timer_counter[1] < 8)) {
+        !(pulse_current_period[pulse_index] < 8 || 
+        pulse_current_period[pulse_index] > 0x7FF || 
+        pulse_length_counter[pulse_index] == 0 || 
+        pulse_timer_counter[pulse_index] < 8)) {
         pulse_output[pulse_index] = volume;
     } else {
         pulse_output[pulse_index] = 0.0f;
@@ -336,7 +337,7 @@ unsigned char APU::getNoiseLengthCounterLoad() {
 
 //Triangular wave
 bool APU::getTriangleLengthCounterHalt() {
-    return (regTriangle[0] >> 7) & 0x01;
+    return (regTriangle[0] & 0x80);
 }
 
 unsigned char APU::getTriangleLinearCounterLoad() {
@@ -352,6 +353,11 @@ unsigned char APU::getTriangleLengthCounterLoad() {
 }
 
 float APU::generateTriangleSample() {
+
+    if (triangle_linear_counter == 0 || triangle_length_counter == 0){
+        triangle_output = 0.0f;
+        return triangle_output;
+    }
     // Get timer period
     unsigned short timer_period = getTriangleTimer();
 
@@ -363,6 +369,7 @@ float APU::generateTriangleSample() {
         triangle_timer_counter--;
     }
 
+    
     triangle_output = ((float)TRIANGLE_SEQUENCE[triangle_current_sequence_step] / 15.0f);// - 1.0f;
 
     return triangle_output;
@@ -619,10 +626,10 @@ void APU::AudioCallback(void* cookie, void* buffer, size_t size, const media_raw
         for (int j = 0; j < 20; ++j){
             pulse1_sample = (apu->getPulseStatus(0)) ? apu->generatePulseSample(0) : 0;
             pulse2_sample = (apu->getPulseStatus(1)) ? apu->generatePulseSample(1) : 0;
-            //triangle_sample = (apu->getTriangleStatus()) ? apu->generateTriangleSample() : 0;
+            triangle_sample = (apu->getTriangleStatus()) ? apu->generateTriangleSample() : 0;
             //noise_sample = (apu->getNoiseStatus()) ? apu->generateNoiseSample() : 0;
             
-            average += (pulse1_sample + pulse2_sample) / 4.0f;
+            average += (pulse1_sample + pulse2_sample + triangle_sample) / 4.0f;
         }
         float_buffer[i] = average / 20;
     }
