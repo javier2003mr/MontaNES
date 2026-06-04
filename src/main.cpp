@@ -206,7 +206,10 @@ public:
         keysMenu->AddItem(new BMenuItem(B_TRANSLATE("Gamepad"), new BMessage(kMsgKeyConfOpen)));
 
         BMenu* pttrnMenu = new BMenu(B_TRANSLATE("Pattern Window"));
-        pttrnMenu->AddItem(new BMenuItem(B_TRANSLATE("Show"), new BMessage(kMsgPttrnOpen)));
+        mostrarMenuPttrn = new BMenuItem(B_TRANSLATE("Show"), new BMessage(kMsgPttrnOpen));
+        mostrarMenuPttrn->SetMarked(false);
+        pttrnMenu->AddItem(mostrarMenuPttrn);
+        
 
         menuBar->AddItem(fileMenu);
         menuBar->AddItem(keysMenu);
@@ -219,6 +222,7 @@ public:
 
         fFilePanel = new BFilePanel(B_OPEN_PANEL, new BMessenger(be_app));
         
+        pattern_hiden = true;
         //BRect frame(100, 100, 420, 500);
         //fKeyConfWindow = new KeyConfWindow(frame);
     }
@@ -239,7 +243,16 @@ public:
                 keyConfWindow->Activate();                
                 break;
             case kMsgPttrnOpen:
-                fPatternWindow->Show();
+                
+                if (pattern_hiden){
+                    fPatternWindow->Show();
+                }else{
+                    fPatternWindow->Hide();
+                }
+                
+                
+                mostrarMenuPttrn->SetMarked(!mostrarMenuPttrn->IsMarked());
+                pattern_hiden = !pattern_hiden;
                 break;
             default:
                 BWindow::MessageReceived(message);
@@ -268,6 +281,10 @@ public:
     }
 
 private:
+
+    bool pattern_hiden;
+    BMenuItem * mostrarMenuPttrn;
+
     EmulatorView* fEmulatorView;
     BFilePanel*   fFilePanel;
     KeyConfWindow* keyConfWindow;
@@ -288,6 +305,7 @@ public:
 
         fEmulatorWindow->Show();
         fPatternTableWindow->Show();
+        fPatternTableWindow->Hide();
 
         // 3. Set up the emulator loop
         BMessage tickMsg(kClockTick);
