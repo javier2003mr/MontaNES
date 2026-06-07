@@ -181,6 +181,7 @@ void APU :: setAudioValue(unsigned short dir, unsigned char value){
     }else if (dir == 0x15){
         reg4015 = value;
     }else if (dir == 0x17){
+        frame_sequencer_counter = 0;
         reg4017 = value;
     }
 
@@ -377,7 +378,7 @@ float APU::generateTriangleSample() {
 
 float APU::generateNoiseSample() {
     // Get timer period
-    unsigned char period_index = getNoisePeriod();
+    //unsigned char period_index = getNoisePeriod();
     unsigned short timer_period = 0;//NOISE_PERIODS[period_index];
 
     // Update timer counter
@@ -527,21 +528,6 @@ bool APU :: getStepMode(){
 
 bool APU :: getIRQInhibitFlag(){
     return (reg4017 & 0x40 != 0);
-}
-
-void APU :: updatePulseTimer(int pulse_index){
-    // Update timer counter
-    if (pulse_timer_counter[pulse_index] == 0) {
-        pulse_timer_counter[pulse_index] = pulse_current_period[pulse_index];
-        pulse_current_sequence_step[pulse_index] = (pulse_current_sequence_step[pulse_index] + 1) % 8;
-    } else {
-        pulse_timer_counter[pulse_index]--; 
-    }
-}
-
-void APU :: clock(){
-    updatePulseTimer(0);
-    updatePulseTimer(1);
 }
 
 void APU :: step(){

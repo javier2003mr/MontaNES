@@ -6,10 +6,8 @@
 #define TAM_APU_REGISTERS 4
 
 const int SAMPLE_RATE = 44100;
-const float NES_CPU_FREQ = 1789772.7272f; // NES CPU frequency in Hz
 const size_t BUFFER_SIZE = 40 * sizeof(float);
 const float AMPLITUDE = 1.0f;
-const float DOWNSAMPLING_RATIO = NES_CPU_FREQ / SAMPLE_RATE;
 
 static const unsigned char DUTY_CYCLE_SEQUENCES[4][8] = {
     {0, 1, 0, 0, 0, 0, 0, 0}, // 00: 12.5%
@@ -115,7 +113,6 @@ class APU {
         void updateSweep(int channel_index);
         void updateLengthCounter(int channel_index);
         void updateTriangleLinearCounter();
-        void updatePulseTimer(int pulse_index);
 
     public:
 
@@ -162,7 +159,6 @@ class APU {
         bool getStepMode();
         bool getIRQInhibitFlag();
 
-        void clock();
         void step();
 
         void start();

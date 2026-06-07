@@ -35,8 +35,6 @@ private:
     unsigned char data_buffer; // Internal PPU read buffer
     
     // Rendering buffers
-    unsigned char background_buffer[256];
-    unsigned char sprite_buffer[256];
     unsigned int frame_buffer[256 * 240];  // RGB frame buffer
     
     // Timing counters
