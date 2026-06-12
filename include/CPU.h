@@ -99,6 +99,14 @@ class CPU {
 
         OpcodeInfo opcodeTable[OPCODE_TABLE_SIZE];
 
+        void readArgs(OpcodeInfo & info, unsigned char * & arg, unsigned short & aux);
+        void stack_push(unsigned char data);
+        unsigned char stack_pop();
+        void initializeOpcodeTable();
+        bool getFlag(Flags flag);
+        void setFlag(Flags flag, bool condition);
+        void executeOpcode(OpcodeInfo & info, void* param);
+
     public:
 
         CPU();
@@ -208,6 +216,7 @@ class CPU {
         void SHA (unsigned short dir);
 
         void nmi();
+        void irq();
         void connectPPU(PPU* ppu_ptr);
         void connectJoypad (Joypad * joypad_ptr);
         void connectCartridge (Cartridge * c);
@@ -231,12 +240,6 @@ class CPU {
 
         unsigned char * getMemoryDir(unsigned short dir);
 
-        void stack_push(unsigned char data);
-        unsigned char stack_pop();
-        void initializeOpcodeTable();
-        bool getFlag(Flags flag);
-        void setFlag(Flags flag, bool condition);
-        void executeOpcode(OpcodeInfo & info, void* param);
         int emulationCycle();
 };
 

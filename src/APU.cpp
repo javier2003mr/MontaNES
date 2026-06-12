@@ -275,29 +275,22 @@ unsigned char APU::getSweepShiftCount(int pulse_index) {
 
 float APU::generatePulseSample(int pulse_index) {
 
-    // Get current duty cycle pattern
+    // Obtenemos el duty cycle de la onda cuadrada
     unsigned char duty_cycle_raw = (pulse_index == 0) ? (regPulse1[0] & 0xC0) >> 6 : (regPulse2[0] & 0xC0) >> 6;
     const unsigned char* current_duty_sequence = DUTY_CYCLE_SEQUENCES[duty_cycle_raw];
 
-    // Update timer counter
+    // Actualiza los contadores
     if (pulse_timer_counter[pulse_index] == 0) {
         pulse_timer_counter[pulse_index] = pulse_current_period[pulse_index];
         pulse_current_sequence_step[pulse_index] = (pulse_current_sequence_step[pulse_index] + 1) % 8;
     } else {
         pulse_timer_counter[pulse_index]--;
-
-        //if (pulse_timer_counter[pulse_index] < 8){
-          //  pulse_output[pulse_index] = 0.0f;
-          //  return pulse_output[pulse_index];
-        //}
     }
 
-    // Get volume (now uses envelope volume)
+    // Obtenemos el volumen de la onda
     double volume = getVolume(pulse_index);
 
-    // If length counter is 0, silence the channel
-    // Muting conditions from sweep unit
-    // Determine output based on duty cycle and volume
+    //Condiciones para emitir audio
     if (current_duty_sequence[pulse_current_sequence_step[pulse_index]] == 1 &&
         !(pulse_current_period[pulse_index] < 8 || 
         pulse_current_period[pulse_index] > 0x7FF || 
@@ -355,14 +348,15 @@ unsigned char APU::getTriangleLengthCounterLoad() {
 
 float APU::generateTriangleSample() {
 
+    //Condiciones para sacar sonido
     if (triangle_linear_counter == 0 || triangle_length_counter == 0){
         triangle_output = 0.0f;
         return triangle_output;
     }
-    // Get timer period
+    // Obtenemos el valor a recargar el timer en caso de estar a 0
     unsigned short timer_period = getTriangleTimer();
 
-    // Update timer counter
+    // Actualizamos el timer
     if (triangle_timer_counter == 0) {
         triangle_timer_counter = timer_period;
         triangle_current_sequence_step = (triangle_current_sequence_step + 1) % 32;
@@ -370,7 +364,7 @@ float APU::generateTriangleSample() {
         triangle_timer_counter--;
     }
 
-    
+    //Sacamos el valor
     triangle_output = ((float)TRIANGLE_SEQUENCE[triangle_current_sequence_step] / 15.0f);// - 1.0f;
 
     return triangle_output;
@@ -549,7 +543,7 @@ void APU :: step(){
         // IRQ if enabled at step 3
         if (frame_sequencer_counter == 3){
             if (!getIRQInhibitFlag()){
-                // CPU IRQ
+                // IRQ
             }
         }
 

@@ -19,7 +19,7 @@ std::string to_hex(int w, int n) {
 
 int main() {
     CPU cpu;
-    cpu.initializeOpcodeTable(); // Initialize the CPU's internal tables
+    //cpu.initializeOpcodeTable(); // Initialize the CPU's internal tables
 
     // Loop through all possible opcode files (0x00 to 0xFF)
     for (int opcode = 0x00; opcode <= 0xFF; ++opcode) {

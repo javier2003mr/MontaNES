@@ -576,6 +576,11 @@ void CPU :: nmi() {
     PC = getMemoryValue(0xFFFA) | (getMemoryValue(0xFFFB) << 8);
 }
 
+void CPU :: irq(){
+    BRK();
+    modifyPC = true;
+}
+
 void CPU :: connectPPU(PPU* ppu_ptr) {
     this->ppu = ppu_ptr;
 }
@@ -759,7 +764,7 @@ unsigned char * CPU :: getMemoryDir (unsigned short dir){
 void CPU :: executeOpcode(OpcodeInfo & info, void* param = nullptr) {
 
     if (!info.handler.func.void_func) {
-        // Handle illegal/undefined opcode
+        // Operacion ilegal o no definida
         return;
     }
     
@@ -786,16 +791,8 @@ void CPU :: executeOpcode(OpcodeInfo & info, void* param = nullptr) {
     }
 }
 
-int CPU :: emulationCycle(){
-    
-    instruction_cycles = 0;
+void CPU :: readArgs(OpcodeInfo & info, unsigned char * & arg, unsigned short & aux){
 
-    unsigned char opcode = getMemoryValue(PC);
-
-    OpcodeInfo info = opcodeTable[opcode];
-    
-    unsigned char * arg;
-    unsigned short aux;
     int pc_plus_1 = (PC + 1) % CPU_RAM_SIZE;
     int pc_plus_2 = (PC + 2) % CPU_RAM_SIZE;
 
@@ -884,6 +881,21 @@ int CPU :: emulationCycle(){
         arg = nullptr;
         break;
     }
+
+}
+
+int CPU :: emulationCycle(){
+    
+    instruction_cycles = 0;
+
+    unsigned char opcode = getMemoryValue(PC);
+
+    OpcodeInfo info = opcodeTable[opcode];
+    
+    unsigned char * arg;
+    unsigned short aux;
+
+    readArgs(info, arg, aux);
     
     if (info.handler.type == InstructionHandler::TYPE_USHORT)
         executeOpcode(info, &aux);

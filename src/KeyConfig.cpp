@@ -6,6 +6,7 @@
 #include <ios>
 #include <Catalog.h>
 #include <Locale.h>
+#include <Key.h>
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "KeyNES2"
@@ -14,6 +15,83 @@ bool capturing = false;
 int kindex = 0;
 
 unsigned char keys[8];
+
+BString getButtonNames(int index){
+
+    BString name;
+
+    switch (index)
+    {
+    case 1:
+        name = "A";
+        break;
+    case 2:
+        name = "B";
+        break;
+    case 3:
+        name = "Start";
+        break;
+    case 4:
+        name = "Select";
+        break;
+    case 5:
+        name = "Up";
+        break;
+    case 6:
+        name = "Down";
+        break;
+    case 7:
+        name = "Left";
+        break;
+    case 8:
+        name = "Right";
+        break;
+    default:
+        name = "Unknown Button";
+        break;
+    }
+
+    return name;
+}
+
+BString GetKeyName(uint32 keycode)
+{
+
+    key_map* map = NULL;
+    char* keyBuffer = NULL;
+    
+    // Obtiene el mapa y el búfer actual del sistema
+    // Nota: Esta función reserva memoria que debemos liberar después.
+    get_key_map(&map, &keyBuffer);
+    
+    if (map == NULL || keyBuffer == NULL)
+        return BString("[Error]");
+
+    // El rango estándar de keycodes en Haiku es de 0 a 127
+    if (keycode >= 128) {
+        free(map);
+        free(keyBuffer);
+        return BString("[Desconocido]");
+    }
+
+    // Obtenemos el desplazamiento (offset) en el búfer para el modo normal
+    int32 offset = map->normal_map[keycode];
+    
+    // El primer byte en la posición del offset es la longitud de la cadena UTF-8
+    int length = keyBuffer[offset];
+    
+    BString result;
+    if (length > 0) {
+        // Copiamos los caracteres saltándonos el byte de longitud (offset + 1)
+        result.SetTo(&keyBuffer[offset + 1], length);
+    }
+
+    // ¡Importante! Liberar la memoria asignada por get_key_map
+    free(map);
+    free(keyBuffer);
+    
+    return result;
+}
 
 void loadKeys(const char * path){
 
@@ -75,7 +153,7 @@ KeyConfView::KeyConfView(BRect frame)
     for (int i = 0; i < 8; i++) {
         BMessage* msg = new BMessage(MSG_KEY1 + i);
         BString label;
-        label << B_TRANSLATE("Capture Key") << " " << i + 1;
+        label << B_TRANSLATE("Button") << " " << getButtonNames(i + 1) << ": " << GetKeyName(fKeySettings[i]);
         BRect rect(20, 20 + i * 40, 160, 50 + i * 40);
         fKeyButtons[i] = new BButton(rect, nullptr, label.String(), msg);
         AddChild(fKeyButtons[i]);
@@ -158,7 +236,7 @@ void KeyConfView::StartCapture(uint32_t keyMsgWhat)
     // Cambia la etiqueta del botón para indicar que está en modo captura
     int index = keyMsgWhat - MSG_KEY1;
     BString label;
-    label << B_TRANSLATE("Capturing Key") << " " << index + 1 << "...";
+    label << B_TRANSLATE("Capturing Key") << " " << getButtonNames(index+1) << "...";
     fKeyButtons[index]->SetLabel(label.String());
 
     kindex = index;
@@ -208,7 +286,7 @@ void KeyConfView::StopCapture()
     // Restaura las etiquetas de los botones a su estado normal
     for (int i = 0; i < 8; i++) {
         BString label;
-        label << B_TRANSLATE("Key") << " " << i + 1 << ": " << std::hex << fKeySettings[i];
+        label << B_TRANSLATE("Button") << " " << getButtonNames(i + 1) << ": " << GetKeyName(fKeySettings[i]);
         fKeyButtons[i]->SetLabel(label.String());
     }
     capturing = false;

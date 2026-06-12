@@ -1,7 +1,7 @@
 #include "Joypad.hpp"
 
 Joypad :: Joypad (){
-    strove_active = 0;
+    strobe_active = 0;
     buttons = 0xFF;
     shift_register = 0xFF;
 }
@@ -26,11 +26,11 @@ void Joypad :: write4016 (unsigned char value){
     bool new_strobe = (value & 0x01 != 0);
 
     // Flanco de bajada del strobe (carga datos en el shift register)
-    if (strove_active &&  !new_strobe){
+    if (strobe_active &&  !new_strobe){
         shift_register = buttons;
     }
 
-    strove_active = new_strobe;
+    strobe_active = new_strobe;
 }
 
 unsigned char Joypad :: read4016 (){
@@ -39,7 +39,7 @@ unsigned char Joypad :: read4016 (){
 
     // En caso de ser 1 este carga siempre el mismo valor
     // Si es 0, desplazará el registro
-    if (!strove_active){   
+    if (!strobe_active){   
         shift_register >>= 1;
     }
 

@@ -4,7 +4,7 @@
 class Joypad {
 
     private:
-        bool strove_active;
+        bool strobe_active;
         unsigned char buttons;
         unsigned char shift_register;
 

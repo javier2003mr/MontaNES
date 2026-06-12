@@ -264,40 +264,39 @@ unsigned short PPU::mirrorNametableAddr(unsigned short addr) {
 
 // Rendering functions
 void PPU::runCycle() {
-    // This is the main PPU cycle function that needs to be called 3 times per CPU cycle
 
-    // Pre-render scanline
+    // Línea de pre-renderizado
     if (scanline == 261) {
         if (cycle == 1) {
-            // Clear VBLANK flag and sprite 0 hit
+            // Limpiar bandera VBLANK y golpe de sprite 0
             //unsigned char status = getPPUSTATUS();
-            setPPUSTATUS(ppu_status & 0x3F);    // Clear bits 7 and 6
+            setPPUSTATUS(ppu_status & 0x3F);    // Limpiar bits 7 y 6
         } else if (cycle >= 280 && cycle <= 304) {
-            // Copy vertical bits from t to v
+            // Copiar bits verticales de t a v
             if (isRenderingEnabled()) {
                 v = (v & 0x041F) | (t & 0xFBE0);
             }
         }
     }
     
-    // Visible scanlines (0-239)
+    // Líneas visibles (0-239)
     if (scanline >= 0 && scanline < 240) {
         renderPixel();
     }
     
-    // Set VBLANK flag at start of VBLANK period
+    // Activar bandera VBLANK al inicio del período VBLANK
     if (scanline == 241 && cycle == 1) {
-        setPPUSTATUS(ppu_status | 0x80); // Set VBLANK flag
+        setPPUSTATUS(ppu_status | 0x80); // Activar bandera VBLANK
 
-        // Trigger NMI if enabled in PPUCTRL
+        // Disparar NMI si está habilitado en PPUCTRL
         if (getPPUCTRL() & 0x80) {
             nes_cpu->nmi();
         }
     }
     
-    // Background fetching during visible and pre-render scanlines
+    // Obtención de fondo durante líneas visibles y de pre-renderizado
     if (isRenderingEnabled() && (scanline < 240 || scanline == 261)) {
-        // Shift background registers every cycle during rendering
+        // Desplazar registros de fondo cada ciclo durante el renderizado
         if ((cycle >= 2 && cycle <= 257) || (cycle >= 322 && cycle <= 337)) {
             bg_pattern_low <<= 1;
             bg_pattern_high <<= 1;
@@ -305,11 +304,11 @@ void PPU::runCycle() {
             bg_palette_high <<= 1;
         }
 
-        // Perform background fetches and load shift registers
+        // Realizar búsquedas de fondo y cargar registros de desplazamiento
         if ((cycle >= 1 && cycle <= 256) || (cycle >= 321 && cycle <= 336)) {
             fetchBackgroundData();
             unsigned char phase = (cycle - 1) % 8;
-            if (phase == 0) { // Every 8 cycles, load the latched tile data into the shift registers
+            if (phase == 0) { // Cada 8 ciclos, cargar los datos del tile almacenados en los registros de desplazamiento
                 bg_pattern_low = (bg_pattern_low & 0xFF00) | bg_low;
                 bg_pattern_high = (bg_pattern_high & 0xFF00) | bg_high;
                 bg_palette_low = (bg_palette_low & 0xFF00) | ((at_byte & 0x01) ? 0xFF : 0x00);
@@ -317,43 +316,43 @@ void PPU::runCycle() {
             }
         }
         
-        // Increment coarse X every 8 cycles
+        // Incrementar X grueso cada 8 ciclos
         if (isRenderingEnabled() && (cycle % 8 == 0) && ((cycle >= 8 && cycle <= 256) || (cycle >= 328 && cycle <= 336))) {
             if ((v & 0x001F) == 31) {
                 v &= ~0x001F;
-                v ^= 0x0400;  // Switch horizontal nametable
+                v ^= 0x0400;  // Cambiar tabla de nombres horizontal
             } else {
                 v++;
             }
         }
         
-        // Increment Y at cycle 256
+        // Incrementar Y en el ciclo 256
         if (cycle == 256) {
-            if ((v & 0x7000) != 0x7000) { // if fine Y < 7
-                v += 0x1000; // increment fine Y
+            if ((v & 0x7000) != 0x7000) { // si fine Y < 7
+                v += 0x1000; // incrementar fine Y
             } else {
                 v &= ~0x7000; // fine Y = 0
-                int y = (v & 0x03E0) >> 5; // let y = coarse Y
+                int y = (v & 0x03E0) >> 5; // sea y = Y grueso
                 if (y == 29) {
-                    y = 0; // coarse Y = 0
-                    v ^= 0x0800; // switch vertical nametable
+                    y = 0; // Y grueso = 0
+                    v ^= 0x0800; // cambiar tabla de nombres vertical
                 } else if (y == 31) {
-                    y = 0; // coarse Y = 0, nametable not switched
+                    y = 0; // Y grueso = 0, tabla de nombres no cambiada
                 } else {
-                    y++; // increment coarse Y
+                    y++; // incrementar Y grueso
                 }
-                v = (v & ~0x03E0) | (y << 5); // put coarse Y back into v
+                v = (v & ~0x03E0) | (y << 5); // volver a colocar Y grueso en v
             }
         }
         
-        // At cycle 257, copy horizontal bits from t to v
+        // En el ciclo 257, copiar bits horizontales de t a v
         if (cycle == 257) {
             evaluateSprites();
             v = (v & 0xFBE0) | (t & 0x041F);
         }
     }
     
-    // Increment cycle/scanline
+    // Incrementar ciclo/línea
     cycle++;
     if (cycle > 340) {
         cycle = 0;
@@ -362,7 +361,7 @@ void PPU::runCycle() {
             scanline = 0;
             odd_frame = !odd_frame;
             if (odd_frame && isRenderingEnabled()) {
-                cycle = 1; // Skip a cycle on odd frames
+                cycle = 1; // Saltar un ciclo en cuadros impares
             }
         }
     }
@@ -382,7 +381,7 @@ void PPU::renderPixel() {
     bool spr_opaque = false;
     bool bg_priority = false;
     
-    // Background rendering
+    // Renderizado del fondo
     if (getPPUMASK() & 0x08) {
         unsigned int shift = 15 - x;
         unsigned char bg_pixel = ((bg_pattern_low >> shift) & 0x01) |
@@ -396,7 +395,7 @@ void PPU::renderPixel() {
         }
     }
     
-    // Sprite rendering
+    // Renderizado de sprites
     if (getPPUMASK() & 0x10) {
         for (int i = 0; i < sprite_count; i++) {
             int spr_x = pixel_x - sprite_positions[i];
@@ -405,7 +404,7 @@ void PPU::renderPixel() {
                 unsigned char spr_pixel_low = sprite_pattern_low[i];
                 unsigned char spr_pixel_high = sprite_pattern_high[i];
 
-                if (sprite_attributes[i] & 0x40) { // Horizontal flip
+                if (sprite_attributes[i] & 0x40) { // Volteo horizontal
                     spr_x = 7 - spr_x;
                 }
 
@@ -414,31 +413,31 @@ void PPU::renderPixel() {
                 unsigned char spr_pixel = (bit1 << 1) | bit0;
 
                 if (spr_pixel != 0) {
-                    // This is the first opaque sprite pixel we've found.
-                    // Priority is determined by the sprite's order in the secondary OAM.
+                    // Este es el primer píxel opaco de sprite que encontramos.
+                    // La prioridad se determina por el orden del sprite en la OAM secundaria.
                     spr_color = readPalette(0x10 + (sprite_attributes[i] & 0x03) * 4 + spr_pixel);
                     spr_opaque = true;
                     bg_priority = sprite_attributes[i] & 0x20;
 
-                    // Sprite 0 hit detection:
-                    // Check if the background is opaque, this sprite is OAM sprite 0,
-                    // and we are not at the screen edge.
+                    // Detección de golpe de sprite 0:
+                    // Verifica si el fondo es opaco, este sprite es el sprite 0 de la OAM,
+                    // y no estamos en el borde de la pantalla.
                     if (bg_opaque && sprite_oam_indices[i] == 0 && pixel_x < 255) {
                         setSpriteZeroHit(true);
                     }
 
-                    // We found the highest priority sprite, so we can stop.
+                    // Encontramos el sprite de mayor prioridad, así que podemos detenernos.
                     break;
                 }
             }
         }
     }
     
-    // Combine pixels
+    // Combinar píxeles
     unsigned int final_color = 0;
     
     if (!spr_opaque && !bg_opaque) {
-        final_color = readPalette(0);  // Backdrop color
+        final_color = readPalette(0);  // Color de fondo
     } else if (!bg_opaque) {
         final_color = spr_color;
     } else if (!spr_opaque) {
