@@ -102,14 +102,14 @@ void loadKeys(const char * path){
     if (fkeys != NULL){
         fread(keys, sizeof(unsigned char), 8, fkeys);
     }else{
-        keys[0] = 0x3c;
-        keys[1] = 0x3d;
+        keys[0] = 0x42;
+        keys[1] = 0x43;
         keys[2] = 0x30;
         keys[3] = 0x47;
-        keys[4] = 0x57;
-        keys[5] = 0x62;
-        keys[6] = 0x61;
-        keys[7] = 0x63;
+        keys[4] = 0x28;
+        keys[5] = 0x3d;
+        keys[6] = 0x3c;
+        keys[7] = 0x3e;
     }
     fclose(fkeys);
     printf("Configuracion de teclas:\n");
