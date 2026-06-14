@@ -93,6 +93,28 @@ BString GetKeyName(uint32 keycode)
     return result;
 }
 
+BString getWorkingDirectory() {
+    image_info info;
+    int32 cookie = 0;
+
+    while (get_next_image_info(B_CURRENT_TEAM, &cookie, &info) >= B_OK) {
+        if (info.type == B_APP_IMAGE) {
+            BString path(info.name);
+            int32 lastSlash = path.FindLast('/');
+            if (lastSlash >= 0){
+                path.Truncate(lastSlash);
+                int32 lastSlash = path.FindLast('/');
+                if (lastSlash >= 0){
+                    path.Truncate(lastSlash);
+                }
+            }
+
+            return path;
+        }
+    }
+    return BString();
+}
+
 void loadKeys(const char * path){
 
     //unsigned char keys[8];
@@ -190,6 +212,10 @@ void KeyConfView::AttachedToWindow()
 
 void KeyConfView::MessageReceived(BMessage* msg)
 {
+
+    BString dir;
+    char * c;
+
     switch (msg->what) {
         // Mensajes de los botones de captura de tecla
         case MSG_KEY1 ... MSG_KEY1 + 7:
@@ -200,7 +226,11 @@ void KeyConfView::MessageReceived(BMessage* msg)
             for (int i = 0; i < 8; ++i){
                 keys[i] = fKeySettings[i];
             }
-            storeKeys("./keyconfig");
+            
+            dir = getWorkingDirectory();
+            dir += "/keyconfig";
+            c = dir.LockBuffer(MAX_PATH_LENGTH);
+            storeKeys(c);
             //fSavePanel->Show();
             break;
         // Mensaje del botón "Cancelar"

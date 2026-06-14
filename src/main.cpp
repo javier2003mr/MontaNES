@@ -42,21 +42,7 @@ bool previousTabState;
 bool fastForward;
 
 
-char * getExecutablePath(){
-    image_info info;
-    int32 cookie = 0;
-    char * exePath;
-
-    while (get_next_image_info(B_CURRENT_TEAM, &cookie, &info) >= B_OK) {
-        if (info.type == B_APP_IMAGE) {
-            exePath = new char [sizeof(info.name)];
-            strlcpy(exePath, info.name, sizeof(info.name));
-            break;
-        }
-    }
-    return exePath;
-}
-
+/*
 BString getWorkingDirectory() {
     image_info info;
     int32 cookie = 0;
@@ -78,6 +64,7 @@ BString getWorkingDirectory() {
     }
     return BString();
 }
+*/
 
 // --- Emulator View ---
 // This view is responsible for drawing the main game screen.

@@ -15,6 +15,7 @@
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "KeyNES"
+#define MAX_PATH_LENGTH 10000
 
 extern bool capturing;
 extern int kindex;
@@ -23,17 +24,7 @@ extern unsigned char keys[8];
 void loadKeys(const char * path);
 void storeKeys(const char * path);
 int CaptureKey(void * p);
-
-/*
-unsigned char a_key = 0x3c;
-unsigned char b_key = 0x3d;
-unsigned char select_key = 0x30;
-unsigned char start_key = 0x47;
-unsigned char up_key = 0x57;
-unsigned char down_key = 0x62;
-unsigned char left_key = 0x61;
-unsigned char right_key = 0x63;
-*/
+BString getWorkingDirectory();
 
 // Constantes para los mensajes que usarán los botones
 const uint32_t MSG_KEY1 = 'key1';
@@ -49,6 +40,7 @@ const uint32_t MSG_SAVE = 'save';
 const uint32_t MSG_CANCEL = 'cncl';
 const uint32_t MSG_TIMER = 'tmr_';
 const uint32_t MSG_SAVE_PANEL = 'svpn';
+
 
 class KeyConfView : public BView {
 public:
