@@ -1,13 +1,13 @@
-1	es	x-vnd.Haiku-montaNES	3073713191
-Capturing Key	KeyNES2		Capturando Teclas
+1	es	x-vnd.Haiku-montaNES	3731786321
+Capturing Key	KeyNES2		Capturando tecla
 Cancel	KeyNES2		Cancelar
-Pattern Tables	MontaNES		Tabla de Tiles
+Pattern Window	MontaNES		Ventana de patrones
+Show	MontaNES		Mostrar
+Pattern Tables	MontaNES		Tablas de patrones
 Save	KeyNES2		Guardar
-Key Configuration	KeyNES		Configuración de Controles
-NES Emulator	MontaNES		MontaNES
-Gamepad	MontaNES		Mando
+Key Configuration	KeyNES		Configuracion de botones
+Gamepad	MontaNES		Gamepad
 File	MontaNES		Archivo
-Key	KeyNES2		Tecla
-Capture Key	KeyNES2		Capturar Tecla
 Open	MontaNES		Abrir
+Button	KeyNES2		Botón
 Config	MontaNES		Configuración

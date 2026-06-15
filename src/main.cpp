@@ -29,7 +29,7 @@
 
 #undef B_TRANSLATION_CONTEXT
 #define B_TRANSLATION_CONTEXT "MontaNES"
-#define MAX_PATH_LENGTH 10000
+//#define MAX_PATH_LENGTH 10000
 
 // Message constants
 const uint32_t kMsgFileOpen = 'flop';
@@ -40,31 +40,6 @@ using namespace std;
 
 bool previousTabState;
 bool fastForward;
-
-
-/*
-BString getWorkingDirectory() {
-    image_info info;
-    int32 cookie = 0;
-
-    while (get_next_image_info(B_CURRENT_TEAM, &cookie, &info) >= B_OK) {
-        if (info.type == B_APP_IMAGE) {
-            BString path(info.name);
-            int32 lastSlash = path.FindLast('/');
-            if (lastSlash >= 0){
-                path.Truncate(lastSlash);
-                int32 lastSlash = path.FindLast('/');
-                if (lastSlash >= 0){
-                    path.Truncate(lastSlash);
-                }
-            }
-
-            return path;
-        }
-    }
-    return BString();
-}
-*/
 
 // --- Emulator View ---
 // This view is responsible for drawing the main game screen.

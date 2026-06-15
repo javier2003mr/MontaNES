@@ -1,13 +1,13 @@
-1	de	x-vnd.Haiku-montaNES	3073713191
-Capturing Key	KeyNES2		Erfassen von Schlüsseln
+1	de	x-vnd.Haiku-montaNES	3731786321
+Capturing Key	KeyNES2		Schlüssel erfassen
 Cancel	KeyNES2		Stornieren
-Pattern Tables	MontaNES		Fliesentisch
-Save	KeyNES2		Halten
-Key Configuration	KeyNES		Kontrolleinstellungen
-NES Emulator	MontaNES		MontaNES
-Gamepad	MontaNES		Befehl
-File	MontaNES		Archiv
-Key	KeyNES2		Schlüssel
-Capture Key	KeyNES2		Capture-Schlüssel   
+Pattern Window	MontaNES		Musterfenster
+Show	MontaNES		Zeigen
+Pattern Tables	MontaNES		Mustertabellen
+Save	KeyNES2		Speichern
+Key Configuration	KeyNES		Schlüsselkonfiguration
+Gamepad	MontaNES		Gamepad
+File	MontaNES		Datei
 Open	MontaNES		Offen
-Config	MontaNES		Konfiguration
+Button	KeyNES2		Taste
+Config	MontaNES		Konfig

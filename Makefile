@@ -37,7 +37,7 @@ TEST_GUI_TARGET = $(BIN_DIR)/haiku_gui
 TEST_SHOW_CHR_TARGET = $(BIN_DIR)/show_chr
 
 # Default rule
-all: $(TARGET) # $(TEST_CPU_TARGET) $(TEST_PPU_TARGET) $(TEST_GUI_TARGET) $(TEST_SHOW_CHR_TARGET)
+all: $(TARGET) bindcatalogs # $(TEST_CPU_TARGET) $(TEST_PPU_TARGET) $(TEST_GUI_TARGET) $(TEST_SHOW_CHR_TARGET)
 
 # Regla para compilar .rdef a .rsrc ---
 $(RES_OBJ): $(RDEF_FILE) | $(OBJ_DIR)

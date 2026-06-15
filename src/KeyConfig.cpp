@@ -47,7 +47,7 @@ BString getButtonNames(int index){
         name = "Right";
         break;
     default:
-        name = "Unknown Button";
+        name = "Unknown";
         break;
     }
 

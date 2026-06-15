@@ -1,13 +1,13 @@
-1	en	x-vnd.Haiku-montaNES	3073713191
+1	en	x-vnd.Haiku-montaNES	3731786321
 Capturing Key	KeyNES2		Capturing Key
 Cancel	KeyNES2		Cancel
+Pattern Window	MontaNES		Pattern Window
+Show	MontaNES		Show
 Pattern Tables	MontaNES		Pattern Tables
 Save	KeyNES2		Save
 Key Configuration	KeyNES		Key Configuration
-NES Emulator	MontaNES		NES Emulator
 Gamepad	MontaNES		Gamepad
 File	MontaNES		File
-Key	KeyNES2		Key
-Capture Key	KeyNES2		Capture Key
 Open	MontaNES		Open
+Button	KeyNES2		Button
 Config	MontaNES		Config
