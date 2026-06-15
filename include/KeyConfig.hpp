@@ -71,7 +71,7 @@ private:
 class KeyConfWindow : public BWindow {
 public:
     KeyConfWindow()
-        : BWindow(BRect (100, 100, 420, 500), B_TRANSLATE("Key Configuration"), B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS)
+        : BWindow(BRect (100, 100, 420, 450), B_TRANSLATE("Key Configuration"), B_TITLED_WINDOW, B_ASYNCHRONOUS_CONTROLS)
     {
         KeyConfView* view = new KeyConfView(Bounds());
         AddChild(view);
