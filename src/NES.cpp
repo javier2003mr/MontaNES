@@ -1,6 +1,6 @@
-#include "NES.h"
+#include "NES.hpp"
 #include "Cartridge.hpp"
-#include "CPU.h"
+#include "CPU.hpp"
 #include "PPU.hpp" // Using the more complete PPU implementation
 #include <iostream>
 

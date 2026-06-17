@@ -20,10 +20,10 @@
 #include <Locale.h>
 
 // Emulator core headers
-#include "NES.h"
+#include "NES.hpp"
 #include "PPU.hpp"
 #include "Cartridge.hpp"
-#include "CPU.h"
+#include "CPU.hpp"
 
 #include "KeyConfig.hpp"
 

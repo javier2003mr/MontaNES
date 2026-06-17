@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include "Joypad.hpp" // Include Joypad header
-#include "CPU.h"
+#include "CPU.hpp"
 #include "PPU.hpp"
 #include "Cartridge.hpp"
 #include "APU.hpp"

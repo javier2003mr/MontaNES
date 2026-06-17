@@ -1,7 +1,7 @@
 #ifndef PPUCLASS
 #define PPUCLASS
 
-#include "CPU.h"
+#include "CPU.hpp"
 #include "Cartridge.hpp"
 
 #define PPU_RAM_SIZE 65536
